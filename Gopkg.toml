@@ -1,0 +1,12 @@
+[[constraint]]
+  branch = "master"
+  name = "github.com/yuin/gopher-lua"
+
+[[constraint]]
+  name = "gopkg.in/yaml.v2"
+  version = "2.2.2"
+
+[prune]
+  non-go = true
+  go-tests = true
+  unused-packages = true
