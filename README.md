@@ -1,5 +1,4 @@
-# gopher-lua-libs [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs?status.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs)
-
+# gopher-lua-libs [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs?status.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs) [![Travis](https://travis-ci.org/vadv/gopher-lua-libs.svg)](https://travis-ci.org/vadv/gopher-lua-libs)
 Package contains is a libs for [gopher-lua](https://github.com/yuin/gopher-lua).
 
 ## License
