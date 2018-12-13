@@ -54,7 +54,7 @@ func ExampleDir() {
 		log.Fatal(err.Error())
 	}
 	// Output:
-	// /var/tmp/file.name
+	// /var/tmp
 }
 
 // filepath.basename(string)
