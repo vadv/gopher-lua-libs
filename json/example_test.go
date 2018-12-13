@@ -44,5 +44,5 @@ func ExampleDecode() {
 		log.Fatal(err.Error())
 	}
 	// Output:
-	// {"a":{"b":1}}
+	// '{"a":{"b":1}}'
 }
