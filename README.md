@@ -23,3 +23,8 @@ go get github.com/vadv/gopher-lua-libs
 * [json](/json) json implementation
 * [regexp](/regexp) regexp port
 * [strings](/strings) strings port
+* [tac](/tac) tac line-by-line scanner (from end of file to up)
+* [tcp](/tcp) raw tcp client lib
+* [time](/time) time port
+* [xmlpath](/xmlpath) [xmlpath](https://gopkg.in/xmlpath.v2) port
+* [yaml](/yaml) [yaml](https://gopkg.in/yaml.v2) port
