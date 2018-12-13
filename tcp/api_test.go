@@ -1,7 +1,6 @@
 package tcp
 
 import (
-	"io/ioutil"
 	"net"
 	"testing"
 	"time"
@@ -45,13 +44,9 @@ func TestApi(t *testing.T) {
 	go runPingPongServer(":12345")
 	time.Sleep(time.Second)
 
-	data, err := ioutil.ReadFile("./test/test_api.lua")
-	if err != nil {
-		t.Fatalf("%s\n", err.Error())
-	}
 	state := lua.NewState()
 	Preload(state)
-	if err := state.DoString(string(data)); err != nil {
+	if err := state.DoFile("./test/test_api.lua"); err != nil {
 		t.Fatalf("execute test: %s\n", err.Error())
 	}
 }
