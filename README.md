@@ -15,6 +15,7 @@ go get github.com/vadv/gopher-lua-libs
 ## Index
 
 * [cert_util](/cert_util) monitoring ssl certs
+* [cmd](/cmd) cmd port
 * [db](/db) access to databases
 * [filepath](/filepath) path.filepath port
 * [http](/http) http.client port
@@ -23,6 +24,7 @@ go get github.com/vadv/gopher-lua-libs
 * [json](/json) json implementation
 * [plugin](/plugin) run lua code in lua code
 * [regexp](/regexp) regexp port
+* [runtime](/runtime) runtime port
 * [strings](/strings) strings port
 * [tac](/tac) tac line-by-line scanner (from end of file to up)
 * [tcp](/tcp) raw tcp client lib

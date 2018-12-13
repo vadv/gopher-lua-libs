@@ -1,6 +1,4 @@
-// build +purego
-
-package db
+package runtime
 
 import (
 	"testing"
