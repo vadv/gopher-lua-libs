@@ -18,5 +18,8 @@ go get github.com/vadv/gopher-lua-libs
 * [db](/db) access to databases
 * [filepath](/filepath) path.filepath port
 * [http](/http) http.client port
-* [inspect](/inspect) pretty print [inspect](https://github.com/kikito/inspect.lua)
+* [inspect](/inspect) pretty print [inspect port](https://github.com/kikito/inspect.lua)
 * [ioutil](/ioutil) io/ioutil port
+* [json](/json) json implementation
+* [regexp](/regexp) regexp port
+* [strings](/strings) strings port
