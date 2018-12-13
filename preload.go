@@ -1,6 +1,8 @@
 package libs
 
 import (
+	cert_util "github.com/vadv/gopher-lua-libs/cert_util"
+	db "github.com/vadv/gopher-lua-libs/db"
 	filepath "github.com/vadv/gopher-lua-libs/filepath"
 	http "github.com/vadv/gopher-lua-libs/http"
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
@@ -33,4 +35,6 @@ func Preload(L *lua.LState) {
 	json.Preload(L)
 	tcp.Preload(L)
 	xmlpath.Preload(L)
+	db.Preload(L)
+	cert_util.Preload(L)
 }
