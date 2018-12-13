@@ -14,11 +14,11 @@ func Example_package() {
     local cert_util = require("cert_util")
     local tx, err = cert_util.not_after("google.com", "64.233.165.101:443")
     if err then error(err) end
-    print(tx)
+    print(tx > 0)
 `
 	if err := state.DoString(source); err != nil {
 		log.Fatal(err.Error())
 	}
 	// Output:
-	// 1548838740
+	// true
 }
