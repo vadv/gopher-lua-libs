@@ -21,10 +21,11 @@ go get github.com/vadv/gopher-lua-libs
 * [inspect](/inspect) pretty print [github.com/kikito/inspect.lua](https://github.com/kikito/inspect.lua)
 * [ioutil](/ioutil) io/ioutil port
 * [json](/json) json implementation
+* [plugins](/plugins) run lua code in lua code
 * [regexp](/regexp) regexp port
 * [strings](/strings) strings port
 * [tac](/tac) tac line-by-line scanner (from end of file to up)
 * [tcp](/tcp) raw tcp client lib
 * [time](/time) time port
 * [xmlpath](/xmlpath) [gopkg.in/xmlpath.v2](https://gopkg.in/xmlpath.v2) port
-* [yaml](/yaml) [yaml](https://gopkg.in/yaml.v2) port
+* [yaml](/yaml) [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2) port

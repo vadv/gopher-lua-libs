@@ -6,6 +6,7 @@ import (
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
+	plugin "github.com/vadv/gopher-lua-libs/plugin"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
 	strings "github.com/vadv/gopher-lua-libs/strings"
 	tac "github.com/vadv/gopher-lua-libs/tac"
@@ -28,6 +29,7 @@ func Preload(L *lua.LState) {
 	tac.Preload(L)
 	inspect.Preload(L)
 	yaml.Preload(L)
+	plugin.Preload(L)
 	json.Preload(L)
 	tcp.Preload(L)
 	xmlpath.Preload(L)
