@@ -21,7 +21,7 @@ go get github.com/vadv/gopher-lua-libs
 * [inspect](/inspect) pretty print [github.com/kikito/inspect.lua](https://github.com/kikito/inspect.lua)
 * [ioutil](/ioutil) io/ioutil port
 * [json](/json) json implementation
-* [plugins](/plugins) run lua code in lua code
+* [plugin](/plugin) run lua code in lua code
 * [regexp](/regexp) regexp port
 * [strings](/strings) strings port
 * [tac](/tac) tac line-by-line scanner (from end of file to up)
