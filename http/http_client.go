@@ -37,7 +37,7 @@ func checkClient(L *lua.LState) *luaClient {
 //   {
 //     http_proxy="http(s)://<user>:<password>@host:<port>",
 //     timeout= 10,
-//     insecure_skip_verify=true,
+//     insecure_skip_verify=false,
 //   }
 func NewClient(L *lua.LState) int {
 	var config *lua.LTable

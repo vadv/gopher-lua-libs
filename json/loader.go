@@ -21,6 +21,6 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"decode": Encode,
-	"encode": Decode,
+	"decode": Decode,
+	"encode": Encode,
 }
