@@ -11,6 +11,7 @@ local inspect = require("inspect")
 local client = http.client({proxy="http://192.168.184.28:3128", insecure_ssl=true})
 local bot = telegram.bot("token", client)
 
+-- getUpdates
 local updates, err = bot:getUpdates()
 if err then error(err) end
 
@@ -31,6 +32,7 @@ for _, upd in pairs(updates) do
     end
 end
 
+-- sendMessage
 local reply_markup_message, err = bot:sendMessage({
     chat_id = XXX,
     text = "do u like panda?",
@@ -47,9 +49,11 @@ local reply_markup_message, err = bot:sendMessage({
 })
 if err then error(err) end
 
+-- sendPhoto
 local _, err = bot:sendPhoto({chat_id = XXX, caption="panda", photo="./test/panda.jpg"})
 if err then error(err) end
 
+-- editReplyMarkup
 local _, err = bot:editMessageReplyMarkup({
     chat_id = reply_markup_message.chat.id,
     message_id = reply_markup_message.message_id,
