@@ -1,4 +1,4 @@
-// Package telegram implements golang telegram bot for lua.
+// Package telegram implements telegram api bot for lua.
 package telegram
 
 import (
