@@ -12,6 +12,7 @@ import (
 	plugin "github.com/vadv/gopher-lua-libs/plugin"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
 	runtime "github.com/vadv/gopher-lua-libs/runtime"
+	storage "github.com/vadv/gopher-lua-libs/storage"
 	strings "github.com/vadv/gopher-lua-libs/strings"
 	tac "github.com/vadv/gopher-lua-libs/tac"
 	tcp "github.com/vadv/gopher-lua-libs/tcp"
@@ -45,4 +46,5 @@ func Preload(L *lua.LState) {
 	runtime.Preload(L)
 	telegram.Preload(L)
 	zabbix.Preload(L)
+	storage.Preload(L)
 }

@@ -25,6 +25,7 @@ go get github.com/vadv/gopher-lua-libs
 * [plugin](/plugin) run lua code in lua code
 * [regexp](/regexp) regexp port
 * [runtime](/runtime) runtime port
+* [storage](/storage) package for store persist data and share values between lua states
 * [strings](/strings) strings port
 * [tac](/tac) tac line-by-line scanner (from end of file to up)
 * [tcp](/tcp) raw tcp client lib

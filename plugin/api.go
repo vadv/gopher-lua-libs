@@ -11,12 +11,15 @@ import (
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
+	storage "github.com/vadv/gopher-lua-libs/storage"
 	strings "github.com/vadv/gopher-lua-libs/strings"
 	tac "github.com/vadv/gopher-lua-libs/tac"
 	tcp "github.com/vadv/gopher-lua-libs/tcp"
+	telegram "github.com/vadv/gopher-lua-libs/telegram"
 	time "github.com/vadv/gopher-lua-libs/time"
 	xmlpath "github.com/vadv/gopher-lua-libs/xmlpath"
 	yaml "github.com/vadv/gopher-lua-libs/yaml"
+	zabbix "github.com/vadv/gopher-lua-libs/zabbix"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -72,6 +75,9 @@ func (p *luaPlugin) start() {
 	time.Preload(state)
 	xmlpath.Preload(state)
 	yaml.Preload(state)
+	zabbix.Preload(state)
+	telegram.Preload(state)
+	storage.Preload(state)
 	//
 	p.state = state
 	p.error = nil
