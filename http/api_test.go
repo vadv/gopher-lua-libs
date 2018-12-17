@@ -24,6 +24,22 @@ func basicAuth(handler http.HandlerFunc, username, password, realm string) http.
 	}
 }
 
+func httpCheckHeaders(w http.ResponseWriter, r *http.Request) {
+	if header := r.Header.Get(`simple_header`); header != `check_header` {
+		w.WriteHeader(412)
+		return
+	}
+	w.Write([]byte(`OK`))
+}
+
+func httpCheckUserAgent(w http.ResponseWriter, r *http.Request) {
+	if ua := r.UserAgent(); ua != `check_ua` {
+		w.WriteHeader(412)
+		return
+	}
+	w.Write([]byte(`OK`))
+}
+
 func httpRouterGet(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`OK`))
 }
@@ -52,6 +68,8 @@ func TestApi(t *testing.T) {
 	http.HandleFunc("/get", httpRouterGet)
 	http.HandleFunc("/getBasicAuth", basicAuth(httpRouterGet, "admin", "123456", "Please enter your username and password for this site"))
 	http.HandleFunc("/timeout", httpRouterGetTimeout)
+	http.HandleFunc("/checkHeader", httpCheckHeaders)
+	http.HandleFunc("/checkUserAgent", httpCheckUserAgent)
 
 	go runHttp(":1111")
 	go runHttps(":1112")

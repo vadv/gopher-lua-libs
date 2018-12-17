@@ -29,4 +29,10 @@ local request = http.request("POST", "http://hostname.com/api.json", "{}")
 -- ignore ssl
 local client = http.client({insecure_ssl=true})
 local request = http.request("POST", "http://hostname.com/api.json", "{}")
+
+-- set headers for all request
+local client = http.client({ headers={key="value"} })
+
+-- set basic auth for all request
+local client = http.client({basic_auth_user="admin", basic_auth_password="123456"})
 ```

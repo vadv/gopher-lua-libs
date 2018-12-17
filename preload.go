@@ -19,6 +19,7 @@ import (
 	time "github.com/vadv/gopher-lua-libs/time"
 	xmlpath "github.com/vadv/gopher-lua-libs/xmlpath"
 	yaml "github.com/vadv/gopher-lua-libs/yaml"
+	zabbix "github.com/vadv/gopher-lua-libs/zabbix"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -43,4 +44,5 @@ func Preload(L *lua.LState) {
 	cert_util.Preload(L)
 	runtime.Preload(L)
 	telegram.Preload(L)
+	zabbix.Preload(L)
 }

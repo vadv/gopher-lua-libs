@@ -2,11 +2,14 @@ package http
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
 	"os"
 	"time"
 
+	lua_json "github.com/vadv/gopher-lua-libs/json"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -21,6 +24,10 @@ const (
 
 type LuaHTTPClient struct {
 	*http.Client
+	userAgent       string
+	basicAuthUser   *string
+	basicAuthPasswd *string
+	headers         map[string]string
 }
 
 func checkClient(L *lua.LState) *LuaHTTPClient {
@@ -38,13 +45,17 @@ func checkClient(L *lua.LState) *LuaHTTPClient {
 //     proxy="http(s)://<user>:<password>@host:<port>",
 //     timeout= 10,
 //     insecure_ssl=false,
+//     user_agent = "gopher-lua",
+//     basic_auth_user = "",
+//     basic_auth_password = "",
+//     headers = {"key"="value"}
 //   }
 func NewClient(L *lua.LState) int {
 	var config *lua.LTable
 	if L.GetTop() > 0 {
 		config = L.CheckTable(1)
 	}
-	client := &LuaHTTPClient{Client: &http.Client{Timeout: DefaultTimeout}}
+	client := &LuaHTTPClient{Client: &http.Client{Timeout: DefaultTimeout}, userAgent: DefaultUserAgent}
 	transport := &http.Transport{}
 	// parse env
 	if proxyEnv := os.Getenv(`HTTP_PROXY`); proxyEnv != `` {
@@ -88,9 +99,54 @@ func NewClient(L *lua.LState) int {
 					L.ArgError(1, "insecure_ssl must be bool")
 				}
 			}
+			// parse user_agent
+			if k.String() == `user_agent` {
+				if _, ok := v.(lua.LString); ok {
+					client.userAgent = v.String()
+				} else {
+					L.ArgError(1, "user_agent must be string")
+				}
+			}
+			// parse basic_auth_user
+			if k.String() == `basic_auth_user` {
+				if _, ok := v.(lua.LString); ok {
+					user := v.String()
+					client.basicAuthUser = &user
+				} else {
+					L.ArgError(1, "basic_auth_user must be string")
+				}
+			}
+			// parse basic_auth_password
+			if k.String() == `basic_auth_password` {
+				if _, ok := v.(lua.LString); ok {
+					password := v.String()
+					client.basicAuthPasswd = &password
+				} else {
+					L.ArgError(1, "basic_auth_password must be string")
+				}
+			}
+			// parse headers
+			if k.String() == `headers` {
+				if tbl, ok := v.(*lua.LTable); ok {
+					headers := make(map[string]string, 0)
+					data, err := lua_json.ValueEncode(tbl)
+					if err != nil {
+						L.ArgError(1, "headers must be table of key-values string")
+					}
+					if err := json.Unmarshal(data, &headers); err != nil {
+						L.ArgError(1, "headers must be table of key-values string")
+					}
+					client.headers = headers
+				} else {
+					L.ArgError(1, "headers must be table")
+				}
+			}
 		})
 	}
 
+	// cookie support
+	jar, _ := cookiejar.New(&cookiejar.Options{})
+	client.Jar = jar
 	client.Transport = transport
 	ud := L.NewUserData()
 	ud.Value = client

@@ -3,7 +3,6 @@ package telegram
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	lua_http "github.com/vadv/gopher-lua-libs/http"
@@ -91,7 +90,6 @@ func sendGeneric(L *lua.LState, iface interface{}) int {
 		return 2
 	}
 	// byte to chattable
-	log.Printf("> c: %s\n", data)
 	if err := json.Unmarshal(data, c); err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))

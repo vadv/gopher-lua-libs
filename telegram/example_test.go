@@ -3,6 +3,8 @@ package telegram
 import (
 	"log"
 
+	http "github.com/vadv/gopher-lua-libs/http"
+	inspect "github.com/vadv/gopher-lua-libs/inspect"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -10,6 +12,8 @@ import (
 func ExampleSendMessage() {
 	state := lua.NewState()
 	Preload(state)
+	http.Preload(state)
+	inspect.Preload(state)
 	source := `
 local bot = telegram.bot("token")
 bot:sendMessage({
