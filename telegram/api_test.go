@@ -10,7 +10,7 @@ import (
 )
 
 func TestApi(t *testing.T) {
-	data, err := ioutil.ReadFile("./test/test_ap.1lua")
+	data, err := ioutil.ReadFile("./test/test_api.lua")
 	if err != nil {
 		t.Fatalf("%s\n", err.Error())
 	}
