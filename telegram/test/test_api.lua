@@ -3,7 +3,7 @@ local telegram = require("telegram")
 local inspect = require("inspect")
 
 -- local client = http.client({proxy="http://192.168.184.28:3128", insecure_ssl=true})
-local bot = telegram.bot("770791440:AAFfrX08qwFtj8YIzcvnhuVzAMv88aqMSxE", client)
+local bot = telegram.bot("770791440:AAFfrX08qwFtj8YIzcvnhuVzAMv88aqMSxE")
 
 local updates, err = bot:getUpdates()
 -- if err then error(err) end
