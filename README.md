@@ -28,6 +28,7 @@ go get github.com/vadv/gopher-lua-libs
 * [strings](/strings) strings port
 * [tac](/tac) tac line-by-line scanner (from end of file to up)
 * [tcp](/tcp) raw tcp client lib
+* [telegram](/telegram) telegram bot
 * [time](/time) time port
 * [xmlpath](/xmlpath) [gopkg.in/xmlpath.v2](https://gopkg.in/xmlpath.v2) port
 * [yaml](/yaml) [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2) port

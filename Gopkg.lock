@@ -37,6 +37,14 @@
   revision = "52369c62f4463a21c8ff8531194c5526322b8521"
 
 [[projects]]
+  digest = "1:c6d6892ef3af2632f7892ed12239190002925e009afca91b0336c2f372e64610"
+  name = "github.com/technoweenie/multipartstreamer"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "a90a01d73ae432e2611d178c18367fbaa13e0154"
+  version = "v1.0.1"
+
+[[projects]]
   branch = "master"
   digest = "1:286bb14ef80f61cf33d7b5d976cdf10a6df4f279b20cca7337a8828010342959"
   name = "github.com/yuin/gopher-lua"
@@ -194,6 +202,7 @@
   input-imports = [
     "github.com/go-sql-driver/mysql",
     "github.com/lib/pq",
+    "github.com/technoweenie/multipartstreamer",
     "github.com/yuin/gopher-lua",
     "gopkg.in/xmlpath.v2",
     "gopkg.in/yaml.v2",

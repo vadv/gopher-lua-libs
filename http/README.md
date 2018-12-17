@@ -23,10 +23,10 @@ local request = http.request("POST", "http://hostname.com/api.json", "{}")
 request:header_set("Content-Type", "application/json")
 
 -- with proxy
-local client = http.client({http_proxy="http(s)://login:password@hostname.com"})
+local client = http.client({proxy="http(s)://login:password@hostname.com"})
 local request = http.request("POST", "http://hostname.com/api.json", "{}")
 
 -- ignore ssl
-local client = http.client({insecure_skip_verify=true})
+local client = http.client({insecure_ssl=true})
 local request = http.request("POST", "http://hostname.com/api.json", "{}")
 ```

@@ -19,13 +19,13 @@ const (
 	insecureSkipVerify = false
 )
 
-type luaClient struct {
+type LuaHTTPClient struct {
 	*http.Client
 }
 
-func checkClient(L *lua.LState) *luaClient {
+func checkClient(L *lua.LState) *LuaHTTPClient {
 	ud := L.CheckUserData(1)
-	if v, ok := ud.Value.(*luaClient); ok {
+	if v, ok := ud.Value.(*LuaHTTPClient); ok {
 		return v
 	}
 	L.ArgError(1, "http client excepted")
@@ -35,16 +35,16 @@ func checkClient(L *lua.LState) *luaClient {
 // http.client(config) returns (user data, error)
 // config table:
 //   {
-//     http_proxy="http(s)://<user>:<password>@host:<port>",
+//     proxy="http(s)://<user>:<password>@host:<port>",
 //     timeout= 10,
-//     insecure_skip_verify=false,
+//     insecure_ssl=false,
 //   }
 func NewClient(L *lua.LState) int {
 	var config *lua.LTable
 	if L.GetTop() > 0 {
 		config = L.CheckTable(1)
 	}
-	client := &luaClient{Client: &http.Client{Timeout: DefaultTimeout}}
+	client := &LuaHTTPClient{Client: &http.Client{Timeout: DefaultTimeout}}
 	transport := &http.Transport{}
 	// parse env
 	if proxyEnv := os.Getenv(`HTTP_PROXY`); proxyEnv != `` {
@@ -67,8 +67,8 @@ func NewClient(L *lua.LState) int {
 					L.ArgError(1, "timeout must be number")
 				}
 			}
-			// parse http_proxy
-			if k.String() == `http_proxy` {
+			// parse proxy
+			if k.String() == `proxy` {
 				if value, ok := v.(lua.LString); ok {
 					proxyUrl, err := url.Parse(value.String())
 					if err == nil {
@@ -80,12 +80,12 @@ func NewClient(L *lua.LState) int {
 					L.ArgError(1, "http_proxy must be string")
 				}
 			}
-			// parse insecure_skip_verify
-			if k.String() == `insecure_skip_verify` {
+			// parse insecure_ssl
+			if k.String() == `insecure_ssl` {
 				if value, ok := v.(lua.LBool); ok {
 					transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: bool(value)}
 				} else {
-					L.ArgError(1, "insecure_skip_verify must be bool")
+					L.ArgError(1, "insecure_ssl must be bool")
 				}
 			}
 		})

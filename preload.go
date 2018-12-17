@@ -15,6 +15,7 @@ import (
 	strings "github.com/vadv/gopher-lua-libs/strings"
 	tac "github.com/vadv/gopher-lua-libs/tac"
 	tcp "github.com/vadv/gopher-lua-libs/tcp"
+	telegram "github.com/vadv/gopher-lua-libs/telegram"
 	time "github.com/vadv/gopher-lua-libs/time"
 	xmlpath "github.com/vadv/gopher-lua-libs/xmlpath"
 	yaml "github.com/vadv/gopher-lua-libs/yaml"
@@ -41,4 +42,5 @@ func Preload(L *lua.LState) {
 	db.Preload(L)
 	cert_util.Preload(L)
 	runtime.Preload(L)
+	telegram.Preload(L)
 }
