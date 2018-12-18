@@ -5,6 +5,7 @@ import (
 	"context"
 	"sync"
 
+	crypto "github.com/vadv/gopher-lua-libs/crypto"
 	filepath "github.com/vadv/gopher-lua-libs/filepath"
 	http "github.com/vadv/gopher-lua-libs/http"
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
@@ -78,6 +79,7 @@ func (p *luaPlugin) start() {
 	zabbix.Preload(state)
 	telegram.Preload(state)
 	storage.Preload(state)
+	crypto.Preload(state)
 	//
 	p.state = state
 	p.error = nil
