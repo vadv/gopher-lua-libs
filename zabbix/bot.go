@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -12,17 +13,19 @@ import (
 	"strings"
 	"time"
 
+	lua_http "github.com/vadv/gopher-lua-libs/http"
 	lua "github.com/yuin/gopher-lua"
 )
 
 type luaBot struct {
-	client   *http.Client
+	client   *lua_http.LuaHTTPClient
 	baseURL  string
 	apiURL   string
 	loginURL string
 	chatURL  string
 	user     string
 	password string
+	debug    bool
 	// auth
 	id   int
 	auth string
@@ -60,6 +63,9 @@ func (b *luaBot) updateURLs() error {
 }
 
 func (b *luaBot) sendRequest(method string, data interface{}) (rpcResponse, error) {
+	if b.debug {
+		log.Printf("[DEBUG] send request method: `%s` data: %#v\n", method, data)
+	}
 	id := b.id
 	b.id = id + 1
 	request := rpcRequest{Jsonrpc: "2.0", Method: method, Params: data, Auth: b.auth, Id: id}
@@ -75,7 +81,7 @@ func (b *luaBot) sendRequest(method string, data interface{}) (rpcResponse, erro
 		return rpcResponse{Error: zbxError{Code: -2, Data: err.Error()}}, err
 	}
 	httpRequest.Header.Set(`Content-Type`, `application/json-rpc`)
-	httpResponse, err := b.client.Do(httpRequest)
+	httpResponse, err := b.client.DoRequest(httpRequest)
 	if err != nil {
 		return rpcResponse{Error: zbxError{Code: -3, Data: err.Error()}}, err
 	}
@@ -150,7 +156,7 @@ func (b *luaBot) saveGraph(filename string, itemId, period, width, height int64)
 		"autologin": {"1"},
 		"enter":     {"Sign in"},
 	}
-	response, err := b.client.PostForm(b.loginURL, values)
+	response, err := b.client.PostFromRequest(b.loginURL, values)
 	if err != nil {
 		return err
 	}
@@ -164,7 +170,7 @@ func (b *luaBot) saveGraph(filename string, itemId, period, width, height int64)
 	if err != nil {
 		return err
 	}
-	response, err = b.client.Do(request)
+	response, err = b.client.DoRequest(request)
 	if err != nil {
 		return err
 	}

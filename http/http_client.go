@@ -30,6 +30,39 @@ type LuaHTTPClient struct {
 	headers         map[string]string
 }
 
+// NewLuaHTTPClient() returns new LuaHTTPClient
+func NewLuaHTTPClient() *LuaHTTPClient {
+	jar, _ := cookiejar.New(&cookiejar.Options{})
+	return &LuaHTTPClient{Client: &http.Client{Jar: jar}}
+}
+
+func (client *LuaHTTPClient) updateRequest(req *http.Request) {
+	// set basic auth
+	if client.basicAuthUser != nil && client.basicAuthPasswd != nil {
+		username, password := client.basicAuthUser, client.basicAuthPasswd
+		req.SetBasicAuth(*username, *password)
+	}
+	// set user agent
+	req.Header.Set(`User-Agent`, client.userAgent)
+	// set headers
+	if client.headers != nil {
+		for k, v := range client.headers {
+			req.Header.Set(k, v)
+		}
+	}
+}
+
+// DoRequest() process request with needed settings for request
+func (client *LuaHTTPClient) DoRequest(req *http.Request) (*http.Response, error) {
+	client.updateRequest(req)
+	return client.Do(req)
+}
+
+// PostFromRequest() process Form
+func (client *LuaHTTPClient) PostFromRequest(url string, data url.Values) (*http.Response, error) {
+	return client.PostForm(url, data)
+}
+
 func checkClient(L *lua.LState) *LuaHTTPClient {
 	ud := L.CheckUserData(1)
 	if v, ok := ud.Value.(*LuaHTTPClient); ok {

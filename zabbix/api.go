@@ -4,8 +4,7 @@ package zabbix
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/http/cookiejar"
+	"log"
 	"strconv"
 
 	lua_http "github.com/vadv/gopher-lua-libs/http"
@@ -18,17 +17,16 @@ import (
 //    url = "http://zabbix.url",
 //    user = "user",
 //    password = "password",
+//    debug = true,
 //}
 func NewBot(L *lua.LState) int {
 	config := L.CheckTable(1)
-	// cookie support
-	jar, _ := cookiejar.New(&cookiejar.Options{})
-	client := &http.Client{Jar: jar}
+	client := lua_http.NewLuaHTTPClient()
 	if L.GetTop() > 1 {
 		// http client
 		ud := L.CheckUserData(2)
 		if v, ok := ud.Value.(*lua_http.LuaHTTPClient); ok {
-			client = v.Client
+			client = v
 		} else {
 			L.ArgError(2, "must be http_client_ud")
 		}
@@ -49,6 +47,8 @@ func NewBot(L *lua.LState) int {
 			bot.user = v.String()
 		case `passwd`, `password`:
 			bot.password = v.String()
+		case `debug`:
+			bot.debug = (v.String() == `true`)
 		default:
 			err = fmt.Errorf("unknown config parameter: `%s`", k.String())
 		}
@@ -67,6 +67,9 @@ func NewBot(L *lua.LState) int {
 	ud.Value = bot
 	L.SetMetatable(ud, L.GetTypeMetatable("zabbix_bot_ud"))
 	L.Push(ud)
+	if bot.debug {
+		log.Printf("[DEBUG] create zabbix bot: %#v\n", bot)
+	}
 	return 1
 }
 

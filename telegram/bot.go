@@ -12,12 +12,14 @@ import (
 	"os"
 	"strconv"
 
+	lua_http "github.com/vadv/gopher-lua-libs/http"
+
 	multipartstreamer "github.com/technoweenie/multipartstreamer"
 	lua "github.com/yuin/gopher-lua"
 )
 
 type luaBot struct {
-	client *http.Client
+	client *lua_http.LuaHTTPClient
 	token  string
 	offset int
 }
@@ -39,8 +41,7 @@ func (bot *luaBot) decodeAPIResponse(responseBody io.Reader, resp *APIResponse) 
 
 func (bot *luaBot) makeRequest(endpoint string, params url.Values) (APIResponse, error) {
 	method := fmt.Sprintf(APIEndpoint, bot.token, endpoint)
-
-	resp, err := bot.client.PostForm(method, params)
+	resp, err := bot.client.PostFromRequest(method, params)
 	if err != nil {
 		return APIResponse{}, err
 	}
@@ -246,7 +247,7 @@ func (bot *luaBot) uploadFile(endpoint string, params map[string]string, fieldna
 
 	ms.SetupRequest(req)
 
-	res, err := bot.client.Do(req)
+	res, err := bot.client.DoRequest(req)
 	if err != nil {
 		return APIResponse{}, err
 	}

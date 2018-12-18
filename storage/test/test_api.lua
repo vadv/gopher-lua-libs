@@ -40,3 +40,11 @@ if found then error("must be not found") end
 -- close
 local err = s:close()
 if err then error(err) end
+
+-- get nil
+local err = s:set("key2", nil, 60)
+if err then error(err) end
+local value, found, err = s:get("key")
+if err then error(err) end
+if found then error("must be not found") end
+if not(value == nil) then error("must be nil") end

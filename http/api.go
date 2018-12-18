@@ -18,21 +18,7 @@ func DoRequest(L *lua.LState) int {
 	client := checkClient(L)
 	req := checkRequest(L, 2)
 
-	// set basic auth
-	if client.basicAuthUser != nil && client.basicAuthPasswd != nil {
-		username, password := client.basicAuthUser, client.basicAuthPasswd
-		req.SetBasicAuth(*username, *password)
-	}
-	// set user agent
-	req.Request.Header.Set(`User-Agent`, client.userAgent)
-	// set headers
-	if client.headers != nil {
-		for k, v := range client.headers {
-			req.Header.Set(k, v)
-		}
-	}
-
-	response, err := client.Do(req.Request)
+	response, err := client.DoRequest(req.Request)
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))
