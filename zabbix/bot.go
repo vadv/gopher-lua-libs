@@ -69,7 +69,7 @@ func (b *luaBot) sendRequest(method string, data interface{}) (rpcResponse, erro
 	id := b.id
 	b.id = id + 1
 	request := rpcRequest{Jsonrpc: "2.0", Method: method, Params: data, Auth: b.auth, Id: id}
-	if method == `APIInfo.version` {
+	if method == `APIInfo.version` || method == `user.login` {
 		request.Auth = ``
 	}
 	encoded, err := json.Marshal(request)
