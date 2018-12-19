@@ -71,5 +71,4 @@ func Exec(L *lua.LState) int {
 		return 1
 	}
 
-	return 0
 }

@@ -20,7 +20,7 @@ type listStorages struct {
 
 type storage struct {
 	sync.Mutex
-	filename string                   `json:"-"`
+	filename string
 	Data     map[string]*storageValue `json:"data"`
 }
 

@@ -1,4 +1,4 @@
-# gopher-lua-libs [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs?status.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs) [![Travis](https://travis-ci.org/vadv/gopher-lua-libs.svg)](https://travis-ci.org/vadv/gopher-lua-libs) [![Coveralls](https://coveralls.io/repos/vadv/gopher-lua-libs/badge.svg)](https://coveralls.io/r/vadv/gopher-lua-libs)
+# gopher-lua-libs [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs?status.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs) [![Travis](https://travis-ci.org/vadv/gopher-lua-libs.svg)](https://travis-ci.org/vadv/gopher-lua-libs) [![Coveralls](https://coveralls.io/repos/vadv/gopher-lua-libs/badge.svg)](https://coveralls.io/r/vadv/gopher-lua-libs)[![Go Report Card](https://goreportcard.com/badge/github.com/vadv/gopher-lua-libs)](https://goreportcard.com/report/github.com/vadv/gopher-lua-libs)
 
 Package contains is a libs for [gopher-lua](https://github.com/yuin/gopher-lua).
 
