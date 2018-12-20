@@ -23,7 +23,7 @@ func parseRows(sqlRows *sql.Rows, L *lua.LState) (*lua.LTable, *lua.LTable, erro
 	for sqlRows.Next() {
 		columns := make([]interface{}, len(cols))
 		pointers := make([]interface{}, len(cols))
-		for i, _ := range columns {
+		for i := range columns {
 			pointers[i] = &columns[i]
 		}
 		err := sqlRows.Scan(pointers...)
@@ -31,7 +31,7 @@ func parseRows(sqlRows *sql.Rows, L *lua.LState) (*lua.LTable, *lua.LTable, erro
 			return nil, nil, err
 		}
 		luaRow := L.CreateTable(0, len(cols))
-		for i, _ := range cols {
+		for i := range cols {
 			valueP := pointers[i].(*interface{})
 			value := *valueP
 			switch converted := value.(type) {

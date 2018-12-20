@@ -22,5 +22,9 @@ local result = strings.has_suffix("abcd", "d")
 -- strings.trim(string, cutset)
 local result = strings.trim("abcd", "d")
 -- Output: abc
+
+-- strings.contains(string, substring)
+local result = strings.contains("abcd", "d")
+-- Output: true
 ```
 

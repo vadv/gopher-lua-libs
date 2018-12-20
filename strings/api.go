@@ -46,3 +46,12 @@ func Trim(L *lua.LState) int {
 	L.Push(lua.LString(result))
 	return 1
 }
+
+// Contains(): lua strings.contains(string, cutset) Port of go string.Contains() returns bool
+func Contains(L *lua.LState) int {
+	str1 := L.CheckString(1)
+	str2 := L.CheckString(2)
+	result := strings.Contains(str1, str2)
+	L.Push(lua.LBool(result))
+	return 1
+}

@@ -72,3 +72,19 @@ func ExampleTrim() {
 	// Output:
 	// abc
 }
+
+// strings.contains(string, substring)
+func ExampleContains() {
+	state := lua.NewState()
+	Preload(state)
+	source := `
+    local strings = require("strings")
+    local result = strings.contains("abcd", "d")
+    print(result)
+`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+	// Output:
+	// true
+}

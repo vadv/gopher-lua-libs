@@ -25,4 +25,5 @@ var api = map[string]lua.LGFunction{
 	"trim":       Trim,
 	"has_prefix": HasPrefix,
 	"has_suffix": HasSuffix,
+	"contains":   Contains,
 }
