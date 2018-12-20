@@ -31,7 +31,7 @@ go get github.com/vadv/gopher-lua-libs
 * [regexp](/regexp) regexp port
 * [runtime](/runtime) runtime port
 * [storage](/storage) package for store persist data and share values between lua states
-* [strings](/strings) strings port
+* [strings](/strings) strings port (utf supported)
 * [tac](/tac) tac line-by-line scanner (from end of file to up)
 * [tcp](/tcp) raw tcp client lib
 * [telegram](/telegram) telegram bot
