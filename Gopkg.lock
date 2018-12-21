@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  digest = "1:a9a80e9515397ba989a52af67b5fa27607a19513ac8e9f1e3456033879341e72"
+  name = "github.com/chzyer/readline"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "62c6fe6193755f722b8b8788aa7357be55a50ff1"
+  version = "v1.4"
+
+[[projects]]
   branch = "master"
   digest = "1:7e2a28602fd65774c79a780a9c32a7a82d180e5a93bb5a36a6beb8619e24a35b"
   name = "github.com/edsrzf/mmap-go"
@@ -200,10 +208,12 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/chzyer/readline",
     "github.com/go-sql-driver/mysql",
     "github.com/lib/pq",
     "github.com/technoweenie/multipartstreamer",
     "github.com/yuin/gopher-lua",
+    "github.com/yuin/gopher-lua/parse",
     "gopkg.in/xmlpath.v2",
     "gopkg.in/yaml.v2",
     "modernc.org/ql/driver",
