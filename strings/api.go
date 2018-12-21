@@ -47,6 +47,24 @@ func Trim(L *lua.LState) int {
 	return 1
 }
 
+// TrimPrefix(): lua strings.trim_prefix(string, cutset) Port of go string.TrimPrefix() returns string
+func TrimPrefix(L *lua.LState) int {
+	str1 := L.CheckString(1)
+	str2 := L.CheckString(2)
+	result := strings.TrimPrefix(str1, str2)
+	L.Push(lua.LString(result))
+	return 1
+}
+
+// TrimSuffix(): lua strings.trim_suffix(string, cutset) Port of go string.TrimSuffix() returns string
+func TrimSuffix(L *lua.LState) int {
+	str1 := L.CheckString(1)
+	str2 := L.CheckString(2)
+	result := strings.TrimSuffix(str1, str2)
+	L.Push(lua.LString(result))
+	return 1
+}
+
 // Contains(): lua strings.contains(string, cutset) Port of go string.Contains() returns bool
 func Contains(L *lua.LState) int {
 	str1 := L.CheckString(1)

@@ -18,6 +18,8 @@ print("done: strings.has_suffix, strings.has_prefix")
 
 if not(strings.trim(str, "world") == "hello ") then error("strings.trim()") end
 if not(strings.trim(str, "hello ") == "world") then error("strings.trim()") end
+if not(strings.trim_prefix(str, "hello ") == "world") then error("strings.trim()") end
+if not(strings.trim_suffix(str, "hello ") == "hello world") then error("strings.trim()") end
 print("done: strings.trim()")
 
 if not(strings.contains(str, "hello ") == true) then error("strings.contains()") end

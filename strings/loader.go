@@ -21,9 +21,11 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"split":      Split,
-	"trim":       Trim,
-	"has_prefix": HasPrefix,
-	"has_suffix": HasSuffix,
-	"contains":   Contains,
+	"split":       Split,
+	"trim":        Trim,
+	"trim_prefix": TrimPrefix,
+	"trim_suffix": TrimSuffix,
+	"has_prefix":  HasPrefix,
+	"has_suffix":  HasSuffix,
+	"contains":    Contains,
 }

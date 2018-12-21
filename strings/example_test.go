@@ -73,6 +73,38 @@ func ExampleTrim() {
 	// abc
 }
 
+// strings.trim_prefix(string, cutset)
+func ExampleTrimPrefix() {
+	state := lua.NewState()
+	Preload(state)
+	source := `
+    local strings = require("strings")
+    local result = strings.trim_prefix("abcd", "d")
+    print(result)
+`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+	// Output:
+	// abcd
+}
+
+// strings.trim_suffix(string, cutset)
+func ExampleTrimSuffix() {
+	state := lua.NewState()
+	Preload(state)
+	source := `
+    local strings = require("strings")
+    local result = strings.trim_suffix("abcd", "d")
+    print(result)
+`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+	// Output:
+	// abc
+}
+
 // strings.contains(string, substring)
 func ExampleContains() {
 	state := lua.NewState()

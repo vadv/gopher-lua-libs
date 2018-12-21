@@ -8,20 +8,22 @@ local bot = telegram.bot("770791440:AAFfrX08qwFtj8YIzcvnhuVzAMv88aqMSxE")
 local updates, err = bot:getUpdates()
 -- if err then error(err) end
 
-for _, upd in pairs(updates) do
-    print(inspect(upd))
-    if upd.callback_query then
-        bot:sendMessage({
-            chat_id = upd.callback_query.message.chat.id,
-            reply_to_message_id = upd.callback_query.message.message_id,
-            text = "callback query data: "..upd.callback_query.data,
-        })
-    else
-        bot:sendMessage({
-            chat_id = upd.message.chat.id,
-            reply_to_message_id = upd.message.message_id,
-            text = "this is a reply!",
-        })
+if updates then -- concurency build
+    for _, upd in pairs(updates) do
+        print(inspect(upd))
+        if upd.callback_query then
+            bot:sendMessage({
+                chat_id = upd.callback_query.message.chat.id,
+                reply_to_message_id = upd.callback_query.message.message_id,
+                text = "callback query data: "..upd.callback_query.data,
+            })
+        else
+            bot:sendMessage({
+                chat_id = upd.message.chat.id,
+                reply_to_message_id = upd.message.message_id,
+                text = "this is a reply!",
+            })
+        end
     end
 end
 
