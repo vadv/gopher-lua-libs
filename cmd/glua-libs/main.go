@@ -20,19 +20,19 @@ func main() {
 }
 
 func mainAux() int {
-	var opt_e, opt_l, opt_p string
-	var opt_i, opt_v, opt_dt, opt_dc bool
-	var opt_m int
-	flag.StringVar(&opt_e, "e", "", "")
-	flag.StringVar(&opt_l, "l", "", "")
-	flag.StringVar(&opt_p, "p", "", "")
-	flag.IntVar(&opt_m, "mx", 0, "")
-	flag.BoolVar(&opt_i, "i", false, "")
-	flag.BoolVar(&opt_v, "v", false, "")
-	flag.BoolVar(&opt_dt, "dt", false, "")
-	flag.BoolVar(&opt_dc, "dc", false, "")
+	var optE, optL, optP string
+	var optI, optV, optDT, optDC bool
+	var optM int
+	flag.StringVar(&optE, "e", "", "")
+	flag.StringVar(&optL, "l", "", "")
+	flag.StringVar(&optP, "p", "", "")
+	flag.IntVar(&optM, "mx", 0, "")
+	flag.BoolVar(&optI, "i", false, "")
+	flag.BoolVar(&optV, "v", false, "")
+	flag.BoolVar(&optDT, "dt", false, "")
+	flag.BoolVar(&optDC, "dc", false, "")
 	flag.Usage = func() {
-		fmt.Println(`Usage: glua [options] [script [args]].
+		fmt.Println(`Usage: glua-libs [options] [script [args]].
 Available options are:
   -e stat  execute string 'stat'
   -l name  require library 'name'
@@ -44,8 +44,8 @@ Available options are:
   -v       show version information`)
 	}
 	flag.Parse()
-	if len(opt_p) != 0 {
-		f, err := os.Create(opt_p)
+	if len(optP) != 0 {
+		f, err := os.Create(optP)
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
@@ -53,8 +53,8 @@ Available options are:
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
 	}
-	if len(opt_e) == 0 && !opt_i && !opt_v && flag.NArg() == 0 {
-		opt_i = true
+	if len(optE) == 0 && !optI && !optV && flag.NArg() == 0 {
+		optI = true
 	}
 
 	status := 0
@@ -62,16 +62,16 @@ Available options are:
 	L := lua.NewState()
 	libs.Preload(L)
 	defer L.Close()
-	if opt_m > 0 {
-		L.SetMx(opt_m)
+	if optM > 0 {
+		L.SetMx(optM)
 	}
 
-	if opt_v || opt_i {
+	if optV || optI {
 		fmt.Println(lua.PackageCopyRight)
 	}
 
-	if len(opt_l) > 0 {
-		if err := L.DoFile(opt_l); err != nil {
+	if len(optL) > 0 {
+		if err := L.DoFile(optL); err != nil {
 			fmt.Println(err.Error())
 		}
 	}
@@ -83,7 +83,7 @@ Available options are:
 			L.RawSet(argtb, lua.LNumber(i), lua.LString(flag.Arg(i)))
 		}
 		L.SetGlobal("arg", argtb)
-		if opt_dt || opt_dc {
+		if optDT || optDC {
 			file, err := os.Open(script)
 			if err != nil {
 				fmt.Println(err.Error())
@@ -94,10 +94,10 @@ Available options are:
 				fmt.Println(err2.Error())
 				return 1
 			}
-			if opt_dt {
+			if optDT {
 				fmt.Println(parse.Dump(chunk))
 			}
-			if opt_dc {
+			if optDC {
 				proto, err3 := lua.Compile(chunk, script)
 				if err3 != nil {
 					fmt.Println(err3.Error())
@@ -112,14 +112,14 @@ Available options are:
 		}
 	}
 
-	if len(opt_e) > 0 {
-		if err := L.DoString(opt_e); err != nil {
+	if len(optE) > 0 {
+		if err := L.DoString(optE); err != nil {
 			fmt.Println(err.Error())
 			status = 1
 		}
 	}
 
-	if opt_i {
+	if optI {
 		doREPL(L)
 	}
 	return status
