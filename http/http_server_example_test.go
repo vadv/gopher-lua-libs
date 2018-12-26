@@ -44,7 +44,7 @@ func ExampleServerAccept() {
     print("request_uri: "..req.request_uri)
     print("user_agent: "..req.user_agent)
     -- print(req.remote_addr)
-     print("header: Accept-Encoding="..req.headers["Accept-Encoding"])
+    print("header: Accept-Encoding="..req.headers["Accept-Encoding"])
     for k, v in pairs(req.query) do
       print("query: "..k.."="..v)
     end

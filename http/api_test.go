@@ -83,15 +83,20 @@ func request(url string) error {
 	return nil
 }
 
-func manyRequest(addr string) error {
+func manyRequest(addr string) {
 	time.Sleep(5 * time.Second)
 	count := 0
 	for {
-		if err := request(fmt.Sprintf("%s/%s?d=%d", addr, "url", count)); err != nil {
-			panic(err)
+		if count > 10 {
+			break
 		}
+		url := fmt.Sprintf("%s/%s?d=%d", addr, "url", count)
+		go func(url string) {
+			if err := request(url); err != nil {
+				panic(err)
+			}
+		}(url)
 		count++
-		time.Sleep(10 * time.Millisecond)
 	}
 }
 
