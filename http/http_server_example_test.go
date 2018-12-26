@@ -27,10 +27,7 @@ func ExampleServerAccept() {
         local client = http.client({timeout=1})
         local request, err = http.request("GET", "http://127.0.0.1:1999/get/url?param1=value1")
         if err then error(err) end
-        local result, err = client:do_request(request)
-        print("client request done")
-        if err then error(err) end
-        print(result.code)
+        client:do_request(request)
     ]]
 
     local client_plugin = plugin.new(client_plugin)
