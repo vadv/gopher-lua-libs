@@ -44,9 +44,7 @@ func ExampleServerAccept() {
     print("request_uri: "..req.request_uri)
     print("user_agent: "..req.user_agent)
     -- print(req.remote_addr)
-    for k, v in pairs(req.headers) do
-      print("header: "..k.."="..v)
-    end
+     print("header: Accept-Encoding="..req.headers["Accept-Encoding"])
     for k, v in pairs(req.query) do
       print("query: "..k.."="..v)
     end
@@ -65,7 +63,6 @@ func ExampleServerAccept() {
 	// proto: HTTP/1.1
 	// request_uri: /get/url?param1=value1
 	// user_agent: gopher-lua
-	// header: User-Agent=gopher-lua
 	// header: Accept-Encoding=gzip
 	// query: param1=value1
 }
