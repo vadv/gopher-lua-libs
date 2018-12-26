@@ -28,6 +28,20 @@ func Loader(L *lua.LState) int {
 		"header_set":     RequestHeaderSet,
 	}))
 
+	http_server_response_writer_ud := L.NewTypeMetatable(`http_server_response_writer_ud`)
+	L.SetGlobal(`http_server_response_writer_ud`, http_server_response_writer_ud)
+	L.SetField(http_server_response_writer_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
+		"write_header": serveWriteHeader,
+		"write":        serveWrite,
+		"done":         serveDone,
+	}))
+
+	http_server_ud := L.NewTypeMetatable(`http_server_ud`)
+	L.SetGlobal(`http_server_ud`, http_server_ud)
+	L.SetField(http_server_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
+		"accept": ServerAccept,
+	}))
+
 	t := L.NewTable()
 	L.SetFuncs(t, api)
 	L.Push(t)
@@ -35,6 +49,7 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
+	"server":         NewServer,
 	"client":         NewClient,
 	"request":        NewRequest,
 	"query_escape":   QueryEscape,

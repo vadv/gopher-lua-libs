@@ -2,12 +2,15 @@ package http
 
 import (
 	"crypto/subtle"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
+	lua_time "github.com/vadv/gopher-lua-libs/time"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -63,6 +66,35 @@ func runHttps(addr string) {
 	}
 }
 
+func request(url string) error {
+	client := &http.Client{}
+	resp, err := client.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	if strings.HasPrefix(url, string(body)) {
+		return fmt.Errorf("bad url, get: %s except: %s\n", body, url)
+	}
+	return nil
+}
+
+func manyRequest(addr string) error {
+	time.Sleep(5 * time.Second)
+	count := 0
+	for {
+		if err := request(fmt.Sprintf("%s/%s?d=%d", addr, "url", count)); err != nil {
+			panic(err)
+		}
+		count++
+		time.Sleep(10 * time.Millisecond)
+	}
+}
+
 func TestApi(t *testing.T) {
 
 	http.HandleFunc("/get", httpRouterGet)
@@ -75,13 +107,11 @@ func TestApi(t *testing.T) {
 	go runHttps(":1112")
 	time.Sleep(time.Second)
 
-	data, err := ioutil.ReadFile("./test/test_api.lua")
-	if err != nil {
-		t.Fatalf("%s\n", err.Error())
-	}
 	state := lua.NewState()
 	Preload(state)
-	if err := state.DoString(string(data)); err != nil {
+	lua_time.Preload(state)
+	go manyRequest("http://127.0.0.1:1113")
+	if err := state.DoFile("./test/test_api.lua"); err != nil {
 		t.Fatalf("execute test: %s\n", err.Error())
 	}
 }

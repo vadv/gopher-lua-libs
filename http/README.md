@@ -2,6 +2,8 @@
 
 ## Usage
 
+### Client
+
 ```lua
 local http = require("http")
 local client = http.client()
@@ -35,4 +37,35 @@ local client = http.client({ headers={key="value"} })
 
 -- set basic auth for all request
 local client = http.client({basic_auth_user="admin", basic_auth_password="123456"})
+```
+
+### Server
+
+```lua
+local server, err = http.server("127.0.0.1:1113")
+if err then error(err) end
+
+while true do
+  local req, resp = server:accept() -- lock and wait request
+
+  -- print request
+  print("host:", req.host)
+  print("method:", req.method)
+  print("referer:", req.referer)
+  print("proto:", req.proto)
+  print("request_uri:", req.request_uri)
+  print("remote_addr:", req.remote_addr)
+  print("user_agent: "..req.user_agent)
+  for k, v in pairs(req.headers) do
+    print("header: ", k, v)
+  end
+  for k, v in pairs(req.query) do
+    print("query params: ", k, "=" ,v)
+  end
+  -- write response
+  resp:write_header(200) -- write header
+  resp:write(req.request_uri) -- write data
+  resp:done() -- end response
+
+end
 ```

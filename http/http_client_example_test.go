@@ -1,15 +1,16 @@
-package http
+package http_test
 
 import (
 	"log"
 
+	http "github.com/vadv/gopher-lua-libs/http"
 	lua "github.com/yuin/gopher-lua"
 )
 
 // http_client_ud:do_request(request)
 func ExampleDoRequest() {
 	state := lua.NewState()
-	Preload(state)
+	http.Preload(state)
 	source := `
     local http = require("http")
     local client = http.client()
@@ -28,7 +29,7 @@ func ExampleDoRequest() {
 // http:query_escape(string)
 func ExampleQueryEscape() {
 	state := lua.NewState()
-	Preload(state)
+	http.Preload(state)
 	source := `
     local http = require("http")
     local result = http.query_escape("<> 123")
@@ -44,7 +45,7 @@ func ExampleQueryEscape() {
 // http:query_escape(string)
 func ExampleQueryUnescape() {
 	state := lua.NewState()
-	Preload(state)
+	http.Preload(state)
 	source := `
     local http = require("http")
     local result, err = http.query_unescape("%3C%3E+123")

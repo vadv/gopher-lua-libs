@@ -127,9 +127,7 @@ Available options are:
 
 // do read/eval/print/loop
 func doREPL(L *lua.LState) {
-	rl, err := readline.NewEx(&readline.Config{
-		Prompt: "> ",
-	})
+	rl, err := readline.NewEx(&readline.Config{Prompt: "> "})
 	if err != nil {
 		panic(err)
 	}
