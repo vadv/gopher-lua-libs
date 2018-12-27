@@ -36,3 +36,9 @@ func Hostname(L *lua.LState) int {
 	L.Push(lua.LString(hostname))
 	return 1
 }
+
+// Getpagesize(): lua goos.pagesize() return number
+func Getpagesize(L *lua.LState) int {
+	L.Push(lua.LNumber(os.Getpagesize()))
+	return 1
+}

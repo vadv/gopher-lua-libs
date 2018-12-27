@@ -21,6 +21,7 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"stat":     Stat,
-	"hostname": Hostname,
+	"stat":         Stat,
+	"hostname":     Hostname,
+	"get_pagesize": Getpagesize,
 }

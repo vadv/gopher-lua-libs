@@ -46,3 +46,20 @@ print(hostname > "")
 	// Output:
 	// true
 }
+
+// goos.get_pagesize()
+func ExampleGetpagesize() {
+	state := lua.NewState()
+	Preload(state)
+	inspect.Preload(state)
+	source := `
+local goos = require("goos")
+local page_size = goos.get_pagesize()
+print(page_size > 0)
+	`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+	// Output:
+	// true
+}

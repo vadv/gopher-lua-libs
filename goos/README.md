@@ -17,5 +17,9 @@ print(stat.mode)
 local hostname, err = goos.hostname()
 if err then error(err) end
 print(hostname)
+
+-- get_pagesize
+local page_size = goos.get_pagesize()
+if not(page_size > 0) then error("bad pagesize") end
 ```
 
