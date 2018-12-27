@@ -9,7 +9,11 @@ if not(0 == info.size) then error("size") end
 if not(info.mod_time > 0) then error("mod_time") end
 
 if runtime.goos() == "linux" then
-  if not("-rwxrwxrwx" == info.mode) then error("mode") end
+  if not("-rwxrwxrwx" == info.mode) then error("mode: "..info.mode) end
 else
-  if not("-rw-rw-rw-" == info.mode) then error("mode") end
+  if not("-rw-rw-rw-" == info.mode) then error("mode:"..info.mode) end
 end
+
+local hostname, err = goos.hostname()
+if err then error(err) end
+if not(hostname > "") then error("hostname") end

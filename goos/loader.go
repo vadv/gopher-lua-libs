@@ -21,5 +21,6 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"stat": Stat,
+	"stat":     Stat,
+	"hostname": Hostname,
 }

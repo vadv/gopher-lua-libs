@@ -28,3 +28,21 @@ print(inspect(info, {newline="", indent=""}))
 	// Output:
 	// {is_dir = false,mod_time = 0,mode = "",size = 0}
 }
+
+// goos.hostname()
+func ExampleHostname() {
+	state := lua.NewState()
+	Preload(state)
+	inspect.Preload(state)
+	source := `
+local goos = require("goos")
+local hostname, err = goos.hostname()
+if err then error(err) end
+print(hostname > "")
+	`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+	// Output:
+	// true
+}

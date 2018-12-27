@@ -5,12 +5,17 @@
 ```lua
 local goos = require("goos")
 
+-- stat
 local stat, err = goos.stat("./filename")
 if err then error(err) end
-
 print(stat.is_dir)
 print(stat.size)
 print(stat.mod_time)
 print(stat.mode)
+
+-- hostname
+local hostname, err = goos.hostname()
+if err then error(err) end
+print(hostname)
 ```
 
