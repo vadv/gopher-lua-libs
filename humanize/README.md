@@ -19,5 +19,9 @@ if not(size_string == "1.3 GiB") then error("ibytes: "..size_string) end
 local t = time.unix() - 2
 local time_string = humanize.time(t)
 if not(time_string == "2 seconds ago") then error("time: "..time_string) end
+
+-- humanize.si
+local si_result = humanize.si(0.212121, "m")
+if not(si_result == "212.121 mm") then error("si: "..tostring(si_result)) end
 ```
 

@@ -37,3 +37,12 @@ func ParseBytes(L *lua.LState) int {
 	L.Push(lua.LNumber(size))
 	return 1
 }
+
+// SI(): lua humanize.si(number, string) return string
+func SI(L *lua.LState) int {
+	value := L.CheckNumber(1)
+	input := float64(value)
+	unit := L.CheckString(2)
+	L.Push(lua.LString(humanize.SI(input, unit)))
+	return 1
+}

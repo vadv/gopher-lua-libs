@@ -24,4 +24,5 @@ var api = map[string]lua.LGFunction{
 	"time":        Time,
 	"parse_bytes": ParseBytes,
 	"ibytes":      IBytes,
+	"si":          SI,
 }

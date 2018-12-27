@@ -53,3 +53,18 @@ print(humanize.time(time.unix() - 61))
 	// Output:
 	// 1 minute ago
 }
+
+// humanize.si(input, unit)
+func ExampleSI() {
+	state := lua.NewState()
+	Preload(state)
+	source := `
+local humanize = require("humanize")
+print(humanize.si(0.212121, "m"))
+`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+	// Output:
+	// 212.121 mm
+}
