@@ -23,6 +23,7 @@ go get github.com/vadv/gopher-lua-libs
 * [crypto](/crypto) calculate md5, sha256 hash for string
 * [db](/db) access to databases
 * [filepath](/filepath) path.filepath port
+* [goos](/goos) os port
 * [http](/http) http.client && http.server
 * [inspect](/inspect) pretty print [github.com/kikito/inspect.lua](https://github.com/kikito/inspect.lua)
 * [ioutil](/ioutil) io/ioutil port

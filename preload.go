@@ -6,6 +6,7 @@ import (
 	crypto "github.com/vadv/gopher-lua-libs/crypto"
 	db "github.com/vadv/gopher-lua-libs/db"
 	filepath "github.com/vadv/gopher-lua-libs/filepath"
+	goos "github.com/vadv/gopher-lua-libs/goos"
 	http "github.com/vadv/gopher-lua-libs/http"
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
@@ -48,5 +49,6 @@ func Preload(L *lua.LState) {
 	telegram.Preload(L)
 	zabbix.Preload(L)
 	crypto.Preload(L)
+	goos.Preload(L)
 	storage.Preload(L)
 }
