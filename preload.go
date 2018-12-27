@@ -8,6 +8,7 @@ import (
 	filepath "github.com/vadv/gopher-lua-libs/filepath"
 	goos "github.com/vadv/gopher-lua-libs/goos"
 	http "github.com/vadv/gopher-lua-libs/http"
+	humanize "github.com/vadv/gopher-lua-libs/humanize"
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
@@ -51,4 +52,5 @@ func Preload(L *lua.LState) {
 	crypto.Preload(L)
 	goos.Preload(L)
 	storage.Preload(L)
+	humanize.Preload(L)
 }

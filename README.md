@@ -25,6 +25,7 @@ go get github.com/vadv/gopher-lua-libs
 * [filepath](/filepath) path.filepath port
 * [goos](/goos) os port
 * [http](/http) http.client && http.server
+* [humanize](/humanize) humanize [github.com/github.com/dustin/go-humanize](https://github.com/dustin/go-humanize) port
 * [inspect](/inspect) pretty print [github.com/kikito/inspect.lua](https://github.com/kikito/inspect.lua)
 * [ioutil](/ioutil) io/ioutil port
 * [json](/json) json implementation

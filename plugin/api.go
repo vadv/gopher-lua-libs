@@ -7,7 +7,9 @@ import (
 
 	crypto "github.com/vadv/gopher-lua-libs/crypto"
 	filepath "github.com/vadv/gopher-lua-libs/filepath"
+	goos "github.com/vadv/gopher-lua-libs/goos"
 	http "github.com/vadv/gopher-lua-libs/http"
+	humanize "github.com/vadv/gopher-lua-libs/humanize"
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
@@ -80,6 +82,8 @@ func (p *luaPlugin) start() {
 	telegram.Preload(state)
 	storage.Preload(state)
 	crypto.Preload(state)
+	goos.Preload(state)
+	humanize.Preload(state)
 	//
 	p.state = state
 	p.error = nil
