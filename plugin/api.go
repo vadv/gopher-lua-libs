@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	crypto "github.com/vadv/gopher-lua-libs/crypto"
+	db "github.com/vadv/gopher-lua-libs/db"
 	filepath "github.com/vadv/gopher-lua-libs/filepath"
 	goos "github.com/vadv/gopher-lua-libs/goos"
 	http "github.com/vadv/gopher-lua-libs/http"
@@ -85,6 +86,7 @@ func (p *luaPlugin) start() {
 	crypto.Preload(state)
 	goos.Preload(state)
 	humanize.Preload(state)
+	db.Preload(state)
 	//
 	p.state = state
 	p.error = nil
