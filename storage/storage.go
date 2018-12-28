@@ -72,6 +72,7 @@ func newStorage(filename string) (*storage, error) {
 		}
 	}
 	s.filename = filename
+	listOfStorages.list[filename] = s
 	go s.loop()
 	return s, s.sync()
 }
