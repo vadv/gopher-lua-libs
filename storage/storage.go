@@ -115,3 +115,13 @@ func (s *storage) loop() {
 		}
 	}
 }
+
+func (s *storage) list() []string {
+	result := []string{}
+	s.Lock()
+	defer s.Unlock()
+	for k, _ := range s.Data {
+		result = append(result, k)
+	}
+	return result
+}

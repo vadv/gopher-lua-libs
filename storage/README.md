@@ -5,23 +5,27 @@
 ```lua
 local storage = require("storage")
 
+-- storage.open
 local s, err = storage.open("./test/db.json")
 if err then error(err) end
 
--- key, value, ttl (default = 60s)
+-- storage:set(): key, value, ttl (default = 60s)
 local err = s:set("key", {"one", "two", 1}, 10)
 if err then error(err) end
 
+-- storage:get()
 local value, found, err = s:get("key")
 if err then error(err) end
 if not found then error("must be found") end
+-- value == {"one", "two", 1}
 
-if not(value[1] == "one") then error("value") end
-if not(value[3] == 1) then error("value") end
-
--- override with set max ttl
+-- storage:set(): override with set max ttl
 local err = s:set("key", "override", nil)
 local value, found, err = s:get("key")
 if not(value == "ovveride") then error("must be found") end
+
+-- storage:list()
+local list = s:list()
+-- list == {"key"}
 ```
 

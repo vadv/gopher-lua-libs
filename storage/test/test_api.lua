@@ -48,3 +48,7 @@ local value, found, err = s:get("key")
 if err then error(err) end
 if found then error("must be not found") end
 if not(value == nil) then error("must be nil") end
+
+-- list
+local list = s:list()
+if not(#list == 2) then error("list") end

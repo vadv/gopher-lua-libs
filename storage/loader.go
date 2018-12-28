@@ -22,6 +22,7 @@ func Loader(L *lua.LState) int {
 		"set":   Set,
 		"sync":  Sync,
 		"close": Close,
+		"list":  List,
 	}))
 
 	t := L.NewTable()

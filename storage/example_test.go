@@ -29,8 +29,10 @@ local value, found, err = s:get("key")
 if err then error(err) end
 if not found then error("must be found") end
 
-print(  inspect(value, {newline="", indent=""}) )
+print(inspect(value, {newline="", indent=""}))
 
+local list = s:list()
+print(#list == 3)
 
 `
 	if err := state.DoString(source); err != nil {
@@ -38,4 +40,5 @@ print(  inspect(value, {newline="", indent=""}) )
 	}
 	// Output:
 	// { "one", "two", 1 }
+	// true
 }

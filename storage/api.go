@@ -83,3 +83,14 @@ func Close(L *lua.LState) int {
 	}
 	return 0
 }
+
+// List(): lua storage_ud:list() return table
+func List(L *lua.LState) int {
+	s := checkStorage(L, 1)
+	list, result := s.list(), L.NewTable()
+	for _, v := range list {
+		result.Append(lua.LString(v))
+	}
+	L.Push(result)
+	return 1
+}
