@@ -8,6 +8,8 @@ import (
 	"sync"
 	"time"
 
+	lua_json "github.com/vadv/gopher-lua-libs/json"
+
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -116,7 +118,7 @@ func (s *storage) loop() {
 	}
 }
 
-func (s *storage) list() []string {
+func (s *storage) keys() []string {
 	result := []string{}
 	s.Lock()
 	defer s.Unlock()
@@ -124,4 +126,20 @@ func (s *storage) list() []string {
 		result = append(result, k)
 	}
 	return result
+}
+
+func (s *storage) dump(L *lua.LState) (map[string]lua.LValue, error) {
+	result := make(map[string]lua.LValue, 0)
+	s.Lock()
+	defer s.Unlock()
+	for k, v := range s.Data {
+		if v.valid() {
+			value, err := lua_json.ValueDecode(L, v.Value)
+			if err != nil {
+				return nil, err
+			}
+			result[k] = value
+		}
+	}
+	return result, nil
 }

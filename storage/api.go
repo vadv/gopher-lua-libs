@@ -84,12 +84,29 @@ func Close(L *lua.LState) int {
 	return 0
 }
 
-// List(): lua storage_ud:list() return table
-func List(L *lua.LState) int {
+// Keys(): lua storage_ud:list_keys() return table
+func Keys(L *lua.LState) int {
 	s := checkStorage(L, 1)
-	list, result := s.list(), L.NewTable()
-	for _, v := range list {
+	keys, result := s.keys(), L.NewTable()
+	for _, v := range keys {
 		result.Append(lua.LString(v))
+	}
+	L.Push(result)
+	return 1
+}
+
+// Dump(): lua storage_ud:dump() return (table, error)
+func Dump(L *lua.LState) int {
+	s := checkStorage(L, 1)
+	result := L.NewTable()
+	dump, err := s.dump(L)
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
+	}
+	for k, v := range dump {
+		result.RawSetString(k, v)
 	}
 	L.Push(result)
 	return 1

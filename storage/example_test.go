@@ -31,9 +31,12 @@ if not found then error("must be found") end
 
 print(inspect(value, {newline="", indent=""}))
 
-local list = s:list()
+local list = s:keys()
 print(#list == 3)
 
+local dump, err = s:dump()
+if err then error(err) end
+print(inspect(dump, {newline="", indent=""}))
 `
 	if err := state.DoString(source); err != nil {
 		log.Fatal(err.Error())
@@ -41,4 +44,5 @@ print(#list == 3)
 	// Output:
 	// { "one", "two", 1 }
 	// true
+	// {key = { "one", "two", 1 },key2 = "value2",key3 = 10.64}
 }

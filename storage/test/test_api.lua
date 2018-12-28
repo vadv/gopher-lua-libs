@@ -49,6 +49,11 @@ if err then error(err) end
 if found then error("must be not found") end
 if not(value == nil) then error("must be nil") end
 
--- list
-local list = s:list()
-if not(#list == 2) then error("list") end
+-- keys
+local keys = s:keys()
+if not(#keys == 2) then error("keys") end
+
+-- dump
+local dump, err = s:dump()
+if err then error(err) end
+if not(dump.key3 == 10.64) then error("dump: "..tostring(dump.key3)) end

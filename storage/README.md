@@ -22,10 +22,15 @@ if not found then error("must be found") end
 -- storage:set(): override with set max ttl
 local err = s:set("key", "override", nil)
 local value, found, err = s:get("key")
-if not(value == "ovveride") then error("must be found") end
+if not(value == "override") then error("must be found") end
 
--- storage:list()
-local list = s:list()
+-- storage:keys()
+local list = s:keys()
 -- list == {"key"}
+
+-- storage:dump()
+local dump, err = s:dump()
+if err then error(err) end
+-- list == {"key" = "override"}
 ```
 
