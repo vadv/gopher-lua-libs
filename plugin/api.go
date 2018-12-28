@@ -34,6 +34,7 @@ type luaPlugin struct {
 	running    bool
 	error      error
 	body       string
+	filename   string
 }
 
 func (p *luaPlugin) getError() error {
@@ -91,10 +92,15 @@ func (p *luaPlugin) start() {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.state.SetContext(ctx)
 	p.cancelFunc = cancelFunc
+	isBody := (p.filename == "")
 	p.Unlock()
 
 	// blocking
-	p.setError(p.state.DoString(p.body))
+	if isBody {
+		p.setError(p.state.DoString(p.body))
+	} else {
+		p.setError(p.state.DoFile(p.filename))
+	}
 	p.setRunning(false)
 }
 
@@ -107,10 +113,21 @@ func checkPlugin(L *lua.LState, n int) *luaPlugin {
 	return nil
 }
 
-// New(): lua plugin.new(body) returns plugin_ud
-func New(L *lua.LState) int {
+// DoString(): lua plugin.do_string(body) returns plugin_ud
+func DoString(L *lua.LState) int {
 	body := L.CheckString(1)
 	p := &luaPlugin{body: body}
+	ud := L.NewUserData()
+	ud.Value = p
+	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
+	L.Push(ud)
+	return 1
+}
+
+// DoFile(): lua plugin.do_file(filename) returns plugin_ud
+func DoFile(L *lua.LState) int {
+	filename := L.CheckString(1)
+	p := &luaPlugin{filename: filename}
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))

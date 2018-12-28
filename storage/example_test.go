@@ -9,7 +9,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// plugin.new(), plugin_ud:run(), plugin_ud:stop()
+// storage.open(), storage_ud:get(), storage_ud:set()
 func Example_package() {
 	state := lua.NewState()
 	Preload(state)

@@ -8,7 +8,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// plugin.new(), plugin_ud:run(), plugin_ud:stop()
+// plugin.do_string(), plugin_ud:run(), plugin_ud:stop()
 func Example_package() {
 	state := lua.NewState()
 	Preload(state)
@@ -27,7 +27,7 @@ func Example_package() {
         end
     ]]
 
-    local print_plugin = plugin.new(plugin_body)
+    local print_plugin = plugin.do_string(plugin_body)
     print_plugin:run()
     time.sleep(2)
     print_plugin:stop()

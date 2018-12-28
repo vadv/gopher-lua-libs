@@ -16,7 +16,8 @@ local plugin_body = [[
     end
 ]]
 
-local print_plugin = plugin.new(plugin_body)
+-- plugin.do_string(body)
+local print_plugin = plugin.do_string(plugin_body)
 print_plugin:run()
 time.sleep(2)
 print_plugin:stop()
@@ -24,5 +25,7 @@ time.sleep(1)
 
 local running = print_plugin:is_running()
 if running then error("already running") end
+
+-- also you can use: plugin.do_file(filename)
 ```
 

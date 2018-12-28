@@ -24,7 +24,7 @@ end
 
 ]]
 
-local curl_plugin = plugin.new(plugin_body_1)
+local curl_plugin = plugin.do_string(plugin_body_1)
 
 curl_plugin:run()
 time.sleep(2)

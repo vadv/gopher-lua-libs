@@ -30,7 +30,7 @@ func ExampleServerAccept() {
         client:do_request(request)
     ]]
 
-    local client_plugin = plugin.new(client_plugin)
+    local client_plugin = plugin.do_string(client_plugin)
     client_plugin:run()
 
     local req, resp = server:accept()
