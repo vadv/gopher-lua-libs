@@ -2,6 +2,7 @@ package libs
 
 import (
 	cert_util "github.com/vadv/gopher-lua-libs/cert_util"
+	chef "github.com/vadv/gopher-lua-libs/chef"
 	cmd "github.com/vadv/gopher-lua-libs/cmd"
 	crypto "github.com/vadv/gopher-lua-libs/crypto"
 	db "github.com/vadv/gopher-lua-libs/db"
@@ -53,4 +54,5 @@ func Preload(L *lua.LState) {
 	goos.Preload(L)
 	storage.Preload(L)
 	humanize.Preload(L)
+	chef.Preload(L)
 }

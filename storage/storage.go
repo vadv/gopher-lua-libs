@@ -112,7 +112,7 @@ func (s *storage) close() error {
 
 func (s *storage) loop() {
 	for {
-		time.Sleep(10 * time.Second)
+		time.Sleep(60 * time.Second)
 		if err := s.sync(); err != nil {
 			log.Printf("[ERROR] save %s: %s\n", s.filename, err.Error())
 		}

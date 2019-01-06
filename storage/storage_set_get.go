@@ -13,7 +13,7 @@ func (s *storage) set(key string, value lua.LValue, ttl int64) error {
 	if err != nil {
 		return err
 	}
-	sValue := &storageValue{Value: data, MaxValidAt: time.Now().UnixNano() + (ttl * 1000000000)}
+	sValue := &storageValue{Value: data, MaxValidAt: time.Now().UnixNano() + (ttl * 10e9)}
 	s.Lock()
 	s.Data[key] = sValue
 	s.Unlock()

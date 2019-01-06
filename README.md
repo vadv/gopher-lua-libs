@@ -19,6 +19,7 @@ go get github.com/vadv/gopher-lua-libs
 ## Index
 
 * [cert_util](/cert_util) monitoring ssl certs
+* [chef](/chef) chef client api
 * [cmd](/cmd) cmd port
 * [crypto](/crypto) calculate md5, sha256 hash for string
 * [db](/db) access to databases

@@ -16,7 +16,7 @@ func checkRegexp(L *lua.LState, n int) *luaRegexp {
 	if v, ok := ud.Value.(*luaRegexp); ok {
 		return v
 	}
-	L.ArgError(n, "regexp expected")
+	L.ArgError(n, "regexp_ud expected")
 	return nil
 }
 

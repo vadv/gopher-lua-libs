@@ -3,8 +3,10 @@ package http
 import (
 	"crypto/tls"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"time"
@@ -28,6 +30,7 @@ type LuaHTTPClient struct {
 	basicAuthUser   *string
 	basicAuthPasswd *string
 	headers         map[string]string
+	debug           bool
 }
 
 // NewLuaHTTPClient() returns new LuaHTTPClient
@@ -55,6 +58,10 @@ func (client *LuaHTTPClient) updateRequest(req *http.Request) {
 // DoRequest() process request with needed settings for request
 func (client *LuaHTTPClient) DoRequest(req *http.Request) (*http.Response, error) {
 	client.updateRequest(req)
+	if client.debug {
+		dump, _ := httputil.DumpRequestOut(req, true)
+		log.Printf("[DEBUG] send request:\n%s\n", dump)
+	}
 	return client.Do(req)
 }
 
@@ -81,7 +88,8 @@ func checkClient(L *lua.LState) *LuaHTTPClient {
 //     user_agent = "gopher-lua",
 //     basic_auth_user = "",
 //     basic_auth_password = "",
-//     headers = {"key"="value"}
+//     headers = {"key"="value"},
+//     debug = false,
 //   }
 func NewClient(L *lua.LState) int {
 	var config *lua.LTable
@@ -156,6 +164,14 @@ func NewClient(L *lua.LState) int {
 					client.basicAuthPasswd = &password
 				} else {
 					L.ArgError(1, "basic_auth_password must be string")
+				}
+			}
+			// parse debug
+			if k.String() == `debug` {
+				if value, ok := v.(lua.LBool); ok {
+					client.debug = bool(value)
+				} else {
+					L.ArgError(1, "debug must be bool")
 				}
 			}
 			// parse headers
