@@ -24,8 +24,8 @@ print(result[1][1]) -- { {node_name_1=url_node_name_1}, {node_name_2=url_node_na
 local result, err = client:request("GET", "nodes/node_name")
 print(result.name)
 -- chef node:
--- result.name
---  attributes
+--  result.name
+-- attributes
 --  result.automatic
 --  result.default
 --  result.normal
