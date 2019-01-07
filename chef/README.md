@@ -41,7 +41,7 @@ print(inspect(result.rows)) -- table of nodes
 -- partical search node
 local result, err = client:search("node", "fqdn:node_name", {"result_fqdn" = {"fqdn"}})
 print(inspect(result.rows)) -- table of results
-print(result.rows[0]) -- {data = {result_fqdn = "node_name" }}
+print(result.rows[1]) -- {data = {result_fqdn = "node_name" }}
 
 -- partical search node: limit = 2000, offset = 0, order by X_CHEF_id_CHEF_X asc
 local result, err = client:search("node", "fqdn:node_name", {"result_fqdn" = {"fqdn"}}, {start=0, rows=2000})
