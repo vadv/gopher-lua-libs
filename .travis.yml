@@ -1,16 +1,32 @@
 language: go
 
+#services:
+#  - docker
+
+env:
+  - DOCKER_COMPOSE_VERSION=1.4.2
+
 go:
   - "1.9.x"
   - "1.10.x"
   - "1.11.x"
 
 before_install:
+# install docker compose
+#  - sudo rm /usr/local/bin/docker-compose
+#  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+#  - chmod +x docker-compose
+#  - sudo mv docker-compose /usr/local/bin
+## up services
+#  - ./tests/runner.sh up
+# install dependency
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - if ! go get code.google.com/p/go.tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
 install:
   - go get -u -v $(go list -f '{{join .Imports "\n"}}{{"\n"}}{{join .TestImports "\n"}}' ./... | sort | uniq | grep -v gopher-lua-libs)
 script:
+#  # wait dependency services
+#  - ./tests/runner.sh wait
   - go test -v -tags 'purego' -race ./...
   - $HOME/gopath/bin/goveralls -service=travis-ci

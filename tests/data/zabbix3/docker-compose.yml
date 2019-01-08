@@ -1,0 +1,21 @@
+# https://github.com/adubkov/py-zabbix
+zabbix-db:
+  build: .
+  container_name: zabbix-db
+
+zabbix:
+  image: maksim77/zabbix:3
+  container_name: zabbix
+  ports:
+    - "380:80"
+    - "3443:443"
+    - "30051:10051"
+  links:
+    - zabbix-db:zabbix.db
+  volumes:
+    - "./nginx.conf:/etc/nginx/hosts.d/default.conf"
+    - "./ssl:/usr/local/share/zabbix/ssl"
+  environment:
+    - ZS_DBHost=zabbix.db
+    - ZS_DBUser=zabbix
+    - ZS_DBPassword=zabbix

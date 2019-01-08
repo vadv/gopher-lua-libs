@@ -1,0 +1,7 @@
+chef-server:
+  image: cbuisson/chef-server
+  container_name: chef-server
+  ports:
+    - "2443:2443"
+  environment:
+    - SSL_PORT=2443
