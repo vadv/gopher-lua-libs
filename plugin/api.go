@@ -5,6 +5,7 @@ import (
 	"context"
 	"sync"
 
+	chef "github.com/vadv/gopher-lua-libs/chef"
 	crypto "github.com/vadv/gopher-lua-libs/crypto"
 	db "github.com/vadv/gopher-lua-libs/db"
 	filepath "github.com/vadv/gopher-lua-libs/filepath"
@@ -87,6 +88,7 @@ func (p *luaPlugin) start() {
 	goos.Preload(state)
 	humanize.Preload(state)
 	db.Preload(state)
+	chef.Preload(state)
 	//
 	p.state = state
 	p.error = nil
