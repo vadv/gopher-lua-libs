@@ -22,7 +22,7 @@ func main() {
 func mainAux() int {
 	var optE, optL, optP string
 	var optI, optV, optDT, optDC bool
-	var optM int
+	var optM, optRS int
 	flag.StringVar(&optE, "e", "", "")
 	flag.StringVar(&optL, "l", "", "")
 	flag.StringVar(&optP, "p", "", "")
@@ -31,6 +31,7 @@ func mainAux() int {
 	flag.BoolVar(&optV, "v", false, "")
 	flag.BoolVar(&optDT, "dt", false, "")
 	flag.BoolVar(&optDC, "dc", false, "")
+	flag.IntVar(&optRS, "rs", lua.RegistrySize, "")
 	flag.Usage = func() {
 		fmt.Println(`Usage: glua-libs [options] [script [args]].
 Available options are:
@@ -39,9 +40,10 @@ Available options are:
   -mx MB   memory limit(default: unlimited)
   -dt      dump AST trees
   -dc      dump VM codes
+  -r       registry size, default: %d
   -i       enter interactive mode after executing 'script'
   -p file  write cpu profiles to the file
-  -v       show version information`)
+  -v       show version information`, lua.RegistrySize)
 	}
 	flag.Parse()
 	if len(optP) != 0 {
@@ -59,6 +61,7 @@ Available options are:
 
 	status := 0
 
+	lua.RegistrySize = optRS
 	L := lua.NewState()
 	libs.Preload(L)
 	defer L.Close()
