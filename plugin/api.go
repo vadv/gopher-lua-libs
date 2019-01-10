@@ -5,8 +5,8 @@ import (
 	"context"
 	"sync"
 
-	cmd "github.com/vadv/chef-face/src/github.com/vadv/gopher-lua-libs/cmd"
 	chef "github.com/vadv/gopher-lua-libs/chef"
+	cmd "github.com/vadv/gopher-lua-libs/cmd"
 	crypto "github.com/vadv/gopher-lua-libs/crypto"
 	db "github.com/vadv/gopher-lua-libs/db"
 	filepath "github.com/vadv/gopher-lua-libs/filepath"
