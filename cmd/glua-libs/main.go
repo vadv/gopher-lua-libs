@@ -33,7 +33,7 @@ func mainAux() int {
 	flag.BoolVar(&optDC, "dc", false, "")
 	flag.IntVar(&optRS, "rs", lua.RegistrySize, "")
 	flag.Usage = func() {
-		fmt.Printf("Usage: glua-libs [options] [script [args]].
+		fmt.Printf(`Usage: glua-libs [options] [script [args]].
 Available options are:
   -e stat  execute string 'stat'
   -l name  require library 'name'
@@ -43,7 +43,7 @@ Available options are:
   -r       registry size, default: %d
   -i       enter interactive mode after executing 'script'
   -p file  write cpu profiles to the file
-  -v       show version information\n", lua.RegistrySize)
+  -v       show version information %s`, lua.RegistrySize, "\n")
 	}
 	flag.Parse()
 	if len(optP) != 0 {
