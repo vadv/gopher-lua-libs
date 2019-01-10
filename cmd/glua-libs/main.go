@@ -31,7 +31,7 @@ func mainAux() int {
 	flag.BoolVar(&optV, "v", false, "")
 	flag.BoolVar(&optDT, "dt", false, "")
 	flag.BoolVar(&optDC, "dc", false, "")
-	flag.IntVar(&optRS, "rs", lua.RegistrySize, "")
+	flag.IntVar(&optRS, "r", lua.RegistrySize, "")
 	flag.Usage = func() {
 		fmt.Printf(`Usage: glua-libs [options] [script [args]].
 Available options are:
