@@ -76,6 +76,9 @@ func (b *luaBot) sendRequest(method string, data interface{}) (rpcResponse, erro
 	if err != nil {
 		return rpcResponse{Error: zbxError{Code: -1, Data: err.Error()}}, err
 	}
+	if b.debug {
+		log.Printf("[DEBUG] send request body: %s\n", encoded)
+	}
 	httpRequest, err := http.NewRequest(`POST`, b.apiURL, bytes.NewBuffer(encoded))
 	if err != nil {
 		return rpcResponse{Error: zbxError{Code: -2, Data: err.Error()}}, err

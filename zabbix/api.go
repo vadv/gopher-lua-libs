@@ -143,11 +143,17 @@ func Request(L *lua.LState) int {
 		L.Push(lua.LString(err.Error()))
 		return 2
 	}
+	if b.debug {
+		log.Printf("[DEBUG] response body json: %s\n", byt)
+	}
 	if isString {
 		L.Push(lua.LString(string(byt)))
 		return 1
 	}
 	result, err := lua_json.ValueDecode(L, byt)
+	if b.debug {
+		log.Printf("[DEBUG] response body lua: %s\n", result)
+	}
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))

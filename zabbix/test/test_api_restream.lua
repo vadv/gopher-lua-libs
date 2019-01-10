@@ -2,11 +2,12 @@ local zabbix = require("zabbix")
 local inspect = require("inspect")
 local http = require("http")
 
-local zbx = zabbix.new({url="http://192.168.184.83:8080", user="zbgate", passwd="EeTh9Aiw"})
+local zbx = zabbix.new({url="http://192.168.184.83:8080", user="zbgate", passwd="EeTh9Aiw", debug=true})
 
 local err = zbx:login()
 if err then error(err) end
 
+--[[
 local response, err = zbx:request("trigger.get",
     {
         selectHosts = "extend", selectItems = "extend", selectLastEvent="extend",
@@ -32,6 +33,17 @@ end
 
 local err = zbx:save_graph(item_id, "./test/test.png")
 if err then error(err) end
+--]]
+
+local response, err = zbx:request("host.get",
+    {
+        filter = {
+            host = {"rt-core-pub01.core.iptv.rt.ru"}
+        },
+    }
+)
+if err then error(err) end
+if not response then error("must be result") end
 
 local err = zbx:logout()
 if err then error(err) end

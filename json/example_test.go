@@ -7,7 +7,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// json:decode(string)
+// json.decode(string)
 func ExampleDecode() {
 	state := lua.NewState()
 	Preload(state)
@@ -27,7 +27,7 @@ func ExampleDecode() {
 	// {a = {b = 1}}
 }
 
-// json:encode(obj)
+// json.encode(obj)
 func ExampleEncode() {
 	state := lua.NewState()
 	Preload(state)

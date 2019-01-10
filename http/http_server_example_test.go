@@ -45,7 +45,8 @@ func ExampleServerAccept() {
     for k, v in pairs(req.query) do
       print("query: "..k.."="..v)
     end
-    resp:write_header(200) -- write header
+    resp:code(200) -- write code
+    resp:header("Content-Type", "application/json") -- write header
     resp:write("ok")
     resp:done()
 

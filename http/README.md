@@ -63,7 +63,8 @@ while true do
     print("query params: ", k, "=" ,v)
   end
   -- write response
-  resp:write_header(200) -- write header
+  resp:code(200) -- write header
+  resp:header("content-type", "application/json")
   resp:write(req.request_uri) -- write data
   resp:done() -- end response
 

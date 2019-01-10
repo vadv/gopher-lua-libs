@@ -31,9 +31,10 @@ func Loader(L *lua.LState) int {
 	http_server_response_writer_ud := L.NewTypeMetatable(`http_server_response_writer_ud`)
 	L.SetGlobal(`http_server_response_writer_ud`, http_server_response_writer_ud)
 	L.SetField(http_server_response_writer_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"write_header": serveWriteHeader,
-		"write":        serveWrite,
-		"done":         serveDone,
+		"code":   serveWriteHeaderCode,
+		"header": serveWriteHeader,
+		"write":  serveWrite,
+		"done":   serveDone,
 	}))
 
 	http_server_ud := L.NewTypeMetatable(`http_server_ud`)

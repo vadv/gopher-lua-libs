@@ -36,11 +36,19 @@ func checkServeWriter(L *lua.LState, n int) *luaServeWriter {
 	return w
 }
 
-// serveWriteHeader lua http_server_response_writer_ud:write_header(number)
-func serveWriteHeader(L *lua.LState) int {
+// serveWriteHeaderCode lua http_server_response_writer_ud:code(number)
+func serveWriteHeaderCode(L *lua.LState) int {
 	w := checkServeWriter(L, 1)
 	code := L.CheckInt(2)
 	w.ResponseWriter.WriteHeader(code)
+	return 0
+}
+
+// serveWriteHeader lua http_server_response_writer_ud:header(key, value)
+func serveWriteHeader(L *lua.LState) int {
+	w := checkServeWriter(L, 1)
+	key, value := L.CheckString(2), L.CheckString(3)
+	w.Header().Set(key, value)
 	return 0
 }
 
@@ -99,6 +107,37 @@ func NewServer(L *lua.LState) int {
 	return 1
 }
 
+// NewLuaRequest return lua table with http.Request representation
+func NewLuaRequest(L *lua.LState, req *http.Request) *lua.LTable {
+	luaRequest := L.NewTable()
+	luaRequest.RawSetString(`host`, lua.LString(req.Host))
+	luaRequest.RawSetString(`method`, lua.LString(req.Method))
+	luaRequest.RawSetString(`referer`, lua.LString(req.Referer()))
+	luaRequest.RawSetString(`proto`, lua.LString(req.Proto))
+	luaRequest.RawSetString(`user_agent`, lua.LString(req.UserAgent()))
+	if req.URL != nil && len(req.URL.Query()) > 0 {
+		query := L.NewTable()
+		for k, v := range req.URL.Query() {
+			if len(v) > 0 {
+				query.RawSetString(k, lua.LString(v[0]))
+			}
+		}
+		luaRequest.RawSetString(`query`, query)
+	}
+	if len(req.Header) > 0 {
+		headers := L.NewTable()
+		for k, v := range req.Header {
+			if len(v) > 0 {
+				headers.RawSetString(k, lua.LString(v[0]))
+			}
+		}
+		luaRequest.RawSetString(`headers`, headers)
+	}
+	luaRequest.RawSetString(`request_uri`, lua.LString(req.RequestURI))
+	luaRequest.RawSetString(`remote_addr`, lua.LString(req.RemoteAddr))
+	return luaRequest
+}
+
 // ServerAccept lua http_server_ud:accept() returns request_table, http_server_response_writer_ud
 func ServerAccept(L *lua.LState) int {
 	s := checkServer(L, 1)
@@ -106,32 +145,7 @@ func ServerAccept(L *lua.LState) int {
 	case data := <-s.serveData:
 
 		// make request
-		luaRequest := L.NewTable()
-		luaRequest.RawSetString(`host`, lua.LString(data.req.Host))
-		luaRequest.RawSetString(`method`, lua.LString(data.req.Method))
-		luaRequest.RawSetString(`referer`, lua.LString(data.req.Referer()))
-		luaRequest.RawSetString(`proto`, lua.LString(data.req.Proto))
-		luaRequest.RawSetString(`user_agent`, lua.LString(data.req.UserAgent()))
-		if data.req.URL != nil && len(data.req.URL.Query()) > 0 {
-			query := L.NewTable()
-			for k, v := range data.req.URL.Query() {
-				if len(v) > 0 {
-					query.RawSetString(k, lua.LString(v[0]))
-				}
-			}
-			luaRequest.RawSetString(`query`, query)
-		}
-		if len(data.req.Header) > 0 {
-			headers := L.NewTable()
-			for k, v := range data.req.Header {
-				if len(v) > 0 {
-					headers.RawSetString(k, lua.LString(v[0]))
-				}
-			}
-			luaRequest.RawSetString(`headers`, headers)
-		}
-		luaRequest.RawSetString(`request_uri`, lua.LString(data.req.RequestURI))
-		luaRequest.RawSetString(`remote_addr`, lua.LString(data.req.RemoteAddr))
+		luaRequest := NewLuaRequest(L, data.req)
 
 		// make writer
 		luaWriter := &luaServeWriter{ResponseWriter: data.w, done: data.done}

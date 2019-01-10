@@ -96,7 +96,7 @@ while running do
   for k, v in pairs(req.headers) do
     print("header: ", k, v)
   end
-  response:write_header(200) -- write header
+  response:code(200) -- write header
   response:write(req.request_uri)
   response:done()
   count = count + 1
