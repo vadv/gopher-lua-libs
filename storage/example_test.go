@@ -19,7 +19,7 @@ func Example_package() {
 local storage = require("storage")
 local inspect = require("inspect")
 
-local s, err = storage.open("./test/db.json")
+local s, err = storage.open("./test/db-example.json")
 if err then error(err) end
 
 local err = s:set("key", {"one", "two", 1}, 10)
@@ -32,11 +32,13 @@ if not found then error("must be found") end
 print(inspect(value, {newline="", indent=""}))
 
 local list = s:keys()
-print(#list == 3)
+print(#list == 1)
 
 local dump, err = s:dump()
 if err then error(err) end
 print(inspect(dump, {newline="", indent=""}))
+
+os.remove("./test/db-example.json")
 `
 	if err := state.DoString(source); err != nil {
 		log.Fatal(err.Error())
@@ -44,5 +46,5 @@ print(inspect(dump, {newline="", indent=""}))
 	// Output:
 	// { "one", "two", 1 }
 	// true
-	// {key = { "one", "two", 1 },key2 = "value2",key3 = 10.64}
+	// {key = { "one", "two", 1 }}
 }

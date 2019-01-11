@@ -22,9 +22,9 @@ type listStorages struct {
 
 type storage struct {
 	sync.Mutex
-	filename string
-	Data     map[string]*storageValue `json:"data"`
-	running  bool
+	filename     string
+	Data         map[string]*storageValue `json:"data"`
+	usageCounter int
 }
 
 func checkStorage(L *lua.LState, n int) *storage {
@@ -51,6 +51,7 @@ func newStorage(filename string) (*storage, error) {
 	defer listOfStorages.Unlock()
 
 	if result, ok := listOfStorages.list[filename]; ok {
+		result.usageCounter++
 		return result, nil
 	}
 
@@ -73,7 +74,7 @@ func newStorage(filename string) (*storage, error) {
 		}
 	}
 	s.filename = filename
-	s.running = true
+	s.usageCounter++
 	listOfStorages.list[filename] = s
 	go s.loop()
 	return s, s.sync()
@@ -108,19 +109,22 @@ func (s *storage) close() error {
 	if err := s.sync(); err != nil {
 		return err
 	}
-	delete(listOfStorages.list, s.filename)
-	s.running = false
+	s.usageCounter--
 	return nil
 }
 
 func (s *storage) loop() {
 	for {
 		time.Sleep(60 * time.Second)
-		if !s.running {
+		if s.usageCounter == 0 {
+			listOfStorages.Lock()
+			log.Printf("[INFO] close unused storage [%p-%s]\n", s, s.filename)
+			delete(listOfStorages.list, s.filename)
+			listOfStorages.Unlock()
 			return
 		}
 		if err := s.sync(); err != nil {
-			log.Printf("[ERROR] scheduler [%p] sync save %s: %s\n", s, s.filename, err.Error())
+			log.Printf("[ERROR] scheduler for storage [%p-%s], sync save: %s\n", s, s.filename, err.Error())
 		}
 	}
 }
