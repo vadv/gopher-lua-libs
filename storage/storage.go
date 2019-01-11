@@ -109,6 +109,7 @@ func (s *storage) close() error {
 		return err
 	}
 	delete(listOfStorages.list, s.filename)
+	s.running = false
 	return nil
 }
 
