@@ -115,6 +115,9 @@ func (s *storage) loop() {
 		time.Sleep(60 * time.Second)
 		if err := s.sync(); err != nil {
 			log.Printf("[ERROR] scheduler sync save %s: %s\n", s.filename, err.Error())
+			listOfStorages.Lock()
+			log.Printf("[ERROR] list of opened files: %v\n", listOfStorages)
+			listOfStorages.Unlock()
 		}
 	}
 }
