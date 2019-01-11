@@ -22,6 +22,7 @@ import (
 	tac "github.com/vadv/gopher-lua-libs/tac"
 	tcp "github.com/vadv/gopher-lua-libs/tcp"
 	telegram "github.com/vadv/gopher-lua-libs/telegram"
+	template "github.com/vadv/gopher-lua-libs/template"
 	time "github.com/vadv/gopher-lua-libs/time"
 	xmlpath "github.com/vadv/gopher-lua-libs/xmlpath"
 	yaml "github.com/vadv/gopher-lua-libs/yaml"
@@ -91,6 +92,7 @@ func (p *luaPlugin) start() {
 	db.Preload(state)
 	chef.Preload(state)
 	cmd.Preload(state)
+	template.Preload(state)
 	//
 	p.state = state
 	p.error = nil

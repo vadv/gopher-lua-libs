@@ -4,6 +4,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"sync"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -20,10 +21,16 @@ type luaDB interface {
 	getDB() *sql.DB
 }
 
-var knownDrivers = make(map[string]luaDB, 0)
+var (
+	knownDrivers     = make(map[string]luaDB, 0)
+	knownDriversLock = &sync.Mutex{}
+)
 
 // RegisterDriver(): register sql driver
 func RegisterDriver(driver string, i luaDB) {
+	knownDriversLock.Lock()
+	defer knownDriversLock.Unlock()
+
 	knownDrivers[driver] = i
 }
 
@@ -36,8 +43,11 @@ func checkDB(L *lua.LState, n int) luaDB {
 	return nil
 }
 
-// Open(): lua db:open(driver, connection_string) returns (db_ud, err)
+// Open(): lua db.open(driver, connection_string) returns (db_ud, err)
 func Open(L *lua.LState) int {
+	knownDriversLock.Lock()
+	defer knownDriversLock.Unlock()
+
 	driver := L.CheckString(1)
 	connString := L.CheckString(2)
 	db, ok := knownDrivers[driver]

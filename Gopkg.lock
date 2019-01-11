@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  digest = "1:a8e5037a4d69c6ad7f36cc3ef3202c04eaaba0ef0fab1d960affc6452a8edf25"
+  name = "github.com/cbroglie/mustache"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "eb931a9d20042e51d8a3a9ad5a9ba9bc8282c564"
+  version = "v1.0.1"
+
+[[projects]]
   digest = "1:a9a80e9515397ba989a52af67b5fa27607a19513ac8e9f1e3456033879341e72"
   name = "github.com/chzyer/readline"
   packages = ["."]
@@ -45,12 +53,28 @@
   version = "v1.10.0"
 
 [[projects]]
+  digest = "1:a45ae66dea4c899d79fceb116accfa1892105c251f0dcd9a217ddc276b42ec68"
+  name = "github.com/mitchellh/mapstructure"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
+  version = "v1.1.2"
+
+[[projects]]
   digest = "1:c6d6892ef3af2632f7892ed12239190002925e009afca91b0336c2f372e64610"
   name = "github.com/technoweenie/multipartstreamer"
   packages = ["."]
   pruneopts = "NUT"
   revision = "a90a01d73ae432e2611d178c18367fbaa13e0154"
   version = "v1.0.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:9a9d3214c3f80e9c7708dbadd1ad98cd2b237a41adfb6099cd2d13a75486a9af"
+  name = "github.com/yuin/gluamapper"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "d836955830e75240d46ce9f0e6d148d94f2e1d3a"
 
 [[projects]]
   branch = "master"
@@ -104,12 +128,14 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/cbroglie/mustache",
     "github.com/chzyer/readline",
     "github.com/dustin/go-humanize",
     "github.com/go-sql-driver/mysql",
     "github.com/lib/pq",
     "github.com/mattn/go-sqlite3",
     "github.com/technoweenie/multipartstreamer",
+    "github.com/yuin/gluamapper",
     "github.com/yuin/gopher-lua",
     "github.com/yuin/gopher-lua/parse",
     "gopkg.in/xmlpath.v2",
