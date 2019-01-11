@@ -24,6 +24,7 @@ type storage struct {
 	sync.Mutex
 	filename string
 	Data     map[string]*storageValue `json:"data"`
+	running  bool
 }
 
 func checkStorage(L *lua.LState, n int) *storage {
@@ -72,6 +73,7 @@ func newStorage(filename string) (*storage, error) {
 		}
 	}
 	s.filename = filename
+	s.running = true
 	listOfStorages.list[filename] = s
 	go s.loop()
 	return s, s.sync()
@@ -113,11 +115,11 @@ func (s *storage) close() error {
 func (s *storage) loop() {
 	for {
 		time.Sleep(60 * time.Second)
+		if !s.running {
+			return
+		}
 		if err := s.sync(); err != nil {
 			log.Printf("[ERROR] scheduler sync save %s: %s\n", s.filename, err.Error())
-			listOfStorages.Lock()
-			log.Printf("[ERROR] list of opened files: %v\n", listOfStorages)
-			listOfStorages.Unlock()
 		}
 	}
 }
