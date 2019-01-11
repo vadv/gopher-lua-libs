@@ -24,7 +24,7 @@ before_install:
   - go get github.com/mattn/goveralls
   - if ! go get code.google.com/p/go.tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
 install:
-  - go get -u -v $(go list -f '{{join .Imports "\n"}}{{"\n"}}{{join .TestImports "\n"}}' ./... | sort | uniq | grep -v gopher-lua-libs)
+  - go get -u -v $(go list -tags 'sqlite' -f '{{join .Imports "\n"}}{{"\n"}}{{join .TestImports "\n"}}' ./... | sort | uniq | grep -v gopher-lua-libs)
 script:
 #  # wait dependency services
 #  - ./tests/runner.sh wait
