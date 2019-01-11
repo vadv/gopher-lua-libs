@@ -133,6 +133,9 @@ func NewLuaRequest(L *lua.LState, req *http.Request) *lua.LTable {
 		}
 		luaRequest.RawSetString(`headers`, headers)
 	}
+	luaRequest.RawSetString(`path`, lua.LString(req.URL.Path))
+	luaRequest.RawSetString(`raw_path`, lua.LString(req.URL.RawPath))
+	luaRequest.RawSetString(`raw_query`, lua.LString(req.URL.RawQuery))
 	luaRequest.RawSetString(`request_uri`, lua.LString(req.RequestURI))
 	luaRequest.RawSetString(`remote_addr`, lua.LString(req.RemoteAddr))
 	return luaRequest
