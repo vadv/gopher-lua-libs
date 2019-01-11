@@ -5,24 +5,24 @@
 ```lua
 local db = require("db")
 
-local ql, err = db.open("ql-mem", "memory://mem.db")
+local sqlite, err = db.open("sqlite3", "file:test.db?cache=shared&mode=memory")
 if err then error(err) end
 
-local result, err = ql:query("select 1")
+local result, err = sqlite:query("select 1")
 if err then error(err) end
-if not(result.rows[1][1] == 1) then error("ql error") end
+if not(result.rows[1][1] == 1) then error("sqlite error") end
 
-local _, err = ql:exec("CREATE TABLE t (id int, name string);")
+local _, err = sqlite:exec("CREATE TABLE t (id int, name string);")
 if err then error(err) end
 
 for i = 1, 10 do
     local query = "INSERT INTO t VALUES ("..i..", \"name-"..i.."\");"
     if i % 2 == 0 then query = "INSERT INTO t VALUES ("..i..", NULL);" end
-    local _, err = ql:exec(query)
+    local _, err = sqlite:exec(query)
     if err then error(err) end
 end
 
-local result, err = ql:query("select * from t;")
+local result, err = sqlite:query("select * from t;")
 if err then error(err) end
 
 for i, v in pairs(result.columns) do
@@ -36,12 +36,12 @@ for _, row in pairs(result.rows) do
     end
 end
 
-local err = ql:close()
+local err = sqlite:close()
 if err then error(err) end
 ```
 
 ## Supported Drivers
 
-* [ql](https://godoc.org/modernc.org/ql)
+* [sqlite3](https://github.com/mattn/go-sqlite3)
 * [postgres](https://github.com/lib/pq/)
 * [mysql](https://github.com/go-sql-driver/mysql)

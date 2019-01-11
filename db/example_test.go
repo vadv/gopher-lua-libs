@@ -1,4 +1,5 @@
-// build +purego
+// +build !windows
+// +build sqlite
 
 package db
 
@@ -18,25 +19,25 @@ func Example_package() {
     local db = require("db")
     local inspect = require("inspect")
 
-    local ql, err = db.open("ql-mem", "memory://in-memory.db")
+    local sqlite, err = db.open("sqlite3", "file:test.db?cache=shared&mode=memory")
     if err then error(err) end
 
-    local result, err = ql:query("select \"ok\";")
+    local result, err = sqlite:query("select \"ok\";")
     if err then error(err) end
     print(inspect(result.rows))
 
-    local _, err = ql:exec("CREATE TABLE t (id int, name string);")
+    local _, err = sqlite:exec("CREATE TABLE t (id int, name string);")
     if err then error(err) end
 
-    local result, err = ql:exec("INSERT INTO t VALUES (1, \"chook\");")
-    if err then error(err) end
-    print(inspect(result, {newline="", indent=""}))
-
-    local result, err = ql:exec("INSERT INTO t VALUES (2, \"gek\");")
+    local result, err = sqlite:exec("INSERT INTO t VALUES (1, \"chook\");")
     if err then error(err) end
     print(inspect(result, {newline="", indent=""}))
 
-    local result, err = ql:query("select * from t order by id desc;")
+    local result, err = sqlite:exec("INSERT INTO t VALUES (2, \"gek\");")
+    if err then error(err) end
+    print(inspect(result, {newline="", indent=""}))
+
+    local result, err = sqlite:query("select * from t order by id desc;")
     if err then error(err) end
 
     print(inspect(result.columns))

@@ -1,4 +1,5 @@
-// build +purego
+// +build !windows
+// +build sqlite
 
 package db
 

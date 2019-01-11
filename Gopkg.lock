@@ -18,14 +18,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:7e2a28602fd65774c79a780a9c32a7a82d180e5a93bb5a36a6beb8619e24a35b"
-  name = "github.com/edsrzf/mmap-go"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "0bce6a6887123b67a60366d2c9fe2dfb74289d2e"
-
-[[projects]]
   digest = "1:13e9a236e56e18fecb73f5b2f2eb7f60060a1a9bc27e5a7328ab22e275ecb63e"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
@@ -45,12 +37,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:e3eeca4ba9d81b6356de2fd9dd18268e4dfc701af55ad1d11e1e2e4d87342afd"
-  name = "github.com/remyoudompheng/bigfft"
+  digest = "1:c9724c929d27a14475a45b17a267dbc60671c0bc2c5c05ed21f011f7b5bc9fb5"
+  name = "github.com/mattn/go-sqlite3"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "52369c62f4463a21c8ff8531194c5526322b8521"
+  revision = "c7c4067b79cc51e6dfdcef5c702e74b1e0fa7c75"
+  version = "v1.10.0"
 
 [[projects]]
   digest = "1:c6d6892ef3af2632f7892ed12239190002925e009afca91b0336c2f372e64610"
@@ -108,110 +100,6 @@
   revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
   version = "v2.2.2"
 
-[[projects]]
-  digest = "1:08cc3915c88932232a557eea5726b2795ebdfc98eb5eb65a2c623a59b39a148e"
-  name = "modernc.org/b"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "e2c6d3c5e5f25b4f5a667952d78e934528620d0f"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:1b7f823d25cc5897bf0875cef0bab31e4390f1d5f6bda5b95565393852370460"
-  name = "modernc.org/db"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "0f8532da5108c0770b87e4fe90de4e28c1792ecd"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:5bdaedc43089c951e8faf19a6b5709a9bb837d55ef39bcda460f12ce08c4d2ec"
-  name = "modernc.org/file"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "77fb6ddb93ef6c79fe90759839bf2e605d082bbe"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:5a4ddfdf91baa5b48de17c88652dd1bcc78ea013b9a8aa7ab34a3d3d19273dae"
-  name = "modernc.org/fileutil"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "3dcf11a63f921261b8db146fcff31a462ff9de31"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:748cd9172f5dcc2d03a869bca216073f911e3078c59b01f35abda74fdc1b14ed"
-  name = "modernc.org/golex"
-  packages = ["lex"]
-  pruneopts = "NUT"
-  revision = "bc767dde60ca2c733d60c36421e559c302d87cef"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:3a30002f8b5eca4e2aaabfa3ffdd525b1a380dd24736f572e3bc0c0fb873ac97"
-  name = "modernc.org/internal"
-  packages = [
-    "buffer",
-    "file",
-    "slice",
-  ]
-  pruneopts = "NUT"
-  revision = "092e7f9de1dea39e9fe64dbb8823cc3891948078"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:22e3e6aaa4e186122eac6083bfa29fe21d9e2183807ef52cddd9aaa5d9135ba3"
-  name = "modernc.org/lldb"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "e529cf66479bdd56b27b7cbe9b34d924b30f9c48"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:59635d79e5afb9c22e07d9e08e6c3a7e3e687502cd6a6804e9df0526239747d4"
-  name = "modernc.org/mathutil"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "5712a870eb24900386234a0d001f00d2120cc76a"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:9f5ca5fe6b7cd65135d14f9b2edff01d05908021510147dea96543e6668617e0"
-  name = "modernc.org/ql"
-  packages = [
-    ".",
-    "driver",
-    "vendored/github.com/camlistore/go4/lock",
-  ]
-  pruneopts = "NUT"
-  revision = "c993c7178deb621f621fda8d5b78fe6db1418a28"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:782c13524ad4064ffab5ae8dc718522f8d578db1552d9c5cc6930906b04cfd78"
-  name = "modernc.org/sortutil"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "66d6da9f34017dbc070d22086809f3e1dde01350"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:de7d579b72387e7a9a90e212d5268c1ac3b9f7bcdb91d67718eeb11f42eedad4"
-  name = "modernc.org/strutil"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "5caa9dea4513d6534e4cb63c091c6088e25f4b64"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:55a3e3af71bda4cc1d25694e0b894b43674ad6799b0fecde0209eb927703b234"
-  name = "modernc.org/zappy"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "a53f48544a72f18482cbaedacb9adee516685719"
-  version = "v1.0.0"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -220,12 +108,12 @@
     "github.com/dustin/go-humanize",
     "github.com/go-sql-driver/mysql",
     "github.com/lib/pq",
+    "github.com/mattn/go-sqlite3",
     "github.com/technoweenie/multipartstreamer",
     "github.com/yuin/gopher-lua",
     "github.com/yuin/gopher-lua/parse",
     "gopkg.in/xmlpath.v2",
     "gopkg.in/yaml.v2",
-    "modernc.org/ql/driver",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

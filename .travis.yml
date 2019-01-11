@@ -28,5 +28,5 @@ install:
 script:
 #  # wait dependency services
 #  - ./tests/runner.sh wait
-  - go test -v -tags 'purego' -race ./...
+  - go test -v -tags 'sqlite' -race ./...
   - $HOME/gopath/bin/goveralls -service=travis-ci

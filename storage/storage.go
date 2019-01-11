@@ -114,7 +114,7 @@ func (s *storage) loop() {
 	for {
 		time.Sleep(60 * time.Second)
 		if err := s.sync(); err != nil {
-			log.Printf("[ERROR] save %s: %s\n", s.filename, err.Error())
+			log.Printf("[ERROR] scheduler sync save %s: %s\n", s.filename, err.Error())
 		}
 	}
 }
