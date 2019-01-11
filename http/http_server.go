@@ -24,6 +24,7 @@ type serveData struct {
 
 type luaServeWriter struct {
 	http.ResponseWriter
+	req  *http.Request
 	done chan bool
 }
 
@@ -63,6 +64,18 @@ func serveWrite(L *lua.LState) int {
 		return 2
 	}
 	return 1
+}
+
+// serveRedirect lua http_server_response_writer_ud:redirect(url, code) return err
+func serveRedirect(L *lua.LState) int {
+	w := checkServeWriter(L, 1)
+	url := L.CheckString(2)
+	code := http.StatusPermanentRedirect
+	if L.GetTop() > 2 {
+		code = L.CheckInt(3)
+	}
+	http.Redirect(w.ResponseWriter, w.req, url, code)
+	return 0
 }
 
 // serveDone lua http_server_response_writer_ud:done()
@@ -151,7 +164,7 @@ func ServerAccept(L *lua.LState) int {
 		luaRequest := NewLuaRequest(L, data.req)
 
 		// make writer
-		luaWriter := &luaServeWriter{ResponseWriter: data.w, done: data.done}
+		luaWriter := &luaServeWriter{ResponseWriter: data.w, done: data.done, req: data.req}
 		ud := L.NewUserData()
 		ud.Value = luaWriter
 

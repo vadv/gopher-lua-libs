@@ -69,6 +69,7 @@ while true do
   resp:code(200) -- write header
   resp:header("content-type", "application/json")
   resp:write(req.request_uri) -- write data
+  -- resp:redirect("http://google.com")
   resp:done() -- end response
 
 end
