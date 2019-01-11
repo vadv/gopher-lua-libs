@@ -4,6 +4,7 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	"time"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -154,23 +155,22 @@ func NewLuaRequest(L *lua.LState, req *http.Request) *lua.LTable {
 	return luaRequest
 }
 
+// NewLuaWriter return lua userdata with luaServeWriter
+func NewLuaWriter(L *lua.LState, w http.ResponseWriter, req *http.Request, done chan bool) *lua.LUserData {
+	luaWriter := &luaServeWriter{ResponseWriter: w, done: done, req: req}
+	ud := L.NewUserData()
+	ud.Value = luaWriter
+	L.SetMetatable(ud, L.GetTypeMetatable("http_server_response_writer_ud"))
+	return ud
+}
+
 // ServerAccept lua http_server_ud:accept() returns request_table, http_server_response_writer_ud
 func ServerAccept(L *lua.LState) int {
 	s := checkServer(L, 1)
 	select {
 	case data := <-s.serveData:
-
-		// make request
-		luaRequest := NewLuaRequest(L, data.req)
-
-		// make writer
-		luaWriter := &luaServeWriter{ResponseWriter: data.w, done: data.done, req: data.req}
-		ud := L.NewUserData()
-		ud.Value = luaWriter
-
-		L.SetMetatable(ud, L.GetTypeMetatable("http_server_response_writer_ud"))
-		L.Push(luaRequest)
-		L.Push(ud)
+		L.Push(NewLuaRequest(L, data.req))
+		L.Push(NewLuaWriter(L, data.w, data.req, data.done))
 		return 2
 	}
 }
@@ -181,9 +181,13 @@ func (s *luaServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	data := &serveData{w: w, req: req, done: doneChan}
 	// send data for lua
 	s.serveData <- data
+
 	// wait response from lua
 	select {
 	case <-doneChan:
 		return
+	case <-time.After(time.Minute):
+		doneChan <- true
 	}
+
 }

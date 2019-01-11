@@ -67,8 +67,8 @@ func (p *luaPlugin) setRunning(val bool) {
 	p.running = val
 }
 
-func (p *luaPlugin) start() {
-	p.Lock()
+// NewPluginState return lua state for plugin
+func NewPluginState() *lua.LState {
 	state := lua.NewState()
 	// preload all
 	filepath.Preload(state)
@@ -93,7 +93,13 @@ func (p *luaPlugin) start() {
 	chef.Preload(state)
 	cmd.Preload(state)
 	template.Preload(state)
-	//
+	return state
+}
+
+func (p *luaPlugin) start() {
+	p.Lock()
+
+	state := NewPluginState()
 	p.state = state
 	p.error = nil
 	p.running = true

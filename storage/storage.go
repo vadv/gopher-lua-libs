@@ -116,15 +116,15 @@ func (s *storage) close() error {
 func (s *storage) loop() {
 	for {
 		time.Sleep(60 * time.Second)
+		if err := s.sync(); err != nil {
+			log.Printf("[ERROR] scheduler for storage [%p-%s], sync save: %s\n", s, s.filename, err.Error())
+		}
 		if s.usageCounter == 0 {
 			listOfStorages.Lock()
 			log.Printf("[INFO] close unused storage [%p-%s]\n", s, s.filename)
 			delete(listOfStorages.list, s.filename)
 			listOfStorages.Unlock()
 			return
-		}
-		if err := s.sync(); err != nil {
-			log.Printf("[ERROR] scheduler for storage [%p-%s], sync save: %s\n", s, s.filename, err.Error())
 		}
 	}
 }
