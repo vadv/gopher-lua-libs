@@ -2,6 +2,7 @@ package http
 
 import (
 	"bytes"
+	"io/ioutil"
 	"net/http"
 
 	lua "github.com/yuin/gopher-lua"
@@ -45,7 +46,7 @@ func NewRequest(L *lua.LState) int {
 }
 
 // request:set_basic_auth(username, password)
-func RequestSetBasicAuth(L *lua.LState) int {
+func SetBasicAuth(L *lua.LState) int {
 	req := checkRequest(L, 1)
 	user, passwd := L.CheckAny(2).String(), L.CheckAny(3).String()
 	req.SetBasicAuth(user, passwd)
@@ -53,9 +54,39 @@ func RequestSetBasicAuth(L *lua.LState) int {
 }
 
 // request:header_set(key, value)
-func RequestHeaderSet(L *lua.LState) int {
+func HeaderSet(L *lua.LState) int {
 	req := checkRequest(L, 1)
 	key, value := L.CheckAny(2).String(), L.CheckAny(3).String()
 	req.Header.Set(key, value)
 	return 0
+}
+
+// DoRequest(): lua http_client_ud:do_request()
+// http_client_ud:do_request(http_request_ud) returns (response, error)
+//    response: {
+//      code=http_code (200, 201, ..., 500, ...),
+//      body=string
+//    }
+func DoRequest(L *lua.LState) int {
+	client := checkClient(L)
+	req := checkRequest(L, 2)
+
+	response, err := client.DoRequest(req.Request)
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
+	}
+	defer response.Body.Close()
+	data, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
+	}
+	result := L.NewTable()
+	L.SetField(result, `code`, lua.LNumber(response.StatusCode))
+	L.SetField(result, `body`, lua.LString(string(data)))
+	L.Push(result)
+	return 1
 }

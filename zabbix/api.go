@@ -7,7 +7,7 @@ import (
 	"log"
 	"strconv"
 
-	lua_http "github.com/vadv/gopher-lua-libs/http"
+	lua_http "github.com/vadv/gopher-lua-libs/http/client/interface"
 	lua_json "github.com/vadv/gopher-lua-libs/json"
 	lua "github.com/yuin/gopher-lua"
 )
@@ -21,17 +21,18 @@ import (
 //}
 func NewBot(L *lua.LState) int {
 	config := L.CheckTable(1)
-	client := lua_http.NewLuaHTTPClient()
+	bot := &luaBot{}
 	if L.GetTop() > 1 {
 		// http client
 		ud := L.CheckUserData(2)
-		if v, ok := ud.Value.(*lua_http.LuaHTTPClient); ok {
-			client = v
+		if v, ok := ud.Value.(lua_http.LuaHTTPClient); ok {
+			bot.client = v
 		} else {
 			L.ArgError(2, "must be http_client_ud")
 		}
+	} else {
+		bot.client = lua_http.NewPureClient()
 	}
-	bot := &luaBot{client: client}
 	var err error
 	config.ForEach(func(k lua.LValue, v lua.LValue) {
 		switch k.String() {

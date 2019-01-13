@@ -4,7 +4,7 @@ local inspect = require("inspect")
 
 local node = "chef.itv.restr.im"
 
-local http_client = http.client({insecure_ssl=true})
+local http_client = http.client({insecure_ssl=true, timeout=20})
 local client = chef.client(
     "lualibs",
     "./test/client.pem",

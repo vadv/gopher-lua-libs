@@ -1,17 +1,18 @@
-package telegram
+package telegram_test
 
 import (
 	"log"
 
 	http "github.com/vadv/gopher-lua-libs/http"
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
+	telegram "github.com/vadv/gopher-lua-libs/telegram"
 	lua "github.com/yuin/gopher-lua"
 )
 
 // example sendMessage: https://core.telegram.org/bots/api#sendmessage
 func ExampleSendMessage() {
 	state := lua.NewState()
-	Preload(state)
+	telegram.Preload(state)
 	http.Preload(state)
 	inspect.Preload(state)
 	source := `
@@ -35,7 +36,7 @@ bot:sendMessage({
 // example forwardMessage: https://core.telegram.org/bots/api#forwardmessage
 func ExampleForwardMessage() {
 	state := lua.NewState()
-	Preload(state)
+	telegram.Preload(state)
 	source := `
 local bot = telegram.bot("token")
 bot:forwardMessage({
@@ -54,7 +55,7 @@ bot:forwardMessage({
 // example sendPhoto: https://core.telegram.org/bots/api#sendphoto
 func ExampleSendPhoto() {
 	state := lua.NewState()
-	Preload(state)
+	telegram.Preload(state)
 	source := `
 local bot = telegram.bot("token")
 bot:sendPhoto({
@@ -76,7 +77,7 @@ bot:sendPhoto({
 // example getUpdates: https://core.telegram.org/bots/api#getupdates
 func ExampleGetUpdates() {
 	state := lua.NewState()
-	Preload(state)
+	telegram.Preload(state)
 	source := `
 local bot = telegram.bot("token")
 local updates, err = bot:getUpdates() -- auto offset

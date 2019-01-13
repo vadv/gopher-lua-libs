@@ -9,7 +9,7 @@ import (
 )
 
 // http:server()
-func ExampleServerAccept() {
+func ExampleAccept() {
 	state := lua.NewState()
 	http.Preload(state)
 	plugin.Preload(state)

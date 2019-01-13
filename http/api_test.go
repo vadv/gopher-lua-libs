@@ -1,4 +1,4 @@
-package http
+package http_test
 
 import (
 	"crypto/subtle"
@@ -10,6 +10,9 @@ import (
 	"testing"
 	"time"
 
+	lua_http "github.com/vadv/gopher-lua-libs/http"
+	inspect "github.com/vadv/gopher-lua-libs/inspect"
+	plugin "github.com/vadv/gopher-lua-libs/plugin"
 	lua_time "github.com/vadv/gopher-lua-libs/time"
 	lua "github.com/yuin/gopher-lua"
 )
@@ -113,10 +116,22 @@ func TestApi(t *testing.T) {
 	time.Sleep(time.Second)
 
 	state := lua.NewState()
-	Preload(state)
+	lua_http.Preload(state)
 	lua_time.Preload(state)
+	inspect.Preload(state)
+	plugin.Preload(state)
+
+	if err := state.DoFile("./test/test_client.lua"); err != nil {
+		t.Fatalf("execute test: %s\n", err.Error())
+	}
+
 	go manyRequest("http://127.0.0.1:1113")
-	if err := state.DoFile("./test/test_api.lua"); err != nil {
+	if err := state.DoFile("./test/test_server_accept.lua"); err != nil {
+		t.Fatalf("execute test: %s\n", err.Error())
+	}
+
+	go manyRequest("http://127.0.0.1:2113")
+	if err := state.DoFile("./test/test_server_handle.lua"); err != nil {
 		t.Fatalf("execute test: %s\n", err.Error())
 	}
 }

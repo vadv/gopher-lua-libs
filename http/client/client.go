@@ -24,7 +24,7 @@ const (
 	insecureSkipVerify = false
 )
 
-type LuaHTTPClient struct {
+type LuaClient struct {
 	*http.Client
 	userAgent       string
 	basicAuthUser   *string
@@ -33,13 +33,13 @@ type LuaHTTPClient struct {
 	debug           bool
 }
 
-// NewLuaHTTPClient() returns new LuaHTTPClient
-func NewLuaHTTPClient() *LuaHTTPClient {
+// newLuaClient() returns new LuaClient
+func newLuaClient() *LuaClient {
 	jar, _ := cookiejar.New(&cookiejar.Options{})
-	return &LuaHTTPClient{Client: &http.Client{Jar: jar}}
+	return &LuaClient{Client: &http.Client{Jar: jar}}
 }
 
-func (client *LuaHTTPClient) updateRequest(req *http.Request) {
+func (client *LuaClient) updateRequest(req *http.Request) {
 	// set basic auth
 	if client.basicAuthUser != nil && client.basicAuthPasswd != nil {
 		username, password := client.basicAuthUser, client.basicAuthPasswd
@@ -56,7 +56,7 @@ func (client *LuaHTTPClient) updateRequest(req *http.Request) {
 }
 
 // DoRequest() process request with needed settings for request
-func (client *LuaHTTPClient) DoRequest(req *http.Request) (*http.Response, error) {
+func (client *LuaClient) DoRequest(req *http.Request) (*http.Response, error) {
 	client.updateRequest(req)
 	if client.debug {
 		dump, _ := httputil.DumpRequestOut(req, true)
@@ -65,14 +65,14 @@ func (client *LuaHTTPClient) DoRequest(req *http.Request) (*http.Response, error
 	return client.Do(req)
 }
 
-// PostFromRequest() process Form
-func (client *LuaHTTPClient) PostFromRequest(url string, data url.Values) (*http.Response, error) {
+// PostFormRequest() process Form
+func (client *LuaClient) PostFormRequest(url string, data url.Values) (*http.Response, error) {
 	return client.PostForm(url, data)
 }
 
-func checkClient(L *lua.LState) *LuaHTTPClient {
+func checkClient(L *lua.LState) *LuaClient {
 	ud := L.CheckUserData(1)
-	if v, ok := ud.Value.(*LuaHTTPClient); ok {
+	if v, ok := ud.Value.(*LuaClient); ok {
 		return v
 	}
 	L.ArgError(1, "http client excepted")
@@ -91,12 +91,12 @@ func checkClient(L *lua.LState) *LuaHTTPClient {
 //     headers = {"key"="value"},
 //     debug = false,
 //   }
-func NewClient(L *lua.LState) int {
+func New(L *lua.LState) int {
 	var config *lua.LTable
 	if L.GetTop() > 0 {
 		config = L.CheckTable(1)
 	}
-	client := &LuaHTTPClient{Client: &http.Client{Timeout: DefaultTimeout}, userAgent: DefaultUserAgent}
+	client := &LuaClient{Client: &http.Client{Timeout: DefaultTimeout}, userAgent: DefaultUserAgent}
 	transport := &http.Transport{}
 	// parse env
 	if proxyEnv := os.Getenv(`HTTP_PROXY`); proxyEnv != `` {

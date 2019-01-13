@@ -41,6 +41,8 @@ local client = http.client({basic_auth_user="admin", basic_auth_password="123456
 
 ### Server
 
+#### Accept variant
+
 ```lua
 local server, err = http.server("127.0.0.1:1113")
 if err then error(err) end
@@ -73,4 +75,19 @@ while true do
   resp:done() -- end response
 
 end
+```
+
+#### Handle variant
+
+```lua
+local server, err = http.server("127.0.0.1:1113")
+if err then error(err) end
+
+server:do_handle_string([[ -- do_handle_file
+
+response:code(200) -- write header
+response:write(request.request_uri)
+response:done()
+
+]]
 ```

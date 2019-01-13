@@ -4,7 +4,7 @@ package telegram
 import (
 	"encoding/json"
 
-	lua_http "github.com/vadv/gopher-lua-libs/http"
+	lua_http "github.com/vadv/gopher-lua-libs/http/client/interface"
 	lua_json "github.com/vadv/gopher-lua-libs/json"
 	lua "github.com/yuin/gopher-lua"
 )
@@ -12,17 +12,18 @@ import (
 // NewBot(): lua telegram.bot(tocken, http_ud.client) return telegram_bot_ud
 func NewBot(L *lua.LState) int {
 	token := L.CheckString(1)
-	client := lua_http.NewLuaHTTPClient()
+	bot := &luaBot{token: token}
 	if L.GetTop() > 1 {
 		// http client
 		ud := L.CheckUserData(2)
-		if v, ok := ud.Value.(*lua_http.LuaHTTPClient); ok {
-			client = v
+		if v, ok := ud.Value.(lua_http.LuaHTTPClient); ok {
+			bot.client = v
 		} else {
 			L.ArgError(2, "must be http_client_ud")
 		}
+	} else {
+		bot.client = lua_http.NewPureClient()
 	}
-	bot := &luaBot{client: client, token: token}
 	ud := L.NewUserData()
 	ud.Value = bot
 	L.SetMetatable(ud, L.GetTypeMetatable("telegram_bot_ud"))

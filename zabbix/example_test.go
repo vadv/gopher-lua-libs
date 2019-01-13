@@ -1,17 +1,18 @@
-package zabbix
+package zabbix_test
 
 import (
 	"log"
 
 	http "github.com/vadv/gopher-lua-libs/http"
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
+	zabbix "github.com/vadv/gopher-lua-libs/zabbix"
 	lua "github.com/yuin/gopher-lua"
 )
 
 // example zabbix
 func Example_package() {
 	state := lua.NewState()
-	Preload(state)
+	zabbix.Preload(state)
 	http.Preload(state)
 	inspect.Preload(state)
 	source := `

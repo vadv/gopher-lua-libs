@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"net/url"
 
-	lua_http "github.com/vadv/gopher-lua-libs/http"
+	lua_http "github.com/vadv/gopher-lua-libs/http/client/interface"
 	lua_json "github.com/vadv/gopher-lua-libs/json"
 
 	lua "github.com/yuin/gopher-lua"
 )
 
-// NewClient lua chef.client(client_name, path_to_file_with_key, chef_url, http_client) returns (chef_client_ud, err)
+// NewClient lua chef.client(client_name, path_to_file_with_key, chef_url, http_client_ud) returns (chef_client_ud, err)
 func NewClient(L *lua.LState) int {
 	name := L.CheckString(1)
 	filename := L.CheckString(2)
@@ -32,17 +32,17 @@ func NewClient(L *lua.LState) int {
 	}
 	chefClient.url = url
 	chefClient.key = pk
-	httpClient := lua_http.NewLuaHTTPClient()
 	if L.GetTop() > 3 {
 		// http client
 		ud := L.CheckUserData(4)
-		if v, ok := ud.Value.(*lua_http.LuaHTTPClient); ok {
-			httpClient = v
+		if v, ok := ud.Value.(lua_http.LuaHTTPClient); ok {
+			chefClient.LuaHTTPClient = v
 		} else {
 			L.ArgError(2, "must be http_client_ud")
 		}
+	} else {
+		chefClient.LuaHTTPClient = lua_http.NewPureClient()
 	}
-	chefClient.LuaHTTPClient = httpClient
 	ud := L.NewUserData()
 	ud.Value = chefClient
 	L.SetMetatable(ud, L.GetTypeMetatable(`chef_client_ud`))

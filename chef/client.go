@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	lua_http "github.com/vadv/gopher-lua-libs/http"
+	lua_http "github.com/vadv/gopher-lua-libs/http/client/interface"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -23,7 +23,7 @@ const (
 )
 
 type luaChefClient struct {
-	*lua_http.LuaHTTPClient
+	lua_http.LuaHTTPClient
 	key  *rsa.PrivateKey
 	name string
 	url  *url.URL

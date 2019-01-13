@@ -18,5 +18,5 @@ print( mustache:render("{{#data}} {{.}} {{/data}}", values) )
 
 ## Supported engines
 
-* [mustache](https://mustache.github.io/) [github.com/cbroglie/mustache](https://github.com/cbroglie/mustache)
+* [mustache](https://mustache.github.io/) [cbroglie/mustache](https://github.com/cbroglie/mustache)
 

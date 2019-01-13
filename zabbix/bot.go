@@ -13,12 +13,12 @@ import (
 	"strings"
 	"time"
 
-	lua_http "github.com/vadv/gopher-lua-libs/http"
+	lua_http "github.com/vadv/gopher-lua-libs/http/client/interface"
 	lua "github.com/yuin/gopher-lua"
 )
 
 type luaBot struct {
-	client   *lua_http.LuaHTTPClient
+	client   lua_http.LuaHTTPClient
 	baseURL  string
 	apiURL   string
 	loginURL string
@@ -159,7 +159,7 @@ func (b *luaBot) saveGraph(filename string, itemId, period, width, height int64)
 		"autologin": {"1"},
 		"enter":     {"Sign in"},
 	}
-	response, err := b.client.PostFromRequest(b.loginURL, values)
+	response, err := b.client.PostFormRequest(b.loginURL, values)
 	if err != nil {
 		return err
 	}

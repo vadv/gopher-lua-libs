@@ -1,6 +1,8 @@
 package http
 
 import (
+	client "github.com/vadv/gopher-lua-libs/http/client"
+	server "github.com/vadv/gopher-lua-libs/http/server"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -18,30 +20,32 @@ func Loader(L *lua.LState) int {
 	http_client_ud := L.NewTypeMetatable(`http_client_ud`)
 	L.SetGlobal(`http_client_ud`, http_client_ud)
 	L.SetField(http_client_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"do_request": DoRequest,
+		"do_request": client.DoRequest,
 	}))
 
 	http_request_ud := L.NewTypeMetatable(`http_request_ud`)
 	L.SetGlobal(`http_request_ud`, http_request_ud)
 	L.SetField(http_request_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"set_basic_auth": RequestSetBasicAuth,
-		"header_set":     RequestHeaderSet,
+		"set_basic_auth": client.SetBasicAuth,
+		"header_set":     client.HeaderSet,
 	}))
 
 	http_server_response_writer_ud := L.NewTypeMetatable(`http_server_response_writer_ud`)
 	L.SetGlobal(`http_server_response_writer_ud`, http_server_response_writer_ud)
 	L.SetField(http_server_response_writer_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"code":     serveWriteHeaderCode,
-		"header":   serveWriteHeader,
-		"write":    serveWrite,
-		"redirect": serveRedirect,
-		"done":     serveDone,
+		"code":     server.HeaderCode,
+		"header":   server.Header,
+		"write":    server.Write,
+		"redirect": server.Redirect,
+		"done":     server.Done,
 	}))
 
 	http_server_ud := L.NewTypeMetatable(`http_server_ud`)
 	L.SetGlobal(`http_server_ud`, http_server_ud)
 	L.SetField(http_server_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"accept": ServerAccept,
+		"accept":           server.Accept,
+		"do_handle_file":   server.HandleFile,
+		"do_handle_string": server.HandleString,
 	}))
 
 	t := L.NewTable()
@@ -51,9 +55,9 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"server":         NewServer,
-	"client":         NewClient,
-	"request":        NewRequest,
+	"server":         server.New,
+	"client":         client.New,
+	"request":        client.NewRequest,
 	"query_escape":   QueryEscape,
 	"query_unescape": QueryUnescape,
 }

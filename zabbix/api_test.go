@@ -1,4 +1,4 @@
-package zabbix
+package zabbix_test
 
 import (
 	"io/ioutil"
@@ -6,6 +6,7 @@ import (
 
 	http "github.com/vadv/gopher-lua-libs/http"
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
+	zabbix "github.com/vadv/gopher-lua-libs/zabbix"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -15,7 +16,7 @@ func TestApi(t *testing.T) {
 		t.Fatalf("%s\n", err.Error())
 	}
 	state := lua.NewState()
-	Preload(state)
+	zabbix.Preload(state)
 	http.Preload(state)
 	inspect.Preload(state)
 	if err := state.DoString(string(data)); err != nil {

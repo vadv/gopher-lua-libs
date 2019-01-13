@@ -1,8 +1,9 @@
-package chef
+package chef_test
 
 import (
 	"testing"
 
+	chef "github.com/vadv/gopher-lua-libs/chef"
 	http "github.com/vadv/gopher-lua-libs/http"
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
 	lua "github.com/yuin/gopher-lua"
@@ -10,7 +11,7 @@ import (
 
 func TestApi(t *testing.T) {
 	state := lua.NewState()
-	Preload(state)
+	chef.Preload(state)
 	http.Preload(state)
 	inspect.Preload(state)
 	if err := state.DoFile("./test/test_api.lua"); err != nil {
