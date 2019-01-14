@@ -179,13 +179,15 @@ func newHandlerState(data *serveData) *lua.LState {
 func HandleFile(L *lua.LState) int {
 	s := checkServer(L, 1)
 	file := L.CheckString(2)
-	select {
-	case data := <-s.serveData:
-		state := newHandlerState(data)
-		if err := state.DoFile(file); err != nil {
-			log.Printf("[ERROR] handle file %s: %s\n", file, err.Error())
-		}
+	for {
+		select {
+		case data := <-s.serveData:
+			state := newHandlerState(data)
+			if err := state.DoFile(file); err != nil {
+				log.Printf("[ERROR] handle file %s: %s\n", file, err.Error())
+			}
 
+		}
 	}
 	return 0
 }

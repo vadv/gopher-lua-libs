@@ -21,3 +21,7 @@ while running do
   count = count + 1
   running = (count < 10)
 end
+
+if count < 10 then
+  error("count: "..tostring(count))
+end

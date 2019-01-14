@@ -11,4 +11,4 @@ server:do_handle_file("./test/loop.lua")
 
 local p = plugin.do_string(plugin_body)
 p:run()
-time.sleep(10)
+time.sleep(5)
