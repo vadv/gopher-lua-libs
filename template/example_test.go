@@ -17,7 +17,7 @@ local template = require("template")
 local mustache, err = template.choose("mustache")
 
 local values = {name="world"}
-print( mustache:render("Hello {{name}}!", values) )
+print( mustache:render("Hello {{name}}!", values) ) -- mustache:render_file(filename values)
 
 local values = {data = {"one", "two"}}
 print( mustache:render("{{#data}} {{.}} {{/data}}", values) )

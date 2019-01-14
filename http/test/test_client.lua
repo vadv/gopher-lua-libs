@@ -1,4 +1,5 @@
-local http = require("http")
+local http = require("http_client")
+local http_util = require("http_util")
 
 local client_1 = http.client()
 local client_2 = http.client({timeout=1})
@@ -54,7 +55,7 @@ print("done: http.client:ssl+timeout")
 
 local test_unescape = "<> dasdsadas"
 local test_escape = "%3C%3E+dasdsadas"
-if not (http.query_escape(test_unescape) == test_escape) then error("escape error") end
+if not (http_util.query_escape(test_unescape) == test_escape) then error("escape error") end
 print("done: http.escape")
 
 local req, err = http.request("GET", "http://127.0.0.1:1111/getBasicAuth")

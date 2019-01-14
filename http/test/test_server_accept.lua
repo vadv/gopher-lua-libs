@@ -1,4 +1,4 @@
-local http = require("http")
+local http = require("http_server")
 
 local server, err = http.server("127.0.0.1:1113")
 if err then error(err) end

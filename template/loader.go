@@ -18,7 +18,8 @@ func Loader(L *lua.LState) int {
 	template_ud := L.NewTypeMetatable(`template_ud`)
 	L.SetGlobal(`template_ud`, template_ud)
 	L.SetField(template_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"render": Render,
+		"render":      Render,
+		"render_file": RenderFile,
 	}))
 
 	t := L.NewTable()

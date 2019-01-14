@@ -8,7 +8,7 @@ local template = require("template")
 local mustache, err = template.choose("mustache")
 
 local values = {name="world"}
-print( mustache:render("Hello {{name}}!", values) )
+print( mustache:render("Hello {{name}}!", values) ) -- mustache:render_file()
 -- Output:"Hello world!"
 
 local values = {data = {"one", "two"}}
