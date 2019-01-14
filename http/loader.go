@@ -15,6 +15,9 @@ import (
 //  local http = require("http")
 func Preload(L *lua.LState) {
 	L.PreloadModule("http", Loader)
+	client.Preload(L)
+	server.Preload(L)
+	util.Preload(L)
 }
 
 // Loader is the module loader function.
