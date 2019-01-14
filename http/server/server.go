@@ -14,6 +14,8 @@ import (
 	db "github.com/vadv/gopher-lua-libs/db"
 	filepath "github.com/vadv/gopher-lua-libs/filepath"
 	goos "github.com/vadv/gopher-lua-libs/goos"
+	http_client "github.com/vadv/gopher-lua-libs/http/client"
+	http_util "github.com/vadv/gopher-lua-libs/http/util"
 	humanize "github.com/vadv/gopher-lua-libs/humanize"
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
@@ -154,6 +156,8 @@ func newHandlerState(data *serveData) *lua.LState {
 	humanize.Preload(state)
 	chef.Preload(state)
 	template.Preload(state)
+	http_client.Preload(state)
+	http_util.Preload(state)
 
 	http_server_response_writer_ud := state.NewTypeMetatable(`http_server_response_writer_ud`)
 	state.SetGlobal(`http_server_response_writer_ud`, http_server_response_writer_ud)

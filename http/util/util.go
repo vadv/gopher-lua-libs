@@ -1,5 +1,4 @@
-// Package http implements golang package http functionality for lua.
-package http
+package util
 
 import (
 	"net/url"

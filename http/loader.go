@@ -1,8 +1,11 @@
+// Package http implements golang package http functionality for lua.
+
 package http
 
 import (
 	client "github.com/vadv/gopher-lua-libs/http/client"
 	server "github.com/vadv/gopher-lua-libs/http/server"
+	util "github.com/vadv/gopher-lua-libs/http/util"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -58,6 +61,6 @@ var api = map[string]lua.LGFunction{
 	"server":         server.New,
 	"client":         client.New,
 	"request":        client.NewRequest,
-	"query_escape":   QueryEscape,
-	"query_unescape": QueryUnescape,
+	"query_escape":   util.QueryEscape,
+	"query_unescape": util.QueryUnescape,
 }
