@@ -80,7 +80,7 @@ func RenderFile(L *lua.LState) int {
 		L.Push(lua.LString(err.Error()))
 		return 2
 	}
-	result, err := t.Render(body, context)
+	result, err := t.Render(string(body), context)
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))
