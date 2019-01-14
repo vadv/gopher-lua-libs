@@ -182,10 +182,12 @@ func HandleFile(L *lua.LState) int {
 	for {
 		select {
 		case data := <-s.serveData:
-			state := newHandlerState(data)
-			if err := state.DoFile(file); err != nil {
-				log.Printf("[ERROR] handle file %s: %s\n", file, err.Error())
-			}
+			go func(sData *serveData, filename string) {
+				state := newHandlerState(data)
+				if err := state.DoFile(filename); err != nil {
+					log.Printf("[ERROR] handle file %s: %s\n", filename, err.Error())
+				}
+			}(data, file)
 
 		}
 	}
@@ -201,6 +203,7 @@ func HandleString(L *lua.LState) int {
 		state := newHandlerState(data)
 		if err := state.DoString(body); err != nil {
 			log.Printf("[ERROR] handle: %s\n", err.Error())
+			data.done <- true
 		}
 
 	}
