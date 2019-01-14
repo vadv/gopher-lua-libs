@@ -204,6 +204,7 @@ func HandleString(L *lua.LState) int {
 		if err := state.DoString(body); err != nil {
 			log.Printf("[ERROR] handle: %s\n", err.Error())
 			data.done <- true
+			log.Printf("[ERROR]", "closed connection\n")
 		}
 
 	}
