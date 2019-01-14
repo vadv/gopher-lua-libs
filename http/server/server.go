@@ -186,6 +186,8 @@ func HandleFile(L *lua.LState) int {
 				state := newHandlerState(data)
 				if err := state.DoFile(filename); err != nil {
 					log.Printf("[ERROR] handle file %s: %s\n", filename, err.Error())
+					data.done <- true
+					log.Printf("[ERROR] closed connection\n")
 				}
 			}(data, file)
 
@@ -200,13 +202,14 @@ func HandleString(L *lua.LState) int {
 	body := L.CheckString(2)
 	select {
 	case data := <-s.serveData:
-		state := newHandlerState(data)
-		if err := state.DoString(body); err != nil {
-			log.Printf("[ERROR] handle: %s\n", err.Error())
-			data.done <- true
-			log.Printf("[ERROR]", "closed connection\n")
-		}
-
+		go func(sData *serveData, content string) {
+			state := newHandlerState(sData)
+			if err := state.DoString(content); err != nil {
+				log.Printf("[ERROR] handle: %s\n", err.Error())
+				data.done <- true
+				log.Printf("[ERROR] closed connection\n")
+			}
+		}(data, body)
 	}
 	return 0
 }
