@@ -5,7 +5,6 @@ import (
 	"net"
 	"net/http"
 	"sync"
-	"time"
 
 	cert_util "github.com/vadv/gopher-lua-libs/cert_util"
 	chef "github.com/vadv/gopher-lua-libs/chef"
@@ -175,7 +174,7 @@ func newHandlerState(data *serveData) *lua.LState {
 	return state
 }
 
-// HandleFile lua http_server_ud:handler_file(filename)
+// HandleFile lua http_server_ud:do_handle_file(filename)
 func HandleFile(L *lua.LState) int {
 	s := checkServer(L, 1)
 	file := L.CheckString(2)
@@ -193,10 +192,9 @@ func HandleFile(L *lua.LState) int {
 
 		}
 	}
-	return 0
 }
 
-// HandleString lua http_server_ud:handler_string(body)
+// HandleString lua http_server_ud:do_handle_string(body)
 func HandleString(L *lua.LState) int {
 	s := checkServer(L, 1)
 	body := L.CheckString(2)
@@ -211,7 +209,6 @@ func HandleString(L *lua.LState) int {
 			}
 		}(data, body)
 	}
-	return 0
 }
 
 // ServeHTTP interface realisation
@@ -225,8 +222,6 @@ func (s *luaServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	select {
 	case <-doneChan:
 		return
-	case <-time.After(time.Minute):
-		doneChan <- true
 	}
 
 }

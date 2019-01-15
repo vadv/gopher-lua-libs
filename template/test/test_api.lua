@@ -12,3 +12,8 @@ local values = {data = {"one", "two"}}
 local result, err = mustache:render("{{#data}} {{.}} {{/data}}", values)
 if err then error(err) end
 if not(result == " one  two ") then error(result) end
+
+-- local values = {data = {}}
+-- local result, err = mustache:render("{{#data}} {{.}} {{/data}}", values)
+-- if err then error(err) end
+-- if not(result ==  "") then error(result) end
