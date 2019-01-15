@@ -1,6 +1,8 @@
 local db = require("db")
+local time = require("time")
+local inspect = require("inspect")
 
-local sqlite, err = db.open("sqlite3", "file:test.db?cache=shared&mode=memory")
+local sqlite, err = db.open("sqlite3", "file:testdb.db?cache=shared&mode=memory")
 if err then error(err) end
 
 local result, err = sqlite:query("select 1")
@@ -28,6 +30,29 @@ end
 for _, row in pairs(result.rows) do
     for id, name in pairs(result.columns) do
         print(name, row[id])
+    end
+end
+
+local _, err = sqlite:exec("CREATE TABLE table_time (id int, time DATETIME DEFAULT CURRENT_TIMESTAMP);")
+if err then error(err) end
+
+for i = 1, 10 do
+    local query = "INSERT INTO table_time VALUES ("..i..", " .. time.unix() .. ");"
+    if i % 2 == 0 then
+        query = "INSERT INTO table_time(id) VALUES ("..i..");"
+    end
+    local result, err = sqlite:exec(query)
+    if err then error(err) end
+    print(inspect(result))
+end
+
+local result, err = sqlite:query("select * from table_time;")
+if err then error(err) end
+
+for _, row in pairs(result.rows) do
+    for id, name in pairs(result.columns) do
+        local datetime = os.date("*t", row[id])
+        print(name, datetime.year, datetime.month, datetime.day, datetime.hour, datetime.sec)
     end
 end
 

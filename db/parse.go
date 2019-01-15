@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"log"
+	"time"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -43,6 +44,9 @@ func parseRows(sqlRows *sql.Rows, L *lua.LState) (*lua.LTable, *lua.LTable, erro
 				luaRow.RawSetInt(i+1, lua.LNumber(converted))
 			case string:
 				luaRow.RawSetInt(i+1, lua.LString(converted))
+			case time.Time:
+				tt := float64(converted.UTC().UnixNano()) / float64(time.Second)
+				luaRow.RawSetInt(i+1, lua.LNumber(tt))
 			case []byte:
 				luaRow.RawSetInt(i+1, lua.LString(string(converted)))
 			case nil:
