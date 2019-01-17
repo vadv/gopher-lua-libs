@@ -33,22 +33,27 @@ func ExampleAccept() {
     local client_plugin = plugin.do_string(client_plugin)
     client_plugin:run()
 
-    local req, resp = server:accept()
-    print("host: "..req.host)
-    print("method: "..req.method)
-    -- print("referer: "..req.referer)
-    print("proto: "..req.proto)
-    print("request_uri: "..req.request_uri)
-    print("user_agent: "..req.user_agent)
-    -- print(req.remote_addr)
-    print("header: Accept-Encoding="..req.headers["Accept-Encoding"])
-    for k, v in pairs(req.query) do
+    local request, response = server:accept()
+    print("host: "..request.host)
+    print("method: "..request.method)
+    -- print("referer: "..request.referer)
+    print("proto: "..request.proto)
+    print("request_uri: "..request.request_uri)
+    print("user_agent: "..request.user_agent)
+    -- print(request.remote_addr)
+    print("header: Accept-Encoding="..request.headers["Accept-Encoding"])
+    for k, v in pairs(request.query) do
       print("query: "..k.."="..v)
     end
-    resp:code(200) -- write code
-    resp:header("Content-Type", "application/json") -- write header
-    resp:write("ok")
-    resp:done()
+
+    local body, err = request.body()
+    if err then error(err) end
+    print("body:", body)
+
+    response:code(200) -- write code
+    response:header("Content-Type", "application/json") -- write header
+    response:write("ok")
+    response:done()
 
     client_plugin:stop()
 `
@@ -63,4 +68,5 @@ func ExampleAccept() {
 	// user_agent: gopher-lua
 	// header: Accept-Encoding=gzip
 	// query: param1=value1
+	// body:
 }

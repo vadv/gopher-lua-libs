@@ -85,40 +85,6 @@ func New(L *lua.LState) int {
 	return 1
 }
 
-// NewRequest return lua table with http.Request representation
-func NewRequest(L *lua.LState, req *http.Request) *lua.LTable {
-	luaRequest := L.NewTable()
-	luaRequest.RawSetString(`host`, lua.LString(req.Host))
-	luaRequest.RawSetString(`method`, lua.LString(req.Method))
-	luaRequest.RawSetString(`referer`, lua.LString(req.Referer()))
-	luaRequest.RawSetString(`proto`, lua.LString(req.Proto))
-	luaRequest.RawSetString(`user_agent`, lua.LString(req.UserAgent()))
-	if req.URL != nil && len(req.URL.Query()) > 0 {
-		query := L.NewTable()
-		for k, v := range req.URL.Query() {
-			if len(v) > 0 {
-				query.RawSetString(k, lua.LString(v[0]))
-			}
-		}
-		luaRequest.RawSetString(`query`, query)
-	}
-	if len(req.Header) > 0 {
-		headers := L.NewTable()
-		for k, v := range req.Header {
-			if len(v) > 0 {
-				headers.RawSetString(k, lua.LString(v[0]))
-			}
-		}
-		luaRequest.RawSetString(`headers`, headers)
-	}
-	luaRequest.RawSetString(`path`, lua.LString(req.URL.Path))
-	luaRequest.RawSetString(`raw_path`, lua.LString(req.URL.RawPath))
-	luaRequest.RawSetString(`raw_query`, lua.LString(req.URL.RawQuery))
-	luaRequest.RawSetString(`request_uri`, lua.LString(req.RequestURI))
-	luaRequest.RawSetString(`remote_addr`, lua.LString(req.RemoteAddr))
-	return luaRequest
-}
-
 // Accept lua http_server_ud:accept() returns request_table, http_server_response_writer_ud
 func Accept(L *lua.LState) int {
 	s := checkServer(L, 1)

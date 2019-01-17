@@ -41,49 +41,62 @@ local client = http.client({basic_auth_user="admin", basic_auth_password="123456
 
 ### Server
 
-#### Accept variant
+#### Accept variant (single-threaded)
 
 ```lua
 local server, err = http.server("127.0.0.1:1113")
 if err then error(err) end
 
 while true do
-  local req, resp = server:accept() -- lock and wait request
+  local request, response = server:accept() -- lock and wait request
 
   -- print request
-  print("host:", req.host)
-  print("method:", req.method)
-  print("referer:", req.referer)
-  print("proto:", req.proto)
-  print("path:", req.path)
-  print("raw_path:", req.raw_path)
-  print("raw_query:", req.raw_query)
-  print("request_uri:", req.request_uri)
-  print("remote_addr:", req.remote_addr)
-  print("user_agent: "..req.user_agent)
-  for k, v in pairs(req.headers) do
+  print("host:", request.host)
+  print("method:", request.method)
+  print("referer:", request.referer)
+  print("proto:", request.proto)
+  print("path:", request.path)
+  print("raw_path:", request.raw_path)
+  print("raw_query:", request.raw_query)
+  print("request_uri:", request.request_uri)
+  print("remote_addr:", request.remote_addr)
+  print("user_agent: "..request.user_agent)
+
+  -- get body
+  local body, err = request.body()
+  if err then error(err) end
+  print("body:", body)
+
+  for k, v in pairs(request.headers) do
     print("header: ", k, v)
   end
-  for k, v in pairs(req.query) do
+  for k, v in pairs(request.query) do
     print("query params: ", k, "=" ,v)
   end
   -- write response
-  resp:code(200) -- write header
-  resp:header("content-type", "application/json")
-  resp:write(req.request_uri) -- write data
-  -- resp:redirect("http://google.com")
-  resp:done() -- end response
+  response:code(200) -- write header
+  response:header("content-type", "application/json")
+  response:write(request.request_uri) -- write data
+  -- response:redirect("http://google.com")
+  response:done() -- end response
 
 end
 ```
 
-#### Handle variant
+#### Handle variant (multithreaded)
 
 ```lua
 local server, err = http.server("127.0.0.1:1113")
 if err then error(err) end
 
 server:do_handle_string([[ -- do_handle_file
+
+-- same methods for request like in accept
+  -- get body
+local body, err = request.body()
+if err then error(err) end
+print("body:", body)
+
 
 response:code(200) -- write header
 response:write(request.request_uri)

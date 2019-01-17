@@ -11,6 +11,10 @@ print("remote_addr:", request.remote_addr)
 for k, v in pairs(request.headers) do
   print("header: ", k, v)
 end
+-- get body
+local body, err = request.body()
+if err then error(err) end
+print("body:", body)
 
 response:code(200) -- write header
 response:write(request.request_uri)
