@@ -17,7 +17,6 @@ func NewRequest(L *lua.LState, req *http.Request) *lua.LTable {
 			L.Push(lua.LString(err.Error()))
 			return 2
 		}
-		defer req.Body.Close()
 		L.Push(lua.LString(string(data)))
 		return 1
 	})
