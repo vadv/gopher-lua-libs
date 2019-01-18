@@ -89,3 +89,19 @@ end
 		log.Fatal(err.Error())
 	}
 }
+
+// example deleteMessage: https://core.telegram.org/bots/api#deletemessage
+func ExampleDeleteMessage() {
+	state := lua.NewState()
+	telegram.Preload(state)
+	source := `
+local bot = telegram.bot("token")
+bot:forwardMessage({
+    chat_id = number, -- Unique identifier for the target chat
+    message_id = number, -- Message identifier in the chat specified in from_chat_id
+})
+`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+}

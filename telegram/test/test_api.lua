@@ -13,19 +13,24 @@ local updates, err = bot:getUpdates()
 
 if updates then -- concurency build
     for _, upd in pairs(updates) do
-        print(inspect(upd))
         if upd.callback_query then
-            bot:sendMessage({
+            local msg, err = bot:sendMessage({
                 chat_id = upd.callback_query.message.chat.id,
                 reply_to_message_id = upd.callback_query.message.message_id,
                 text = "callback query data: "..upd.callback_query.data,
             })
+            if not(err) then
+                bot:deleteMessage({chat_id = upd.callback_query.message.chat.id, message_id = msg.message_id})
+            end
         else
-            bot:sendMessage({
+            local msg, err = bot:sendMessage({
                 chat_id = upd.message.chat.id,
                 reply_to_message_id = upd.message.message_id,
                 text = "this is a reply!",
             })
+            if not(err) then
+                bot:deleteMessage({chat_id = upd.message.chat.id, message_id = msg.message_id})
+            end
         end
     end
 end
@@ -44,9 +49,20 @@ local reply_markup_message, err = bot:sendMessage({
         }
     }
 })
+if not(err) then
+    bot:deleteMessage({
+        chat_id = 80734283, message_id = reply_markup_message.message_id
+    })
+end
 -- if err then error(err) end
 
-local _, err = bot:sendPhoto({chat_id = 80734283, caption="panda", photo="./test/panda.jpg"})
+local msg, err = bot:sendPhoto({chat_id = 80734283, caption="panda", photo="./test/panda.jpg"})
+if not(err) then
+    bot:deleteMessage({
+        chat_id = 80734283, message_id = msg.message_id
+    })
+end
+
 -- if err then error(err) end
 
 --[[

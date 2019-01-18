@@ -50,8 +50,11 @@ local reply_markup_message, err = bot:sendMessage({
 if err then error(err) end
 
 -- sendPhoto
-local _, err = bot:sendPhoto({chat_id = XXX, caption="panda", photo="./test/panda.jpg"})
+local msg, err = bot:sendPhoto({chat_id = XXX, caption="panda", photo="./test/panda.jpg"})
 if err then error(err) end
+
+-- deletePhoto
+bot:deleteMessage({chat_id=XXX, message_id=msg.message_id})
 
 -- editReplyMarkup
 local _, err = bot:editMessageReplyMarkup({

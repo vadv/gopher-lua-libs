@@ -1140,8 +1140,8 @@ type PreCheckoutConfig struct {
 
 // DeleteMessageConfig contains information of a message in a chat to delete.
 type DeleteMessageConfig struct {
-	ChatID    int64
-	MessageID int
+	ChatID    int64 `json:"chat_id"`
+	MessageID int   `json:"message_id"`
 }
 
 func (config DeleteMessageConfig) method() string {

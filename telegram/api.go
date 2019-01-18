@@ -142,3 +142,8 @@ func EditMessageCaption(L *lua.LState) int {
 func EditMessageReplyMarkup(L *lua.LState) int {
 	return sendGeneric(L, &EditMessageReplyMarkupConfig{})
 }
+
+// EditMessageReplyMarkup(): lua telegram_bot_ud:deleteMessage(table) returns (bool, err)
+func DeleteMessage(L *lua.LState) int {
+	return sendGeneric(L, &DeleteMessageConfig{})
+}

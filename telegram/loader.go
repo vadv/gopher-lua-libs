@@ -21,6 +21,7 @@ func Loader(L *lua.LState) int {
 		"getUpdates":             GetUpdates,             // https://core.telegram.org/bots/api#getupdates
 		"getOffset":              GetOffset,              // max offset value in updates
 		"sendMessage":            SendMessage,            // https://core.telegram.org/bots/api#sendmessage
+		"deleteMessage":          DeleteMessage,          // https://core.telegram.org/bots/api#deletemessage
 		"forwardMessage":         ForwardMessage,         // https://core.telegram.org/bots/api#forwardmessage
 		"sendPhoto":              SendPhoto,              // https://core.telegram.org/bots/api#sendphoto
 		"editMessageText":        EditMessageText,        // https://core.telegram.org/bots/api#editMessageText
