@@ -25,4 +25,5 @@ var api = map[string]lua.LGFunction{
 	"unix_nano": UnixNano,
 	"sleep":     Sleep,
 	"parse":     Parse,
+	"format":    Format,
 }

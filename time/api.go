@@ -40,3 +40,29 @@ func Parse(L *lua.LState) int {
 	L.Push(lua.LNumber(resultFloat))
 	return 1
 }
+
+// Format(): lua time.format(unixts, ...layout, ...location) returns (string, err)
+func Format(L *lua.LState) int {
+	tt := float64(L.CheckNumber(1))
+	sec := int64(tt)
+	nsec := int64((tt - float64(sec)) * 1000000000)
+	result := time.Unix(sec, nsec)
+	layout := "Mon Jan 2 15:04:05 -0700 MST 2006"
+	if L.GetTop() > 1 {
+		layout = L.CheckString(2)
+	}
+	if L.GetTop() < 3 {
+		L.Push(lua.LString(result.Format(layout)))
+		return 1
+	}
+	location := L.CheckString(3)
+	loc, err := time.LoadLocation(location)
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
+	}
+	result = result.In(loc)
+	L.Push(lua.LString(result.Format(layout)))
+	return 1
+}

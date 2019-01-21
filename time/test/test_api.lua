@@ -17,3 +17,8 @@ print("done: time.parse(): 1")
 local _, err = time.parse("Dec  32 03:33:05 2018", "Jan  2 15:04:05 2006")
 if (err == nil) then error("time.parse(): must be error") end
 print("done: time.parse(): 2")
+
+local result, err = time.format(1543721585, "Jan  2 15:04:05 2006", "Europe/Moscow")
+if err then error(err) end
+if not(result == "Dec  2 06:33:05 2018") then error("time.format()") end
+print("done: time.format(): 1")
