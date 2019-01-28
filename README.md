@@ -42,8 +42,49 @@ go get github.com/vadv/gopher-lua-libs
 * [yaml](/yaml) [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2) port
 * [zabbix](/zabbix) zabbix bot
 
-## Standalone interpreter with listed libs
 
+## Usage
+
+For quick overview you can use standalone interpreter with listed libs. Examples and documentation for modules can be found in their directories.
 ```
 go get github.com/vadv/gopher-lua-libs/cmd/glua-libs
+
+$ glua-libs example.lua
+```
+
+This example shows basic usage of this libs in your code
+
+```golang
+package main
+
+
+import (
+        "log"
+        "flag"
+        "os"
+
+        lua "github.com/yuin/gopher-lua"
+        libs "github.com/vadv/gopher-lua-libs"
+
+)
+var (
+        exec = flag.String("execute", "", "execute lua script")
+)
+
+
+func main() {
+        flag.Parse()
+        state := lua.NewState()
+        libs.Preload(state)
+        if *exec != `` {
+                if err := state.DoFile(*exec); err != nil {
+                        log.Printf("[ERROR] Error executing file: ", err)
+                }
+        } else {
+                log.Println("Target file was not given!")
+                os.Exit(0)
+        }
+}
+
+
 ```
