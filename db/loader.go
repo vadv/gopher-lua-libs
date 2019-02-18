@@ -20,8 +20,17 @@ func Loader(L *lua.LState) int {
 	L.SetField(db_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
 		"query": Query,
 		"exec":  Exec,
+		"stmt":  Stmt,
 		"close": Close,
 	}))
+
+	stmt_ud := L.NewTypeMetatable(`stmt_ud`)
+	L.SetGlobal(`stmt_ud`, stmt_ud)
+	L.SetField(stmt_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
+		"query": StmtQuery,
+		"exec":  StmtExec,
+	}))
+
 
 	t := L.NewTable()
 	L.SetFuncs(t, api)

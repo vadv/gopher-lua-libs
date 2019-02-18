@@ -56,5 +56,24 @@ for _, row in pairs(result.rows) do
     end
 end
 
+local _, err = sqlite:exec("CREATE TABLE t_stmt (id int, name string);")
+if err then error(err) end
+
+local stmt, err = sqlite:stmt("insert into t_stmt (id, name) values (?, ?)")
+if err then error(err) end
+local result, err = stmt:exec(1, 'name-1')
+if err then error(err) end
+if not(result.rows_affected == 1) then error("affted: "..tostring(result.rows_affected)) end
+
+local result, err = sqlite:query("select name from t_stmt where id = 1")
+if err then error(err) end
+if not(result.rows[1][1] == 'name-1') then error("must be 'name-1': "..tostring(result.rows[1][1])) end
+
+local stmt, err = sqlite:stmt("select name from t_stmt where id = ?")
+if err then error(err) end
+local result, err = stmt:query(1)
+if err then error(err) end
+if not(result.rows[1][1] == 'name-1') then error("must be 'name-1': "..tostring(result.rows[1][1])) end
+
 local err = sqlite:close()
 if err then error(err) end
