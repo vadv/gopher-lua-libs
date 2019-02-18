@@ -29,6 +29,20 @@ func Stmt(L *lua.LState) int {
 	return 1
 }
 
+func getSTMTArgs(L *lua.LState) []interface{} {
+	args := make([]interface{}, 0)
+	for i := 2; i <= L.GetTop(); i++ {
+		any := L.CheckAny(i)
+		switch any.Type() {
+		case lua.LTNil:
+			args = append(args, nil)
+		default:
+			args = append(args, L.CheckAny(i))
+		}
+	}
+	return args
+}
+
 // StmtQuery(): lua stmt_ud:query(query) returns ({rows = {}, columns = {}}, err)
 func StmtQuery(L *lua.LState) int {
 	ud := L.CheckUserData(1)
@@ -36,10 +50,7 @@ func StmtQuery(L *lua.LState) int {
 	if !ok {
 		L.ArgError(1, "must be stmt_ud")
 	}
-	args := make([]interface{}, 0)
-	for i := 2; i <= L.GetTop(); i++ {
-		args = append(args, L.CheckAny(i))
-	}
+	args := getSTMTArgs(L)
 	sqlRows, err := s.Query(args...)
 	if err != nil {
 		L.Push(lua.LNil)
@@ -67,10 +78,7 @@ func StmtExec(L *lua.LState) int {
 	if !ok {
 		L.ArgError(1, "must be stmt_ud")
 	}
-	args := make([]interface{}, 0)
-	for i := 2; i <= L.GetTop(); i++ {
-		args = append(args, L.CheckAny(i))
-	}
+	args := getSTMTArgs(L)
 	sqlResult, err := s.Exec(args...)
 	if err != nil {
 		L.Push(lua.LNil)
