@@ -5,7 +5,12 @@
 ```lua
 local db = require("db")
 
-local sqlite, err = db.open("sqlite3", "file:test.db?cache=shared&mode=memory")
+local config = {
+  shared = true, -- share connections between lua states
+  max_connections = 1, -- max connection (if you open shared connection with different max_connections - first win)
+}
+
+local sqlite, err = db.open("sqlite3", "file:test.db?cache=shared&mode=memory", config)
 if err then error(err) end
 
 local result, err = sqlite:query("select 1")

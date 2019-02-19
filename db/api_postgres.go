@@ -8,6 +8,7 @@ import (
 )
 
 type luaPG struct {
+	config *dbConfig
 	sync.Mutex
 	db *sql.DB
 }
@@ -16,15 +17,36 @@ func init() {
 	RegisterDriver(`postgres`, &luaPG{})
 }
 
-func (pg *luaPG) constructor(connString string) (luaDB, error) {
-	db, err := sql.Open(`postgres`, connString)
+var (
+	sharedPG     = make(map[string]*luaPG, 0)
+	sharedPGLock = &sync.Mutex{}
+)
+
+func (pg *luaPG) constructor(config *dbConfig) (luaDB, error) {
+
+	sharedPGLock.Lock()
+	defer sharedPGLock.Unlock()
+
+	if config.sharedMode {
+		result, ok := sharedPG[config.connString]
+		if ok {
+			return result, nil
+		}
+	}
+
+	db, err := sql.Open(`postgres`, config.connString)
 	if err != nil {
 		return nil, err
 	}
-	result := &luaPG{}
-	db.SetMaxIdleConns(MaxIdleConns)
-	db.SetMaxOpenConns(MaxOpenConns)
+	result := &luaPG{config: config}
+	db.SetMaxIdleConns(config.maxOpenConns)
+	db.SetMaxOpenConns(config.maxOpenConns)
 	result.db = db
+
+	if config.sharedMode {
+		sharedPG[config.connString] = result
+	}
+
 	return result, nil
 }
 
@@ -32,4 +54,19 @@ func (pg *luaPG) getDB() *sql.DB {
 	pg.Lock()
 	defer pg.Unlock()
 	return pg.db
+}
+
+func (pg *luaPG) closeDB() error {
+	pg.Lock()
+	defer pg.Unlock()
+	err := pg.db.Close()
+	if err != nil {
+		return err
+	}
+	if pg.config.sharedMode {
+		sharedPGLock.Lock()
+		delete(sharedPG, pg.config.connString)
+		sharedPGLock.Unlock()
+	}
+	return nil
 }

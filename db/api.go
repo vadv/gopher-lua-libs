@@ -10,20 +10,27 @@ import (
 )
 
 const (
-	// max idle connections
-	MaxIdleConns = 1
 	// max open connections
 	MaxOpenConns = 1
 )
 
 type luaDB interface {
-	constructor(string) (luaDB, error)
+	constructor(*dbConfig) (luaDB, error)
 	getDB() *sql.DB
+	closeDB() error
+}
+
+type dbConfig struct {
+	connString   string
+	sharedMode   bool
+	maxOpenConns int
 }
 
 var (
 	knownDrivers     = make(map[string]luaDB, 0)
 	knownDriversLock = &sync.Mutex{}
+	sharedDB         = make(map[string]luaDB, 0)
+	sharedDBLock     = &sync.Mutex{}
 )
 
 // RegisterDriver(): register sql driver
@@ -43,7 +50,12 @@ func checkDB(L *lua.LState, n int) luaDB {
 	return nil
 }
 
-// Open(): lua db.open(driver, connection_string) returns (db_ud, err)
+// Open(): lua db.open(driver, connection_string, config) returns (db_ud, err)
+// config table:
+//   {
+//     shared=bool,
+//     max_connections=X,
+//   }
 func Open(L *lua.LState) int {
 	knownDriversLock.Lock()
 	defer knownDriversLock.Unlock()
@@ -56,14 +68,38 @@ func Open(L *lua.LState) int {
 		L.Push(lua.LString(fmt.Sprintf("unknown driver: %s", driver)))
 		return 2
 	}
-	result, err := db.constructor(connString)
+
+	// parse config
+	config := &dbConfig{connString: connString, maxOpenConns: MaxOpenConns}
+	if L.GetTop() > 2 {
+		configLua := L.CheckTable(3)
+		configLua.ForEach(func(k lua.LValue, v lua.LValue) {
+			if k.String() == `shared` {
+				if val, ok := v.(lua.LBool); ok {
+					config.sharedMode = bool(val)
+				} else {
+					L.ArgError(3, "shared must be bool")
+				}
+			}
+			if k.String() == `max_connections` {
+				if val, ok := v.(lua.LNumber); ok {
+					config.maxOpenConns = int(val)
+				} else {
+					L.ArgError(3, "max_connections must be number")
+				}
+			}
+		})
+	}
+
+	dbIface, err := db.constructor(config)
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))
 		return 2
 	}
+
 	ud := L.NewUserData()
-	ud.Value = result
+	ud.Value = dbIface
 	L.SetMetatable(ud, L.GetTypeMetatable(`db_ud`))
 	L.Push(ud)
 	return 1
@@ -130,11 +166,10 @@ func Exec(L *lua.LState) int {
 	return 1
 }
 
-// Close(): lua db_ud:query(query) returns (table of tables, err)
+// Close(): lua db_ud:close() returns err
 func Close(L *lua.LState) int {
-	dbInterface := checkDB(L, 1)
-	sqlDB := dbInterface.getDB()
-	if err := sqlDB.Close(); err != nil {
+	dbIface := checkDB(L, 1)
+	if err := dbIface.closeDB(); err != nil {
 		L.Push(lua.LString(err.Error()))
 		return 1
 	}

@@ -11,6 +11,7 @@ import (
 )
 
 type luaSQLite struct {
+	config *dbConfig
 	sync.Mutex
 	db *sql.DB
 }
@@ -19,15 +20,36 @@ func init() {
 	RegisterDriver(`sqlite3`, &luaSQLite{})
 }
 
-func (sqlite *luaSQLite) constructor(connString string) (luaDB, error) {
-	db, err := sql.Open(`sqlite3`, connString)
+var (
+	sharedSqlite     = make(map[string]*luaSQLite, 0)
+	sharedSqliteLock = &sync.Mutex{}
+)
+
+func (sqlite *luaSQLite) constructor(config *dbConfig) (luaDB, error) {
+
+	sharedSqliteLock.Lock()
+	defer sharedSqliteLock.Unlock()
+
+	if config.sharedMode {
+		result, ok := sharedSqlite[config.connString]
+		if ok {
+			return result, nil
+		}
+	}
+
+	db, err := sql.Open(`sqlite3`, config.connString)
 	if err != nil {
 		return nil, err
 	}
-	db.SetMaxIdleConns(1)
-	db.SetMaxOpenConns(1)
-	result := &luaSQLite{}
+	db.SetMaxIdleConns(config.maxOpenConns)
+	db.SetMaxOpenConns(config.maxOpenConns)
+	result := &luaSQLite{config: config}
 	result.db = db
+
+	if config.sharedMode {
+		sharedSqlite[config.connString] = result
+	}
+
 	return result, nil
 }
 
@@ -35,4 +57,19 @@ func (sqlite *luaSQLite) getDB() *sql.DB {
 	sqlite.Lock()
 	defer sqlite.Unlock()
 	return sqlite.db
+}
+
+func (sqlite *luaSQLite) closeDB() error {
+	sqlite.Lock()
+	defer sqlite.Unlock()
+	err := sqlite.db.Close()
+	if err != nil {
+		return err
+	}
+	if sqlite.config.sharedMode {
+		sharedSqliteLock.Lock()
+		delete(sharedSqlite, sqlite.config.connString)
+		sharedSqliteLock.Unlock()
+	}
+	return nil
 }

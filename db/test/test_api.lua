@@ -2,7 +2,7 @@ local db = require("db")
 local time = require("time")
 local inspect = require("inspect")
 
-local sqlite, err = db.open("sqlite3", "file:testdb.db?cache=shared&mode=memory")
+local sqlite, err = db.open("sqlite3", "file:testdb.db?mode=memory", {shared = true} )
 if err then error(err) end
 
 local result, err = sqlite:query("select 1")
@@ -75,5 +75,19 @@ local result, err = stmt:query(1)
 if err then error(err) end
 if not(result.rows[1][1] == 'name-1') then error("must be 'name-1': "..tostring(result.rows[1][1])) end
 
+-- test shared connections
+local sqliteShared, err = db.open("sqlite3", "file:testdb.db?mode=memory", {shared = true})
+if err then error(err) end
+local result, err = sqliteShared:query("select name from t_stmt where id = 1")
+if err then error(err) end
+if not(result.rows[1][1] == 'name-1') then error("must be 'name-1': "..tostring(result.rows[1][1])) end
+local sqliteShared2, err = db.open("sqlite3", "file:testdb.db?mode=memory", {shared = false})
+if err then error(err) end
+local result, err = sqliteShared2:query("select name from t_stmt where id = 1")
+if not err then error("must be unknown table") end
+
 local err = sqlite:close()
 if err then error(err) end
+local result, err = sqliteShared:query("select name from t_stmt where id = 1")
+if not err then error("must be closed") end
+
