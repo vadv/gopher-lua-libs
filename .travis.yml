@@ -29,4 +29,4 @@ script:
 #  # wait dependency services
 #  - ./tests/runner.sh wait
   - go test -v -tags 'sqlite' -race ./...
-  - $HOME/gopath/bin/goveralls -service=travis-ci
+  - $HOME/gopath/bin/goveralls -service=travis-ci || echo "ok"
