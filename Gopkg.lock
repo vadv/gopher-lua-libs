@@ -34,6 +34,14 @@
   version = "v1.4.1"
 
 [[projects]]
+  digest = "1:db45f06f5bba3f6f7b29dea965ed6883cf4ae3edd191b01f6aa68e98fe1de54a"
+  name = "github.com/karrick/godirwalk"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "6d1c7760ec857d2984abe0a23fa263877f50d3f0"
+  version = "v1.8.0"
+
+[[projects]]
   digest = "1:4d5fa9f49e5bf3d55c16ff562af9e3231f9ac5ccf495927fd0555f4607c15475"
   name = "github.com/lib/pq"
   packages = [
@@ -132,6 +140,7 @@
     "github.com/chzyer/readline",
     "github.com/dustin/go-humanize",
     "github.com/go-sql-driver/mysql",
+    "github.com/karrick/godirwalk",
     "github.com/lib/pq",
     "github.com/mattn/go-sqlite3",
     "github.com/technoweenie/multipartstreamer",

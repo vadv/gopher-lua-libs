@@ -6,7 +6,7 @@
 local storage = require("storage")
 
 -- storage.open
-local s, err = storage.open("./test/db.json")
+local s, err = storage.open("./test/db.json") -- default storage memory, this storage type can be used for projects that do not store much data and do not save memory
 if err then error(err) end
 
 -- storage:set(): key, value, ttl (default = 60s)
@@ -32,5 +32,8 @@ local list = s:keys()
 local dump, err = s:dump()
 if err then error(err) end
 -- list == {"key" = "override"}
+
+-- storage.disk
+local s, err = storage.open("./test/db", "disk") -- this storage type can be used for projects that store a lot of data and save memory
 ```
 

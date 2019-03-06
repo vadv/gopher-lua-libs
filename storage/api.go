@@ -3,12 +3,29 @@ package storage
 
 import (
 	lua "github.com/yuin/gopher-lua"
+
+	drivers "github.com/vadv/gopher-lua-libs/storage/drivers"
+	interfaces "github.com/vadv/gopher-lua-libs/storage/drivers/interfaces"
 )
 
-// New(): lua storage.new(filename) returns (storage_ud, err)
+const (
+	DefaultDriver = `memory` // default driver mode
+)
+
+// New(): lua storage.new(path, driver) returns (storage_ud, err)
 func New(L *lua.LState) int {
-	filename := L.CheckString(1)
-	s, err := newStorage(filename)
+	path := L.CheckString(1)
+	driverName := DefaultDriver
+	if L.GetTop() > 1 {
+		driverName = L.CheckString(2)
+	}
+	driver, ok := drivers.Get(driverName)
+	if !ok {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(`driver not found`))
+		return 2
+	}
+	s, err := driver.New(path)
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))
@@ -19,6 +36,15 @@ func New(L *lua.LState) int {
 	L.SetMetatable(ud, L.GetTypeMetatable("storage_ud"))
 	L.Push(ud)
 	return 1
+}
+
+func checkStorage(L *lua.LState, n int) interfaces.Driver {
+	ud := L.CheckUserData(n)
+	if v, ok := ud.Value.(interfaces.Driver); ok {
+		return v
+	}
+	L.ArgError(n, "storage_ud excepted")
+	return nil
 }
 
 // Set(): lua storage_ud:set(key, value, ttl) return err
@@ -38,7 +64,7 @@ func Set(L *lua.LState) int {
 			L.ArgError(4, "must be integer or nil")
 		}
 	}
-	err := s.set(key, value, ttl)
+	err := s.Set(key, value, ttl)
 	if err != nil {
 		L.Push(lua.LString(err.Error()))
 		return 1
@@ -50,7 +76,7 @@ func Set(L *lua.LState) int {
 func Get(L *lua.LState) int {
 	s := checkStorage(L, 1)
 	key := L.CheckString(2)
-	value, found, err := s.get(key, L)
+	value, found, err := s.Get(key, L)
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LNil)
@@ -65,7 +91,7 @@ func Get(L *lua.LState) int {
 // Sync(): lua storage_ud:sync() return err
 func Sync(L *lua.LState) int {
 	s := checkStorage(L, 1)
-	err := s.sync()
+	err := s.Sync()
 	if err != nil {
 		L.Push(lua.LString(err.Error()))
 		return 1
@@ -76,7 +102,7 @@ func Sync(L *lua.LState) int {
 // Close(): lua storage_ud:close() return err
 func Close(L *lua.LState) int {
 	s := checkStorage(L, 1)
-	err := s.close()
+	err := s.Close()
 	if err != nil {
 		L.Push(lua.LString(err.Error()))
 		return 1
@@ -84,10 +110,16 @@ func Close(L *lua.LState) int {
 	return 0
 }
 
-// Keys(): lua storage_ud:list_keys() return table
+// Keys(): lua storage_ud:list_keys() return (table, error)
 func Keys(L *lua.LState) int {
 	s := checkStorage(L, 1)
-	keys, result := s.keys(), L.NewTable()
+	keys, err := s.Keys()
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 1
+	}
+	result := L.NewTable()
 	for _, v := range keys {
 		result.Append(lua.LString(v))
 	}
@@ -99,7 +131,7 @@ func Keys(L *lua.LState) int {
 func Dump(L *lua.LState) int {
 	s := checkStorage(L, 1)
 	result := L.NewTable()
-	dump, err := s.dump(L)
+	dump, err := s.Dump(L)
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))

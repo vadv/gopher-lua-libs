@@ -8,7 +8,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-func (s *storage) set(key string, value lua.LValue, ttl int64) error {
+func (s *Storage) Set(key string, value lua.LValue, ttl int64) error {
 	data, err := lua_json.ValueEncode(value)
 	if err != nil {
 		return err
@@ -20,7 +20,7 @@ func (s *storage) set(key string, value lua.LValue, ttl int64) error {
 	return nil
 }
 
-func (s *storage) get(key string, L *lua.LState) (lua.LValue, bool, error) {
+func (s *Storage) Get(key string, L *lua.LState) (lua.LValue, bool, error) {
 	s.Lock()
 	defer s.Unlock()
 	data, ok := s.Data[key]

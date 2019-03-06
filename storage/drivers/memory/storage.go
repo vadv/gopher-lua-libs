@@ -1,3 +1,4 @@
+// this storage can be used for projects that do not store much data and do not save memory
 package storage
 
 import (
@@ -9,31 +10,23 @@ import (
 	"time"
 
 	lua_json "github.com/vadv/gopher-lua-libs/json"
+	interfaces "github.com/vadv/gopher-lua-libs/storage/drivers/interfaces"
 
 	lua "github.com/yuin/gopher-lua"
 )
 
-var listOfStorages = &listStorages{list: make(map[string]*storage)}
+var listOfStorages = &listStorages{list: make(map[string]*Storage)}
 
 type listStorages struct {
 	sync.Mutex
-	list map[string]*storage
+	list map[string]*Storage
 }
 
-type storage struct {
+type Storage struct {
 	sync.Mutex
 	filename     string
 	Data         map[string]*storageValue `json:"data"`
 	usageCounter int
-}
-
-func checkStorage(L *lua.LState, n int) *storage {
-	ud := L.CheckUserData(n)
-	if v, ok := ud.Value.(*storage); ok {
-		return v
-	}
-	L.ArgError(n, "storage_ud excepted")
-	return nil
 }
 
 type storageValue struct {
@@ -45,7 +38,7 @@ func (sv *storageValue) valid() bool {
 	return sv.MaxValidAt > time.Now().UnixNano()
 }
 
-func newStorage(filename string) (*storage, error) {
+func (st *Storage) New(filename string) (interfaces.Driver, error) {
 
 	listOfStorages.Lock()
 	defer listOfStorages.Unlock()
@@ -55,7 +48,7 @@ func newStorage(filename string) (*storage, error) {
 		return result, nil
 	}
 
-	s := &storage{Data: make(map[string]*storageValue, 0)}
+	s := &Storage{Data: make(map[string]*storageValue, 0)}
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		// create
 		dst, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
@@ -77,10 +70,10 @@ func newStorage(filename string) (*storage, error) {
 	s.usageCounter++
 	listOfStorages.list[filename] = s
 	go s.loop()
-	return s, s.sync()
+	return s, s.Sync()
 }
 
-func (s *storage) sync() error {
+func (s *Storage) Sync() error {
 	s.Lock()
 	defer s.Unlock()
 	tmpFilename := s.filename + ".tmp"
@@ -103,20 +96,20 @@ func (s *storage) sync() error {
 	return os.Rename(tmpFilename, s.filename)
 }
 
-func (s *storage) close() error {
+func (s *Storage) Close() error {
 	listOfStorages.Lock()
 	defer listOfStorages.Unlock()
-	if err := s.sync(); err != nil {
+	if err := s.Sync(); err != nil {
 		return err
 	}
 	s.usageCounter--
 	return nil
 }
 
-func (s *storage) loop() {
+func (s *Storage) loop() {
 	for {
 		time.Sleep(60 * time.Second)
-		if err := s.sync(); err != nil {
+		if err := s.Sync(); err != nil {
 			log.Printf("[ERROR] scheduler for storage [%p-%s], sync save: %s\n", s, s.filename, err.Error())
 		} else {
 			if s.usageCounter == 0 {
@@ -130,17 +123,17 @@ func (s *storage) loop() {
 	}
 }
 
-func (s *storage) keys() []string {
+func (s *Storage) Keys() ([]string, error) {
 	result := []string{}
 	s.Lock()
 	defer s.Unlock()
 	for k, _ := range s.Data {
 		result = append(result, k)
 	}
-	return result
+	return result, nil
 }
 
-func (s *storage) dump(L *lua.LState) (map[string]lua.LValue, error) {
+func (s *Storage) Dump(L *lua.LState) (map[string]lua.LValue, error) {
 	result := make(map[string]lua.LValue, 0)
 	s.Lock()
 	defer s.Unlock()
