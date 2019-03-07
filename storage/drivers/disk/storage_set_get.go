@@ -72,6 +72,7 @@ func (s *Storage) Set(key string, value lua.LValue, ttl int64) error {
 		return err
 	}
 	time.Sleep(10 * time.Millisecond)
+	return nil
 }
 
 func (s *Storage) Get(key string, L *lua.LState) (lua.LValue, bool, error) {
