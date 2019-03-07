@@ -39,7 +39,7 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 	opts := badger.DefaultOptions
 	opts.Dir = path
 	opts.ValueDir = path
-	opts.TableLoadingMode = badger_options.FileIO
+	opts.TableLoadingMode = badger_options.MemoryMap
 	opts.Truncate = true
 
 	badgerDB, err := badger.Open(opts)
