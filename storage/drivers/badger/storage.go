@@ -7,8 +7,8 @@ import (
 
 	interfaces "github.com/vadv/gopher-lua-libs/storage/drivers/interfaces"
 
-	badger "gopkg.in/dgraph-io/badger.v1"
-	badger_options "gopkg.in/dgraph-io/badger.v1/options"
+	badger "github.com/dgraph-io/badger"
+	badger_options "github.com/dgraph-io/badger/options"
 
 	lua "github.com/yuin/gopher-lua"
 )
