@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 
 	lua_json "github.com/vadv/gopher-lua-libs/json"
 
@@ -67,7 +68,10 @@ func (s *Storage) Set(key string, value lua.LValue, ttl int64) error {
 	if err := ioutil.WriteFile(filePath, data, 0640); err != nil {
 		return err
 	}
-	return header.write(filePath + headerExt)
+	if err := header.write(filePath + headerExt); err != nil {
+		return err
+	}
+	time.Sleep(10 * time.Millisecond)
 }
 
 func (s *Storage) Get(key string, L *lua.LState) (lua.LValue, bool, error) {
