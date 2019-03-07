@@ -26,10 +26,9 @@
   version = "v1.4"
 
 [[projects]]
-  digest = "1:521dbffa94d29f0d7870a44a8822272ded7abcfc6d29b047e37d7eb2cb728b26"
+  digest = "1:72ee9ee03c8fba70977bca0af281ca3983fcce3319b144f05702a33f0275d0c0"
   name = "github.com/dgraph-io/badger"
   packages = [
-    ".",
     "options",
     "protos",
     "skl",
@@ -166,6 +165,17 @@
   version = "v1.3.0"
 
 [[projects]]
+  digest = "1:4631c67fe2b5fb8847fef246b256399ba1bf0e8509ab95e09cfddcce814ee668"
+  name = "gopkg.in/dgraph-io/badger.v1"
+  packages = [
+    ".",
+    "options",
+  ]
+  pruneopts = "NUT"
+  revision = "99233d725dbdd26d156c61b2f42ae1671b794656"
+  version = "v1.5.4"
+
+[[projects]]
   branch = "v2"
   digest = "1:ebcfe9ac18161a5a837fe7227b3c168d815a2d4b09864a1638c7f1d4d718d406"
   name = "gopkg.in/xmlpath.v2"
@@ -187,8 +197,6 @@
   input-imports = [
     "github.com/cbroglie/mustache",
     "github.com/chzyer/readline",
-    "github.com/dgraph-io/badger",
-    "github.com/dgraph-io/badger/options",
     "github.com/dustin/go-humanize",
     "github.com/go-sql-driver/mysql",
     "github.com/lib/pq",
@@ -197,6 +205,8 @@
     "github.com/yuin/gluamapper",
     "github.com/yuin/gopher-lua",
     "github.com/yuin/gopher-lua/parse",
+    "gopkg.in/dgraph-io/badger.v1",
+    "gopkg.in/dgraph-io/badger.v1/options",
     "gopkg.in/xmlpath.v2",
     "gopkg.in/yaml.v2",
   ]

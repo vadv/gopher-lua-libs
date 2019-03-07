@@ -3,9 +3,10 @@ package storage
 import (
 	"time"
 
-	badger "github.com/dgraph-io/badger"
 	lua_json "github.com/vadv/gopher-lua-libs/json"
+
 	lua "github.com/yuin/gopher-lua"
+	badger "gopkg.in/dgraph-io/badger.v1"
 )
 
 func (s *Storage) Set(key string, value lua.LValue, ttl int64) error {
