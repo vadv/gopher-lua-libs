@@ -3,8 +3,13 @@ package storage
 import (
 	"os"
 	"strings"
+	"time"
 
 	godirwalk "github.com/karrick/godirwalk"
+)
+
+var (
+	countProcessed = 0
 )
 
 func (s *Storage) cleanRoutine() error {
@@ -16,6 +21,13 @@ func (s *Storage) cleanRoutine() error {
 }
 
 func cleanRoutine(osPathname string, de *godirwalk.Dirent) error {
+
+	// stoper
+	countProcessed++
+	if countProcessed%100 == 0 {
+		time.Sleep(10 * time.Millisecond)
+	}
+
 	if err := cleanEmptyDir(osPathname, de); err != nil {
 		return err
 	}
@@ -44,6 +56,7 @@ func cleanAddled(osPathname string, de *godirwalk.Dirent) error {
 		if !header.hasValidTTL() {
 			os.RemoveAll(osPathname)
 			os.RemoveAll(strings.TrimSuffix(osPathname, headerExt))
+			time.Sleep(100 * time.Millisecond)
 		}
 	}
 	return nil

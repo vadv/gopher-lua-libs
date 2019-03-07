@@ -71,7 +71,7 @@ func (s *Storage) Close() error {
 // cleaner and closer
 func (s *Storage) loop() {
 	for {
-		time.Sleep(time.Minute)
+		time.Sleep(5 * time.Minute)
 		s.cleanRoutine()
 	}
 }
