@@ -1,14 +1,14 @@
-// this storage for projects that store a lot of data and save memory
+// this storage based on github.com/dgraph-io/badger
 package storage
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 	"sync"
-	"time"
 
 	interfaces "github.com/vadv/gopher-lua-libs/storage/drivers/interfaces"
+
+	badger "github.com/dgraph-io/badger"
+	badger_options "github.com/dgraph-io/badger/options"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -21,7 +21,7 @@ type listStorages struct {
 }
 
 type Storage struct {
-	sync.Mutex
+	*badger.DB
 	path         string
 	usageCounter int
 }
@@ -36,24 +36,19 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 		return result, nil
 	}
 
-	// check
-	stat, err := os.Stat(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			os.MkdirAll(path, 0750)
-		} else {
-			return nil, err
-		}
-	} else {
-		if !stat.IsDir() {
-			return nil, fmt.Errorf("must be directory")
-		}
-	}
+	opts := badger.DefaultOptions
+	opts.Dir = path
+	opts.ValueDir = path
+	opts.TableLoadingMode = badger_options.FileIO
+	opts.Truncate = true
 
-	s := &Storage{path: path}
+	badgerDB, err := badger.Open(opts)
+	if err != nil {
+		return nil, err
+	}
+	s := &Storage{DB: badgerDB}
 	s.usageCounter++
 	listOfStorages.list[path] = s
-	go s.loop()
 	return s, nil
 }
 
@@ -65,35 +60,27 @@ func (s *Storage) Close() error {
 	listOfStorages.Lock()
 	defer listOfStorages.Unlock()
 	s.usageCounter--
+	if s.usageCounter == 0 {
+		return s.DB.Close()
+	}
 	return nil
 }
 
-// cleaner and closer
-func (s *Storage) loop() {
-	for {
-		time.Sleep(5 * time.Minute)
-		s.cleanRoutine()
-	}
-}
-
 func (s *Storage) Keys() ([]string, error) {
-	headerGlobPatern := filepath.Join(s.path,
-		fmt.Sprintf(filePath, "*", "*", "*")+headerExt)
-	files, err := filepath.Glob(headerGlobPatern)
-	if err != nil {
-		return nil, err
-	}
-	results := []string{}
-	for _, file := range files {
-		h, err := parseHeader(file)
-		if err != nil {
-			return nil, err
+	result := []string{}
+	err := s.DB.View(func(txn *badger.Txn) error {
+		opts := badger.DefaultIteratorOptions
+		opts.PrefetchValues = false
+		it := txn.NewIterator(opts)
+		defer it.Close()
+		for it.Rewind(); it.Valid(); it.Next() {
+			item := it.Item()
+			k := item.Key()
+			result = append(result, fmt.Sprintf("%s", k))
 		}
-		if h.hasValidTTL() {
-			results = append(results, h.key)
-		}
-	}
-	return results, nil
+		return nil
+	})
+	return result, err
 }
 
 func (s *Storage) Dump(L *lua.LState) (map[string]lua.LValue, error) {

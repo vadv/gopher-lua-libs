@@ -58,8 +58,9 @@ local dump, err = s:dump()
 if err then error(err) end
 if not(dump.key3 == 10.64) then error("dump: "..tostring(dump.key3)) end
 
--- test driver disk
-local s, err = storage.open("./test/db", "disk")
+-- test driver badger
+local s, err = storage.open("./test/db/badger", "badger")
+if err then error(err) end
 local err = s:set("key", {"one", "two", 1}, 1)
 if err then error(err) end
 

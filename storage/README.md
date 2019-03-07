@@ -33,7 +33,7 @@ local dump, err = s:dump()
 if err then error(err) end
 -- list == {"key" = "override"}
 
--- storage.disk
-local s, err = storage.open("./test/db", "disk") -- this storage type can be used for projects that store a lot of data and save memory
+-- storage.badger
+local s, err = storage.open("./test/db", "badger") -- this storage based on github.com/dgraph-io/badger
 ```
 

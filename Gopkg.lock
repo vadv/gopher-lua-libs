@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:386e5a632be2aa525a327e13694bd22bde42fe6fe925c3bfef89b59c6e10b08f"
+  name = "github.com/AndreasBriese/bbloom"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "e2d15f34fcf99d5dbb871c820ec73f710fca9815"
+
+[[projects]]
   digest = "1:a8e5037a4d69c6ad7f36cc3ef3202c04eaaba0ef0fab1d960affc6452a8edf25"
   name = "github.com/cbroglie/mustache"
   packages = ["."]
@@ -16,6 +24,29 @@
   pruneopts = "NUT"
   revision = "62c6fe6193755f722b8b8788aa7357be55a50ff1"
   version = "v1.4"
+
+[[projects]]
+  digest = "1:521dbffa94d29f0d7870a44a8822272ded7abcfc6d29b047e37d7eb2cb728b26"
+  name = "github.com/dgraph-io/badger"
+  packages = [
+    ".",
+    "options",
+    "protos",
+    "skl",
+    "table",
+    "y",
+  ]
+  pruneopts = "NUT"
+  revision = "99233d725dbdd26d156c61b2f42ae1671b794656"
+  version = "v1.5.4"
+
+[[projects]]
+  branch = "master"
+  digest = "1:732f1ecc44c3c405aabbca2a319763d77586f0fed9f9c6bca6c82d24c6ebf8d1"
+  name = "github.com/dgryski/go-farm"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "3adb47b1fb0f6d9efcc5051a6c62e2e413ac85a9"
 
 [[projects]]
   digest = "1:b7ffca49e9cfd3dfb04a8e0a59347708c6f78f68476a32c5e0a0edca5d1b258c"
@@ -34,12 +65,12 @@
   version = "v1.4.1"
 
 [[projects]]
-  digest = "1:db45f06f5bba3f6f7b29dea965ed6883cf4ae3edd191b01f6aa68e98fe1de54a"
-  name = "github.com/karrick/godirwalk"
-  packages = ["."]
+  digest = "1:318f1c959a8a740366fce4b1e1eb2fd914036b4af58fbd0a003349b305f118ad"
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
   pruneopts = "NUT"
-  revision = "6d1c7760ec857d2984abe0a23fa263877f50d3f0"
-  version = "v1.8.0"
+  revision = "c823c79ea1570fb5ff454033735a8e68575d1d0f"
+  version = "v1.3.0"
 
 [[projects]]
   digest = "1:4d5fa9f49e5bf3d55c16ff562af9e3231f9ac5ccf495927fd0555f4607c15475"
@@ -67,6 +98,14 @@
   pruneopts = "NUT"
   revision = "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
   version = "v1.1.2"
+
+[[projects]]
+  digest = "1:14715f705ff5dfe0ffd6571d7d201dd8e921030f8070321a79380d8ca4ec1a24"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
 
 [[projects]]
   digest = "1:c6d6892ef3af2632f7892ed12239190002925e009afca91b0336c2f372e64610"
@@ -99,14 +138,24 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1a1ecfa7b54ca3f7a0115ab5c578d7d6a5d8b605839c549e80260468c42f8be7"
+  digest = "1:db956872cc9671f5706d49a50b0a2baa7d5135849ab20543b18cb7b721a00029"
   name = "golang.org/x/net"
   packages = [
     "html",
     "html/atom",
+    "internal/timeseries",
+    "trace",
   ]
   pruneopts = "NUT"
   revision = "610586996380ceef02dd726cc09df7e00a3f8e56"
+
+[[projects]]
+  branch = "master"
+  digest = "1:e482ae9014dcf45ffb110e47d8da101c63a430e2ac6efa5133d4adebe4a459dd"
+  name = "golang.org/x/sys"
+  packages = ["unix"]
+  pruneopts = "NUT"
+  revision = "572b51eaf7221935bdec454796989ba8318fa6f3"
 
 [[projects]]
   digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
@@ -138,9 +187,10 @@
   input-imports = [
     "github.com/cbroglie/mustache",
     "github.com/chzyer/readline",
+    "github.com/dgraph-io/badger",
+    "github.com/dgraph-io/badger/options",
     "github.com/dustin/go-humanize",
     "github.com/go-sql-driver/mysql",
-    "github.com/karrick/godirwalk",
     "github.com/lib/pq",
     "github.com/mattn/go-sqlite3",
     "github.com/technoweenie/multipartstreamer",
