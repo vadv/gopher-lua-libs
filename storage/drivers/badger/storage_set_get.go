@@ -31,10 +31,11 @@ func (s *Storage) Get(key string, L *lua.LState) (lua.LValue, bool, error) {
 		if err != nil {
 			return err
 		}
-		data, err := item.Value()
-		if err != nil {
-			return err
-		}
+		var data []byte
+		item.Value(func(val []byte) error {
+			data = append([]byte{}, val...)
+			return nil
+		})
 		value, err := lua_json.ValueDecode(L, data)
 		if err != nil {
 			return err

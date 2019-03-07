@@ -3,6 +3,10 @@
   name = "github.com/yuin/gopher-lua"
 
 [[constraint]]
+  branch = "master"
+  name = "github.com/dgraph-io/badger"
+
+[[constraint]]
   name = "gopkg.in/yaml.v2"
   version = "2.2.2"
 

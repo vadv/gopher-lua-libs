@@ -26,19 +26,19 @@
   version = "v1.4"
 
 [[projects]]
-  digest = "1:521dbffa94d29f0d7870a44a8822272ded7abcfc6d29b047e37d7eb2cb728b26"
+  branch = "master"
+  digest = "1:41aae77f51ef36013f8ea9fa2a88f4da14250a1fcbe2d532b76b48429de1299e"
   name = "github.com/dgraph-io/badger"
   packages = [
     ".",
     "options",
-    "protos",
+    "pb",
     "skl",
     "table",
     "y",
   ]
   pruneopts = "NUT"
-  revision = "99233d725dbdd26d156c61b2f42ae1671b794656"
-  version = "v1.5.4"
+  revision = "6b97bacb380b3e66cd5791a7ef7c9d7df450847e"
 
 [[projects]]
   branch = "master"
