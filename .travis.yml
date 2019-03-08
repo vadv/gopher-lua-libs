@@ -3,13 +3,11 @@ language: go
 #services:
 #  - docker
 
-env:
-  - DOCKER_COMPOSE_VERSION=1.4.2
-
 go:
   - "1.9.x"
   - "1.10.x"
   - "1.11.x"
+  - "1.12.x"
 
 before_install:
 # install docker compose

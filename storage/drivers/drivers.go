@@ -12,7 +12,6 @@ var (
 
 func init() {
 	knownDrivers[`memory`] = &memory.Storage{}
-	knownDrivers[`badger`] = &badger.Storage{}
 }
 
 func Get(name string) (interfaces.Driver, bool) {
