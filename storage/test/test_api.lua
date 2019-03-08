@@ -59,7 +59,7 @@ if err then error(err) end
 if not(dump.key3 == 10.64) then error("dump: "..tostring(dump.key3)) end
 
 -- test driver badger
-local s, err = storage.open("./test/db/badger", "badger")
+local s, err = storage.open("./test/db/badger2", "badger")
 if err then error(err) end
 
 local keys = s:keys()
