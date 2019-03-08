@@ -13,6 +13,9 @@ func (s *Storage) Set(key string, value lua.LValue, ttl int64) error {
 	if err != nil {
 		return err
 	}
+	if !(ttl > 0) {
+		ttl = 10000000000000 // max ttl
+	}
 	sValue := &storageValue{Value: data, MaxValidAt: time.Now().UnixNano() + (ttl * 1000000000)}
 	s.Lock()
 	s.Data[key] = sValue

@@ -44,6 +44,8 @@ func (st *Storage) New(filename string) (interfaces.Driver, error) {
 	defer listOfStorages.Unlock()
 
 	if result, ok := listOfStorages.list[filename]; ok {
+		result.Lock()
+		defer result.Unlock()
 		result.usageCounter++
 		return result, nil
 	}
@@ -102,19 +104,21 @@ func (s *Storage) Close() error {
 	if err := s.Sync(); err != nil {
 		return err
 	}
+	s.Lock()
+	defer s.Unlock()
 	s.usageCounter--
 	return nil
 }
 
 func (s *Storage) loop() {
 	for {
-		time.Sleep(60 * time.Second)
+		time.Sleep(time.Minute)
 		if err := s.Sync(); err != nil {
-			log.Printf("[ERROR] scheduler for storage [%p-%s], sync save: %s\n", s, s.filename, err.Error())
+			log.Printf("[ERROR] scheduler for memory storage [%p-%s], sync save: %s\n", s, s.filename, err.Error())
 		} else {
 			if s.usageCounter == 0 {
 				listOfStorages.Lock()
-				log.Printf("[INFO] close unused storage [%p-%s]\n", s, s.filename)
+				log.Printf("[INFO] close unused memory storage [%p-%s]\n", s, s.filename)
 				delete(listOfStorages.list, s.filename)
 				listOfStorages.Unlock()
 				return

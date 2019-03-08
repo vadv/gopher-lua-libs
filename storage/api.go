@@ -52,12 +52,12 @@ func Set(L *lua.LState) int {
 	s := checkStorage(L, 1)
 	key := L.CheckString(2)
 	value := L.CheckAny(3)
-	ttl := int64(60)
+	ttl := int64(0)
 	if L.GetTop() > 3 {
 		luaTTL := L.CheckAny(4)
 		switch luaTTL.(type) {
 		case *lua.LNilType:
-			ttl = 1000000000000 // max tll in second :)
+			ttl = 0
 		case lua.LNumber:
 			ttl = L.CheckInt64(4)
 		default:

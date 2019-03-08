@@ -61,6 +61,10 @@ if not(dump.key3 == 10.64) then error("dump: "..tostring(dump.key3)) end
 -- test driver badger
 local s, err = storage.open("./test/db/badger", "badger")
 if err then error(err) end
+
+local keys = s:keys()
+print(inspect(keys))
+
 local err = s:set("key", {"one", "two", 1}, 1)
 if err then error(err) end
 
@@ -94,3 +98,6 @@ if found then error("must be not found") end
 
 local keys = s:keys()
 if not(#keys == 2) then error("keys") end
+
+local err = s:close()
+if err then error(err) end

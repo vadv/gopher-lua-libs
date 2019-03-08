@@ -3,6 +3,7 @@ package storage
 
 import (
 	"fmt"
+	"log"
 	"sync"
 
 	interfaces "github.com/vadv/gopher-lua-libs/storage/drivers/interfaces"
@@ -32,6 +33,8 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 	defer listOfStorages.Unlock()
 
 	if result, ok := listOfStorages.list[path]; ok {
+		result.Lock()
+		defer result.Unlock()
 		result.usageCounter++
 		return result, nil
 	}
@@ -46,7 +49,8 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 	if err != nil {
 		return nil, err
 	}
-	s := &Storage{DB: badgerDB}
+	s := &Storage{DB: badgerDB, path: path}
+	log.Printf("[INFO] new badger storage [%p-%s]\n", s, s.path)
 	s.usageCounter++
 	listOfStorages.list[path] = s
 	return s, nil
@@ -59,8 +63,11 @@ func (s *Storage) Sync() error {
 func (s *Storage) Close() error {
 	listOfStorages.Lock()
 	defer listOfStorages.Unlock()
+	s.Lock()
+	defer s.Unlock()
 	s.usageCounter--
 	if s.usageCounter == 0 {
+		log.Printf("[INFO] close unused badger storage [%p-%s]\n", s, s.path)
 		return s.DB.Close()
 	}
 	return nil
@@ -76,7 +83,7 @@ func (s *Storage) Keys() ([]string, error) {
 		for it.Rewind(); it.Valid(); it.Next() {
 			item := it.Item()
 			k := item.Key()
-			result = append(result, fmt.Sprintf("%s", k))
+			result = append(result, string(k))
 		}
 		return nil
 	})

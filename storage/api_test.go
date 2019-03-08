@@ -16,6 +16,7 @@ func TestApi(t *testing.T) {
 	time.Preload(state)
 	os.RemoveAll("./test/db/badger/LOCK")
 	os.RemoveAll("./test/db/badger/MANIFEST")
+	os.MkdirAll("./test/db/badger", 0755)
 	if err := state.DoFile("./test/test_api.lua"); err != nil {
 		t.Fatalf("execute test: %s\n", err.Error())
 	}
