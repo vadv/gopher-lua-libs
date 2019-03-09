@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"os"
 	"testing"
 
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
@@ -14,9 +13,6 @@ func TestApi(t *testing.T) {
 	Preload(state)
 	inspect.Preload(state)
 	time.Preload(state)
-	os.RemoveAll("./test/db/badger2/LOCK")
-	os.RemoveAll("./test/db/badger2/MANIFEST")
-	os.MkdirAll("./test/db/badger2", 0755)
 	if err := state.DoFile("./test/test_api.lua"); err != nil {
 		t.Fatalf("execute test: %s\n", err.Error())
 	}

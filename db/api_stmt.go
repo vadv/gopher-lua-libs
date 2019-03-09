@@ -43,7 +43,7 @@ func getSTMTArgs(L *lua.LState) []interface{} {
 	return args
 }
 
-// StmtQuery(): lua stmt_ud:query(query) returns ({rows = {}, columns = {}}, err)
+// StmtQuery(): lua stmt_ud:query(args) returns ({rows = {}, columns = {}}, err)
 func StmtQuery(L *lua.LState) int {
 	ud := L.CheckUserData(1)
 	s, ok := ud.Value.(*luaStmt)
@@ -71,7 +71,7 @@ func StmtQuery(L *lua.LState) int {
 	return 1
 }
 
-// StmtExec(): lua stmt_ud:exec(query) returns ({rows_affected=number, last_insert_id=number}, err)
+// StmtExec(): lua stmt_ud:exec(args) returns ({rows_affected=number, last_insert_id=number}, err)
 func StmtExec(L *lua.LState) int {
 	ud := L.CheckUserData(1)
 	s, ok := ud.Value.(*luaStmt)
@@ -94,4 +94,18 @@ func StmtExec(L *lua.LState) int {
 	}
 	L.Push(result)
 	return 1
+}
+
+// StmtClose(): lua stmt_ud:close() returns err
+func StmtClose(L *lua.LState) int {
+	ud := L.CheckUserData(1)
+	s, ok := ud.Value.(*luaStmt)
+	if !ok {
+		L.ArgError(1, "must be stmt_ud")
+	}
+	if err := s.Close(); err != nil {
+		L.Push(lua.LString(err.Error()))
+		return 1
+	}
+	return 0
 }

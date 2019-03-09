@@ -29,8 +29,8 @@ func Loader(L *lua.LState) int {
 	L.SetField(stmt_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
 		"query": StmtQuery,
 		"exec":  StmtExec,
+		"close": StmtClose,
 	}))
-
 
 	t := L.NewTable()
 	L.SetFuncs(t, api)

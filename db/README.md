@@ -50,6 +50,8 @@ if err then error(err) end
 local result, err = stmt:exec(1, 'name-1')
 if err then error(err) end
 if not(result.rows_affected == 1) then error("affted: "..tostring(result.rows_affected)) end
+local err = stmt:close()
+if err then error(err) end
 
 -- stmt query
 local stmt, err = sqlite:stmt("select name from t_stmt where id = ?")
@@ -57,6 +59,8 @@ if err then error(err) end
 local result, err = stmt:query(1)
 if err then error(err) end
 if not(result.rows[1][1] == 'name-1') then error("must be 'name-1': "..tostring(result.rows[1][1])) end
+local err = stmt:close()
+if err then error(err) end
 
 local err = sqlite:close()
 if err then error(err) end
