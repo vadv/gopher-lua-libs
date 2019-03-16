@@ -56,6 +56,10 @@ func (mysql *luaMySQL) getDB() *sql.DB {
 	return mysql.db
 }
 
+func (mysql *luaMySQL) getTXOptions() *sql.TxOptions {
+	return &sql.TxOptions{ReadOnly: mysql.config.readOnly}
+}
+
 func (mysql *luaMySQL) closeDB() error {
 	mysql.Lock()
 	defer mysql.Unlock()

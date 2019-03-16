@@ -8,6 +8,7 @@ local db = require("db")
 local config = {
   shared = true, -- share connections between lua states
   max_connections = 1, -- max connection (if you open shared connection with different max_connections - first win)
+  read_only = false,   -- must execute read-write query
 }
 
 local sqlite, err = db.open("sqlite3", "file:test.db?cache=shared&mode=memory", config)

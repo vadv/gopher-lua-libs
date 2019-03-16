@@ -2,6 +2,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"sync"
@@ -18,12 +19,14 @@ type luaDB interface {
 	constructor(*dbConfig) (luaDB, error)
 	getDB() *sql.DB
 	closeDB() error
+	getTXOptions() *sql.TxOptions
 }
 
 type dbConfig struct {
 	connString   string
 	sharedMode   bool
 	maxOpenConns int
+	readOnly     bool
 }
 
 var (
@@ -53,8 +56,9 @@ func checkDB(L *lua.LState, n int) luaDB {
 // Open(): lua db.open(driver, connection_string, config) returns (db_ud, err)
 // config table:
 //   {
-//     shared=bool,
+//     shared=false,
 //     max_connections=X,
+//     read_only=false
 //   }
 func Open(L *lua.LState) int {
 	knownDriversLock.Lock()
@@ -88,6 +92,13 @@ func Open(L *lua.LState) int {
 					L.ArgError(3, "max_connections must be number")
 				}
 			}
+			if k.String() == `read_only` {
+				if val, ok := v.(lua.LBool); ok {
+					config.readOnly = bool(val)
+				} else {
+					L.ArgError(3, "read_only must be bool")
+				}
+			}
 		})
 	}
 
@@ -110,7 +121,8 @@ func Query(L *lua.LState) int {
 	dbInterface := checkDB(L, 1)
 	query := L.CheckString(2)
 	sqlDB := dbInterface.getDB()
-	tx, err := sqlDB.Begin()
+	opts := dbInterface.getTXOptions()
+	tx, err := sqlDB.BeginTx(context.Background(), opts)
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))
@@ -142,7 +154,8 @@ func Exec(L *lua.LState) int {
 	dbInterface := checkDB(L, 1)
 	query := L.CheckString(2)
 	sqlDB := dbInterface.getDB()
-	tx, err := sqlDB.Begin()
+	opts := dbInterface.getTXOptions()
+	tx, err := sqlDB.BeginTx(context.Background(), opts)
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))

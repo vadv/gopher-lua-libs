@@ -59,6 +59,10 @@ func (sqlite *luaSQLite) getDB() *sql.DB {
 	return sqlite.db
 }
 
+func (sqlite *luaSQLite) getTXOptions() *sql.TxOptions {
+	return &sql.TxOptions{ReadOnly: sqlite.config.readOnly}
+}
+
 func (sqlite *luaSQLite) closeDB() error {
 	sqlite.Lock()
 	defer sqlite.Unlock()

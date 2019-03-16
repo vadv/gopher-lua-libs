@@ -50,6 +50,10 @@ func (pg *luaPG) constructor(config *dbConfig) (luaDB, error) {
 	return result, nil
 }
 
+func (pg *luaPG) getTXOptions() *sql.TxOptions {
+	return &sql.TxOptions{ReadOnly: pg.config.readOnly}
+}
+
 func (pg *luaPG) getDB() *sql.DB {
 	pg.Lock()
 	defer pg.Unlock()
