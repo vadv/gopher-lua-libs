@@ -29,6 +29,7 @@ go get github.com/vadv/gopher-lua-libs
 * [ioutil](/ioutil) io/ioutil port
 * [json](/json) json implementation
 * [plugin](/plugin) run lua code in lua code
+* [pprof](/pprof) pprof http-server for golang from lua
 * [regexp](/regexp) regexp port
 * [runtime](/runtime) runtime port
 * [storage](/storage) package for store persist data and share values between lua states
@@ -41,7 +42,6 @@ go get github.com/vadv/gopher-lua-libs
 * [xmlpath](/xmlpath) [gopkg.in/xmlpath.v2](https://gopkg.in/xmlpath.v2) port
 * [yaml](/yaml) [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2) port
 * [zabbix](/zabbix) zabbix bot
-* [pprof](/pprof) pprof http-server for golang from lua
 
 
 ## Usage
