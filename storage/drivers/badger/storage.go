@@ -4,6 +4,8 @@ package storage
 import (
 	"fmt"
 	"log"
+	"os"
+	"strconv"
 	"sync"
 
 	interfaces "github.com/vadv/gopher-lua-libs/storage/drivers/interfaces"
@@ -47,6 +49,13 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 	opts.SyncWrites = false
 	opts.NumCompactors = 1
 	opts.MaxTableSize = 1024 * 1024
+	if sizeStr := os.Getenv(`BADGER_MAX_TABLE_SIZE_MB`); sizeStr != `` {
+		size, err := strconv.ParseInt(sizeStr, 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("bad BADGER_MAX_TABLE_SIZE_MB: %s", err.Error())
+		}
+		opts.MaxTableSize = size * 1024 * 1024
+	}
 	opts.Truncate = true
 
 	badgerDB, err := badger.Open(opts)
