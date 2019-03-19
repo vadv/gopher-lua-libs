@@ -6,6 +6,7 @@ local client = http.client()
 local pp = pprof.create(":1234")
 
 pp:start()
+time.sleep(1)
 
 local req, err = http.request("GET", "http://127.0.0.1:1234/debug/pprof/goroutine")
 if err then error(err) end
