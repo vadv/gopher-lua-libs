@@ -45,7 +45,7 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 	opts.TableLoadingMode = badger_options.FileIO
 	opts.SyncWrites = false
 	opts.NumCompactors = 1
-	opts.MaxTableSize = 128 * 1024
+	opts.MaxTableSize = 256 * 1024 * 1024
 	opts.Truncate = true
 
 	badgerDB, err := badger.Open(opts)
