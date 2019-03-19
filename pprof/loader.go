@@ -1,0 +1,33 @@
+package pprof
+
+import (
+	lua "github.com/yuin/gopher-lua"
+)
+
+// Preload adds pprof to the given Lua state's package.preload table. After it
+// has been preloaded, it can be loaded using require:
+//
+//  local pprof = require("pprof")
+func Preload(L *lua.LState) {
+	L.PreloadModule("pprof", Loader)
+}
+
+// Loader is the module loader function.
+func Loader(L *lua.LState) int {
+
+	pprof_ud := L.NewTypeMetatable(`pprof_ud`)
+	L.SetGlobal(`pprof_ud`, pprof_ud)
+	L.SetField(pprof_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
+		"stop":  Stop,
+		"start": Start,
+	}))
+
+	t := L.NewTable()
+	L.SetFuncs(t, api)
+	L.Push(t)
+	return 1
+}
+
+var api = map[string]lua.LGFunction{
+	"create": Create,
+}
