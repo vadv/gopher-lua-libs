@@ -43,6 +43,7 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 	opts.Dir = path
 	opts.ValueDir = path
 	opts.TableLoadingMode = badger_options.FileIO
+	opts.ValueLogLoadingMode = badger_options.FileIO
 	opts.SyncWrites = false
 	opts.NumCompactors = 1
 	opts.MaxTableSize = 256 * 1024 * 1024
