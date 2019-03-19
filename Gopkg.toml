@@ -2,6 +2,10 @@
   branch = "master"
   name = "github.com/yuin/gopher-lua"
 
+[[constraint]]
+  branch = "master"
+  name = "github.com/dgraph-io/badger"
+
 [prune]
   non-go = true
   go-tests = true

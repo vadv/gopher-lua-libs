@@ -2,6 +2,7 @@
 package drivers
 
 import (
+	badger "github.com/vadv/gopher-lua-libs/storage/drivers/badger"
 	interfaces "github.com/vadv/gopher-lua-libs/storage/drivers/interfaces"
 	memory "github.com/vadv/gopher-lua-libs/storage/drivers/memory"
 )
@@ -12,6 +13,7 @@ var (
 
 func init() {
 	knownDrivers[`memory`] = &memory.Storage{}
+	knownDrivers[`badger`] = &badger.Storage{}
 }
 
 func Get(name string) (interfaces.Driver, bool) {
