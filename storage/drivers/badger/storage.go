@@ -52,7 +52,7 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 	if sizeStr := os.Getenv(`BADGER_MAX_TABLE_SIZE_MB`); sizeStr != `` {
 		size, err := strconv.ParseInt(sizeStr, 10, 64)
 		if err != nil {
-			return nil, fmt.Errorf("bad BADGER_MAX_TABLE_SIZE_MB: %s", err.Error())
+			return nil, fmt.Errorf("bad value for BADGER_MAX_TABLE_SIZE_MB: %s", err.Error())
 		}
 		opts.MaxTableSize = size * 1024 * 1024
 	}

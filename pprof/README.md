@@ -8,9 +8,10 @@ local http = require("http")
 local time = require("time")
 
 local client = http.client()
-local pp = pprof.create(":1234")
+local pp = pprof.register(":1234")
 
-pp:start()
+pp:enable()
+time.sleep(1)
 
 local req, err = http.request("GET", "http://127.0.0.1:1234/debug/pprof/goroutine")
 if err then error(err) end
@@ -18,7 +19,7 @@ local resp, err = client:do_request(req)
 if err then error(err) end
 if not(resp.code == 200) then error("resp code") end
 
-pp:stop()
+pp:disable()
 time.sleep(5)
 
 local resp, err = client:do_request(req)

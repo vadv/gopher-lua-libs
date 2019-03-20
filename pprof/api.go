@@ -3,7 +3,6 @@ package pprof
 
 import (
 	"context"
-	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"time"
@@ -25,8 +24,8 @@ func checkPprof(L *lua.LState, n int) *luaPprof {
 	return nil
 }
 
-// Create(string): return (pprof_ud, err)
-func Create(L *lua.LState) int {
+// Register(string): return (pprof_ud, err)
+func Register(L *lua.LState) int {
 	addr := L.CheckString(1)
 	ud := L.NewUserData()
 	ud.Value = &luaPprof{addr: addr, stop: make(chan bool, 1)}
@@ -35,30 +34,26 @@ func Create(L *lua.LState) int {
 	return 1
 }
 
-// Start(): start pprof
-func Start(L *lua.LState) int {
+// Enable(): start pprof
+func Enable(L *lua.LState) int {
 	pp := checkPprof(L, 1)
 	go func() {
 		h := &http.Server{Addr: pp.addr}
-		log.Printf("[INFO] start pprof server at: %s\n", pp.addr)
 		go func() {
 			if err := h.ListenAndServe(); err != nil {
-				log.Printf("[ERROR] pprof at %s: %s\n", pp.addr, err.Error())
 				return
 			}
 		}()
 		<-pp.stop
-		log.Printf("[INFO] stop pprof: %s\n", pp.addr)
 		ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 		h.Shutdown(ctx)
 	}()
 	return 0
 }
 
-// Stop(): pprof stop
-func Stop(L *lua.LState) int {
+// Disable(): pprof stop
+func Disable(L *lua.LState) int {
 	pp := checkPprof(L, 1)
 	pp.stop <- true
-	log.Printf("[INFO] send stop to pprof server at: %s\n", pp.addr)
 	return 0
 }

@@ -18,8 +18,8 @@ func Loader(L *lua.LState) int {
 	pprof_ud := L.NewTypeMetatable(`pprof_ud`)
 	L.SetGlobal(`pprof_ud`, pprof_ud)
 	L.SetField(pprof_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"stop":  Stop,
-		"start": Start,
+		"enable":  Enable,
+		"disable": Disable,
 	}))
 
 	t := L.NewTable()
@@ -29,5 +29,5 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"create": Create,
+	"register": Register,
 }
