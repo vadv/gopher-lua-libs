@@ -58,6 +58,32 @@ local test_escape = "%3C%3E+dasdsadas"
 if not (http_util.query_escape(test_unescape) == test_escape) then error("escape error") end
 print("done: http.escape")
 
+local url, err = http_util.parse_url("http://user1:password11@127.0.0.1:1111/getBasicAuth?k1=v1&k2=x&k1=v2")
+if err then error(err) end
+if not(url.scheme == "http") then
+  error("must be scheme http")
+end
+if not(url.host == "127.0.0.1:1111") then
+  error("must be host 127.0.0.1:1111")
+end
+if not(url.user.username == "user1") then
+  error("must be user1")
+end
+if not(url.user.password == "password11") then
+  error("must be password11")
+end
+if not(url.query.k1[2] == "v2") then
+  error("must be v2")
+end
+if not(url.path == "/getBasicAuth") then
+  error("must be /getBasicAuth")
+end
+
+url.path = "/test"
+if not(http_util.build_url(url) == "http://user1:password11@127.0.0.1:1111/test?k1=v1&k1=v2&k2=x") then
+  error("get: "..http_util.build_url(url))
+end
+
 local req, err = http.request("GET", "http://127.0.0.1:1111/getBasicAuth")
 if err then error(err) end
 local resp, err = client_5:do_request(req)

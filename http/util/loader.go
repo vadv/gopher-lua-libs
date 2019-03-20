@@ -25,4 +25,6 @@ func Loader(L *lua.LState) int {
 var api = map[string]lua.LGFunction{
 	"query_escape":   QueryEscape,
 	"query_unescape": QueryUnescape,
+	"parse_url":      ParseURL,
+	"build_url":      BuildURL,
 }

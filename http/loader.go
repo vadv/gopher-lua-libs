@@ -66,4 +66,6 @@ var api = map[string]lua.LGFunction{
 	"request":        client.NewRequest,
 	"query_escape":   util.QueryEscape,
 	"query_unescape": util.QueryUnescape,
+	"parse_url":      util.ParseURL,
+	"build_url":      util.BuildURL,
 }
