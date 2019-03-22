@@ -26,6 +26,7 @@ type listStorages struct {
 
 type Storage struct {
 	*badger.DB
+	gcLock       sync.Mutex
 	path         string
 	usageCounter int
 }
@@ -48,7 +49,7 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 	opts.TableLoadingMode = badger_options.FileIO
 	opts.ValueLogLoadingMode = badger_options.FileIO
 	opts.SyncWrites = false
-	opts.NumCompactors = 1
+	opts.NumCompactors = 2
 	opts.MaxTableSize = 1024 * 1024
 	if sizeStr := os.Getenv(`BADGER_MAX_TABLE_SIZE_MB`); sizeStr != `` {
 		size, err := strconv.ParseInt(sizeStr, 10, 64)
@@ -64,9 +65,11 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 		return nil, err
 	}
 	s := &Storage{DB: badgerDB, path: path}
+	s.gcLock.Lock()
+	s.usageCounter++
+	s.gcLock.Unlock()
 	go s.gc()
 	log.Printf("[INFO] new badger storage [%p-%s]\n", s, s.path)
-	s.usageCounter++
 	listOfStorages.list[path] = s
 	return s, nil
 }
@@ -75,13 +78,13 @@ func (s *Storage) gc() {
 	time.Sleep(time.Second)
 	for {
 		now := time.Now()
-		s.Lock()
+		s.gcLock.Lock()
 		if s.usageCounter == 0 {
 			return
 		}
 		log.Printf("[INFO] starting gc for [%p-%s]\n", s, s.path)
 		err := s.DB.RunValueLogGC(0.7)
-		s.Unlock()
+		s.gcLock.Unlock()
 		if err != nil && err != badger.ErrNoRewrite {
 			log.Printf("[ERROR] [%p-%s] while running gc: %v\n", s, s.path, err.Error())
 		} else {
@@ -100,6 +103,8 @@ func (s *Storage) Close() error {
 	defer listOfStorages.Unlock()
 	s.Lock()
 	defer s.Unlock()
+	s.gcLock.Lock()
+	defer s.gcLock.Unlock()
 	s.usageCounter--
 	if s.usageCounter == 0 {
 		log.Printf("[INFO] close unused badger storage [%p-%s]\n", s, s.path)
