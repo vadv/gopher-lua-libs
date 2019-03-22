@@ -79,12 +79,13 @@ func (s *Storage) gc() {
 		if s.usageCounter == 0 {
 			return
 		}
+		log.Printf("[INFO] starting gc for [%p-%s]\n", s, s.path)
 		err := s.DB.RunValueLogGC(0.7)
 		s.Unlock()
 		if err != nil && err != badger.ErrNoRewrite {
 			log.Printf("[ERROR] [%p-%s] while running gc: %v\n", s, s.path, err.Error())
 		} else {
-			log.Printf("[INFO] [%p-%s] gc completed, execution time: %v\n", s, s.path, time.Now().Sub(now).Seconds())
+			log.Printf("[INFO] [%p-%s] gc completed, execution time: %vs\n", s, s.path, time.Now().Sub(now).Seconds())
 		}
 		time.Sleep(5 * time.Minute)
 	}
