@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"sync"
+	"time"
 
 	interfaces "github.com/vadv/gopher-lua-libs/storage/drivers/interfaces"
 
@@ -63,10 +64,22 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 		return nil, err
 	}
 	s := &Storage{DB: badgerDB, path: path}
+	go s.gc()
 	log.Printf("[INFO] new badger storage [%p-%s]\n", s, s.path)
 	s.usageCounter++
 	listOfStorages.list[path] = s
 	return s, nil
+}
+
+func (s *Storage) gc() {
+	for s.usageCounter > 0 {
+		for {
+			time.Sleep(5 * time.Minute)
+			if err := s.DB.RunValueLogGC(0.7); err != nil {
+				log.Printf("[ERROR] [%p-%s] while running gc: %v\n", s, s.path, err.Error())
+			}
+		}
+	}
 }
 
 func (s *Storage) Sync() error {
