@@ -72,8 +72,8 @@ func (st *Storage) New(path string) (interfaces.Driver, error) {
 }
 
 func (s *Storage) gc() {
+	time.Sleep(time.Second)
 	for {
-		time.Sleep(5 * time.Minute)
 		now := time.Now()
 		s.Lock()
 		if s.usageCounter == 0 {
@@ -81,11 +81,12 @@ func (s *Storage) gc() {
 		}
 		err := s.DB.RunValueLogGC(0.7)
 		s.Unlock()
-		if err != nil {
+		if err != nil && err != badger.ErrNoRewrite {
 			log.Printf("[ERROR] [%p-%s] while running gc: %v\n", s, s.path, err.Error())
 		} else {
 			log.Printf("[INFO] [%p-%s] gc completed, execution time: %v\n", s, s.path, time.Now().Sub(now).Seconds())
 		}
+		time.Sleep(5 * time.Minute)
 	}
 }
 
