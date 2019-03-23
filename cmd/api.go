@@ -65,8 +65,9 @@ func Exec(L *lua.LState) int {
 					L.SetField(result, "status", lua.LNumber(int64(status.ExitStatus())))
 				}
 			}
+		} else {
+			L.SetField(result, "status", lua.LNumber(0))
 		}
-		L.SetField(result, "status", lua.LNumber(0))
 		L.Push(result)
 		return 1
 	}
