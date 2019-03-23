@@ -179,6 +179,31 @@ func Exec(L *lua.LState) int {
 	return 1
 }
 
+// Command(): lua db_ud:command(query) returns ({rows = {}, columns = {}}, err)
+func Command(L *lua.LState) int {
+	dbInterface := checkDB(L, 1)
+	query := L.CheckString(2)
+	sqlDB := dbInterface.getDB()
+	sqlRows, err := sqlDB.Query(query)
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
+	}
+	defer sqlRows.Close()
+	rows, columns, err := parseRows(sqlRows, L)
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
+	}
+	result := L.NewTable()
+	result.RawSetString(`rows`, rows)
+	result.RawSetString(`columns`, columns)
+	L.Push(result)
+	return 1
+}
+
 // Close(): lua db_ud:close() returns err
 func Close(L *lua.LState) int {
 	dbIface := checkDB(L, 1)

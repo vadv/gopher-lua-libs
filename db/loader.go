@@ -18,10 +18,11 @@ func Loader(L *lua.LState) int {
 	db_ud := L.NewTypeMetatable(`db_ud`)
 	L.SetGlobal(`db_ud`, db_ud)
 	L.SetField(db_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"query": Query,
-		"exec":  Exec,
-		"stmt":  Stmt,
-		"close": Close,
+		"query":   Query,
+		"exec":    Exec,
+		"stmt":    Stmt,
+		"command": Command,
+		"close":   Close,
 	}))
 
 	stmt_ud := L.NewTypeMetatable(`stmt_ud`)

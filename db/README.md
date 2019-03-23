@@ -63,6 +63,10 @@ if not(result.rows[1][1] == 'name-1') then error("must be 'name-1': "..tostring(
 local err = stmt:close()
 if err then error(err) end
 
+-- command (outside transaction)
+local _, err = sqlite:command("PRAGMA journal_mode = OFF;")
+if err then error(err) end
+
 local err = sqlite:close()
 if err then error(err) end
 ```

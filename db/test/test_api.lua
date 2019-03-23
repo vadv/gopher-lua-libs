@@ -90,6 +90,10 @@ if err then error(err) end
 local result, err = sqliteShared2:query("select name from t_stmt where id = 1")
 if not err then error("must be unknown table") end
 
+-- command (outside transaction)
+local _, err = sqlite:command("PRAGMA journal_mode = OFF;")
+if err then error(err) end
+
 local err = sqlite:close()
 if err then error(err) end
 local result, err = sqliteShared:query("select name from t_stmt where id = 1")
