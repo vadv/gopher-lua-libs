@@ -33,7 +33,5 @@ local dump, err = s:dump()
 if err then error(err) end
 -- list == {"key" = "override"}
 
--- storage.badger
-local s, err = storage.open("./test/db", "badger") -- this storage based on github.com/dgraph-io/badger
 ```
 
