@@ -43,9 +43,9 @@ func parseRows(sqlRows *sql.Rows, L *lua.LState) (*lua.LTable, *lua.LTable, erro
 				luaRow.RawSetInt(i+1, lua.LNumber(converted))
 			case int64:
 				luaRow.RawSetInt(i+1, lua.LNumber(converted))
-			case pq.StringArray:
+			case *pq.StringArray:
 				tbl := L.NewTable()
-				for _, v := range converted {
+				for _, v := range *converted {
 					tbl.Append(lua.LString(v))
 				}
 				luaRow.RawSetInt(i+1, tbl)
