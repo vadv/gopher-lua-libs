@@ -43,19 +43,24 @@ func parseRows(sqlRows *sql.Rows, L *lua.LState) (*lua.LTable, *lua.LTable, erro
 				luaRow.RawSetInt(i+1, lua.LNumber(converted))
 			case int64:
 				luaRow.RawSetInt(i+1, lua.LNumber(converted))
-			case *pq.StringArray:
-				tbl := L.NewTable()
-				for _, v := range *converted {
-					tbl.Append(lua.LString(v))
+			case []uint8:
+				strArr := make([]string, 0)
+				pqArr := pq.Array(&strArr)
+				if err := pqArr.Scan(converted); err != nil {
+					// todo: new type of array
+					luaRow.RawSetInt(i+1, lua.LString(converted))
+				} else {
+					tbl := L.NewTable()
+					for _, v := range strArr {
+						tbl.Append(lua.LString(v))
+					}
+					luaRow.RawSetInt(i+1, tbl)
 				}
-				luaRow.RawSetInt(i+1, tbl)
 			case string:
 				luaRow.RawSetInt(i+1, lua.LString(converted))
 			case time.Time:
 				tt := float64(converted.UTC().UnixNano()) / float64(time.Second)
 				luaRow.RawSetInt(i+1, lua.LNumber(tt))
-			case []byte:
-				luaRow.RawSetInt(i+1, lua.LString(string(converted)))
 			case nil:
 				luaRow.RawSetInt(i+1, lua.LNil)
 			default:
