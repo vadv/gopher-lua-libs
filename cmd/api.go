@@ -12,13 +12,14 @@ import (
 )
 
 const (
-	// default execution timeout
-	Timeout = 10 * time.Second
+	// default execution timeout in seconds
+	Timeout = 10
 )
 
 // Exec(): lua cmd.exec(command) return ({status=0, stdout="", stderr=""}, err)
 func Exec(L *lua.LState) int {
 	command := L.CheckString(1)
+	timeout := time.Duration(L.OptInt64(2, Timeout)) * time.Second
 	var cmd *exec.Cmd
 
 	switch runtime.GOOS {
@@ -48,7 +49,7 @@ func Exec(L *lua.LState) int {
 	}()
 
 	select {
-	case <-time.After(Timeout):
+	case <-time.After(timeout):
 		go cmd.Process.Kill()
 		L.Push(lua.LNil)
 		L.Push(lua.LString(`execute timeout`))
