@@ -1,4 +1,4 @@
-# chef [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs/aws/cloudwatch?status.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs/aws/cloudwatch)
+# cloudwatch [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs/aws/cloudwatch?status.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs/aws/cloudwatch)
 
 ## Usage
 

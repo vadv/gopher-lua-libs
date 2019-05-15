@@ -37,6 +37,7 @@ func New(L *lua.LState) int {
 // filter table:
 //   {
 //     log_group_name="/aws/rds/instance/name/rds",
+//     filter_patern="",
 //     start_time=timestamp,
 //     end_time=timestamp,
 //   }
@@ -51,6 +52,9 @@ func Download(L *lua.LState) int {
 	filterLua.ForEach(func(k lua.LValue, v lua.LValue) {
 		if k.String() == `log_group_name` {
 			filter.SetLogGroupName(v.String())
+		}
+		if k.String() == `filter_patern` {
+			filter.SetFilterPattern((v.String())
 		}
 		if k.String() == `start_time` {
 			if value, ok := v.(lua.LNumber); ok {
