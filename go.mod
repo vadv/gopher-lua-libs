@@ -3,6 +3,7 @@ module github.com/vadv/gopher-lua-libs
 go 1.12
 
 require (
+	github.com/aws/aws-sdk-go v1.19.30
 	github.com/cbroglie/mustache v1.0.1
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/dustin/go-humanize v1.0.0

@@ -1,6 +1,7 @@
 package libs
 
 import (
+	cloudwatch "github.com/vadv/gopher-lua-libs/aws/cloudwatch"
 	cert_util "github.com/vadv/gopher-lua-libs/cert_util"
 	chef "github.com/vadv/gopher-lua-libs/chef"
 	cmd "github.com/vadv/gopher-lua-libs/cmd"
@@ -59,4 +60,5 @@ func Preload(L *lua.LState) {
 	humanize.Preload(L)
 	chef.Preload(L)
 	template.Preload(L)
+	cloudwatch.Preload(L)
 }
