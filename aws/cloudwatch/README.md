@@ -10,6 +10,7 @@ if err then error(err) end
 
 local filter = {
     log_group_name = "group-name",
+--  filter_patern = "",
     start_time = 1557948000,
     end_time = 1557948200,
 }

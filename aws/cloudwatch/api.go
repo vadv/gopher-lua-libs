@@ -54,7 +54,7 @@ func Download(L *lua.LState) int {
 			filter.SetLogGroupName(v.String())
 		}
 		if k.String() == `filter_patern` {
-			filter.SetFilterPattern((v.String())
+			filter.SetFilterPattern((v.String()))
 		}
 		if k.String() == `start_time` {
 			if value, ok := v.(lua.LNumber); ok {
