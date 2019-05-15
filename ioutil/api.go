@@ -20,3 +20,15 @@ func ReadFile(L *lua.LState) int {
 		return 2
 	}
 }
+
+// WriteFile(): lua ioutil.write_file(filepath, data) reads the file named by filename and returns the contents, returns (string,error)
+func WriteFile(L *lua.LState) int {
+	filename := L.CheckString(1)
+	data := L.CheckString(2)
+	err := ioutil.WriteFile(filename, []byte(data), 0644)
+	if err != nil {
+		L.Push(lua.LString(err.Error()))
+		return 1
+	}
+	return 0
+}

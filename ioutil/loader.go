@@ -21,5 +21,6 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"read_file": ReadFile,
+	"read_file":  ReadFile,
+	"write_file": WriteFile,
 }

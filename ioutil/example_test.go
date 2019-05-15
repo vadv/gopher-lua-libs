@@ -27,3 +27,19 @@ func ExampleReadFile() {
 	// Output:
 	// content of test file
 }
+
+// ioutil.write_file(filepath)
+func ExampleWriteFile() {
+	state := lua.NewState()
+	Preload(state)
+	source := `
+    local ioutil = require("ioutil")
+    local err = ioutil.write_file("./test/file.data", "content of test file")
+    if err then error(err) end
+`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+	// Output:
+	//
+}

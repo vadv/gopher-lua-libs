@@ -5,9 +5,9 @@
 ```lua
 local ioutil = require("ioutil")
 
-local file = io.open("./test/file.data", "w")
-file:write("content of test file", "\n")
-file:close()
+-- ioutil.write_file()
+local err = ioutil.write_file("./test/file.data", "content of test file")
+if err then error(err) end
 
 -- ioutil.read_file()
 local result, err = ioutil.read_file("./test/file.data")
