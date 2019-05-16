@@ -37,15 +37,9 @@ func Exec(L *lua.LState) int {
 	cmd.Stderr = &stderr
 	cmd.Stdout = &stdout
 
-	if err := cmd.Start(); err != nil {
-		L.Push(lua.LNil)
-		L.Push(lua.LString(err.Error()))
-		return 2
-	}
-
 	done := make(chan error)
 	go func() {
-		done <- cmd.Wait()
+		done <- cmd.Run()
 	}()
 
 	select {
