@@ -1,7 +1,6 @@
 package http
 
 import (
-	"log"
 	"net"
 	"net/http"
 	"time"
@@ -19,7 +18,6 @@ func ServeStaticFiles(L *lua.LState) int {
 		L.Push(lua.LString(err.Error()))
 		return 1
 	}
-	log.Printf(">>>>>.listener started\n\n\n\n\n")
 	server := &http.Server{Handler: fs, IdleTimeout: time.Second * 60}
 	err = server.Serve(listener)
 	if err != nil {
