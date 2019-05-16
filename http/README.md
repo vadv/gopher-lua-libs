@@ -104,3 +104,9 @@ response:done()
 
 ]]
 ```
+
+#### Serve Static files
+
+```lua
+
+```

@@ -5,6 +5,7 @@ import (
 	"context"
 	"sync"
 
+	cloudwatch "github.com/vadv/gopher-lua-libs/aws/cloudwatch"
 	chef "github.com/vadv/gopher-lua-libs/chef"
 	cmd "github.com/vadv/gopher-lua-libs/cmd"
 	crypto "github.com/vadv/gopher-lua-libs/crypto"
@@ -93,6 +94,7 @@ func NewPluginState() *lua.LState {
 	chef.Preload(state)
 	cmd.Preload(state)
 	template.Preload(state)
+	cloudwatch.Preload(state)
 	return state
 }
 

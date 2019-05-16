@@ -134,4 +134,8 @@ func TestApi(t *testing.T) {
 	if err := state.DoFile("./test/test_server_handle.lua"); err != nil {
 		t.Fatalf("execute test: %s\n", err.Error())
 	}
+
+	if err := state.DoFile("./test/test_serve_static.lua"); err != nil {
+		t.Fatalf("execute test: %s\n", err.Error())
+	}
 }

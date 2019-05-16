@@ -27,5 +27,5 @@ local running = print_plugin:is_running()
 if running then error("already running") end
 
 -- also you can use: plugin.do_file(filename)
+-- also you can get last error: print_plugin:error()
 ```
-

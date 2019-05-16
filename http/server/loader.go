@@ -42,5 +42,6 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"server": New,
+	"server":       New,
+	"serve_static": ServeStaticFiles,
 }
