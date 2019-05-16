@@ -1,6 +1,16 @@
 # cmd [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs/cmd?status.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs/cmd)
 
-## Usage
+
+## Functions
+`exec(command, [timeout=10])` - execute command via [exec.Start](https://golang.org/pkg/os/exec/#Cmd.Start). Will wait while command is executed.
+Returns table with values
+  - `status`
+  - `stdout`
+  - `stderr`
+
+The default timeout is 10 seconds after which the command will be terminated. The default timeout may be overriden with an optional timeout value (seconds).
+
+## Examples
 
 ```lua
 local cmd = require("cmd")
@@ -13,8 +23,6 @@ local result, err = cmd.exec(command)
 if err then error(err) end
 if not(result.status == 0) then error("status") end
 ```
-
-The default timeout is 10 seconds after which the command will be terminated. The default timeout may be overriden with an optional timeout value (seconds).
 
 ```lua
 local cmd = require("cmd")
