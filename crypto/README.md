@@ -1,6 +1,10 @@
 # crypto [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs/crypto?status.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs/crypto)
 
-## Usage
+## Functions
+- `md5(string)` - return md5 checksum from string.
+- `sha256(string)` - return sha256 checksum from string.
+
+## Examples
 
 ```lua
 local crypto = require("crypto")

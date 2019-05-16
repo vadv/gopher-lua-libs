@@ -1,11 +1,22 @@
 # chef [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs/chef?status.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs/chef)
 
-## Usage
+## Functions
+
+- `client(client_name, path_to_file_with_key, chef_url, http_client_ud)` - returns chef client instance for further usage. Required [http](https://github.com/vadv/gopher-lua-libs/tree/master/http) client instance as `http_client_ud`. Please note that you must specify last slash in `chef_url`.
+
+## Methods
+### client
+- `search(index, query, [partical_data], [params]` - make [search](https://docs.chef.io/api_chef_server.html#search) by given INDEX and query. Also possible use partical search and specify `offset`, `limit`, `order_by` in `params`.
+- `request(verb, url)` - make request to chef server.
+
+
+## Examples
 
 ```lua
 
 local http = require("http")
 local chef = require("chef")
+local inspect = require("inspect")
 
 local http_client = http.client({insecure_ssl=true})
 local client = chef.client(
@@ -18,7 +29,7 @@ local client = chef.client(
 -- list nodes
 local result, err = client:request("GET", "nodes")
 if err then error(err) end
-print(result[1][1]) -- { {node_name_1=url_node_name_1}, {node_name_2=url_node_name_2} }
+print(inspect(result)) -- { [node_name_1=url_node_name_1], [node_name_2=url_node_name_2] }
 
 -- get node
 local result, err = client:request("GET", "nodes/node_name")
