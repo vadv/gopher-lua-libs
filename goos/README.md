@@ -21,5 +21,9 @@ print(hostname)
 -- get_pagesize
 local page_size = goos.get_pagesize()
 if not(page_size > 0) then error("bad pagesize") end
-```
 
+-- mkdir_all
+goos.mkdir_all("./test/test_dir/test_dir/all")
+local stat, err = goos.stat("./test/test_dir/test_dir/all")
+if err then error(err) end
+```

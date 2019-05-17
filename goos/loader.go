@@ -24,4 +24,5 @@ var api = map[string]lua.LGFunction{
 	"stat":         Stat,
 	"hostname":     Hostname,
 	"get_pagesize": Getpagesize,
+	"mkdir_all":    MkdirAll,
 }

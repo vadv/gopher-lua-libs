@@ -42,3 +42,13 @@ func Getpagesize(L *lua.LState) int {
 	L.Push(lua.LNumber(os.Getpagesize()))
 	return 1
 }
+
+// MkdirAll lua goos.mkdir_all() return err
+func MkdirAll(L *lua.LState) int {
+	err := os.MkdirAll(L.CheckString(1), 0755)
+	if err != nil {
+		L.Push(lua.LString(err.Error()))
+		return 1
+	}
+	return 0
+}

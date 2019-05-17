@@ -63,3 +63,22 @@ print(page_size > 0)
 	// Output:
 	// true
 }
+
+// goos.mkdir_all()
+func ExampleMkdirAll() {
+	state := lua.NewState()
+	Preload(state)
+	inspect.Preload(state)
+	source := `
+local goos = require("goos")
+local err = goos.mkdir_all("./test/test_dir_example/test_dir")
+if err then error(err) end
+local _, err = goos.stat("./test/test_dir_example/test_dir")
+print(err == nil)
+	`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+	// Output:
+	// true
+}
