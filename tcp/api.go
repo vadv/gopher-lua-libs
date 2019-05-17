@@ -43,7 +43,7 @@ func checkLuaTCPClient(L *lua.LState, n int) *luaTCPClient {
 	return nil
 }
 
-// Open(): lua tcp.open(string) returns (tcp_client_ud, err)
+// Open lua tcp.open(string) returns (tcp_client_ud, err)
 func Open(L *lua.LState) int {
 	addr := L.CheckString(1)
 	t := &luaTCPClient{address: addr}
@@ -59,7 +59,7 @@ func Open(L *lua.LState) int {
 	return 1
 }
 
-// Write(): lua tcp_client_ud:write() returns err
+// Write lua tcp_client_ud:write() returns err
 func Write(L *lua.LState) int {
 	conn := checkLuaTCPClient(L, 1)
 	data := L.CheckString(2)
@@ -76,7 +76,7 @@ func Write(L *lua.LState) int {
 	return 0
 }
 
-// Read(): lua tcp_client_ud:read(max_size_int) returns (string, err)
+// Read lua tcp_client_ud:read(max_size_int) returns (string, err)
 func Read(L *lua.LState) int {
 	conn := checkLuaTCPClient(L, 1)
 	count := int(1024)
@@ -99,7 +99,7 @@ func Read(L *lua.LState) int {
 	return 1
 }
 
-// Close(): lua tcp_client_ud:close()
+// Close lua tcp_client_ud:close()
 func Close(L *lua.LState) int {
 	conn := checkLuaTCPClient(L, 1)
 	conn.SetDeadline(time.Now().Add(DefaultCloseTimeout))

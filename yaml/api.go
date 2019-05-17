@@ -6,7 +6,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// Decode(): lua yaml.decode(string) returns (table, error)
+// Decode lua yaml.decode(string) returns (table, error)
 func Decode(L *lua.LState) int {
 	str := L.CheckString(1)
 

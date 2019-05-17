@@ -61,7 +61,7 @@ func HeaderSet(L *lua.LState) int {
 	return 0
 }
 
-// DoRequest(): lua http_client_ud:do_request()
+// DoRequest lua http_client_ud:do_request()
 // http_client_ud:do_request(http_request_ud) returns (response, error)
 //    response: {
 //      code=http_code (200, 201, ..., 500, ...),

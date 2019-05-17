@@ -7,7 +7,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// Stat(): lua goos.stat(filename) returns (table, err)
+// Stat lua goos.stat(filename) returns (table, err)
 func Stat(L *lua.LState) int {
 	filename := L.CheckString(1)
 	stat, err := os.Stat(filename)
@@ -25,7 +25,7 @@ func Stat(L *lua.LState) int {
 	return 1
 }
 
-// Hostname(): lua goos.hostname() returns (string, error)
+// Hostname lua goos.hostname() returns (string, error)
 func Hostname(L *lua.LState) int {
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -37,7 +37,7 @@ func Hostname(L *lua.LState) int {
 	return 1
 }
 
-// Getpagesize(): lua goos.pagesize() return number
+// Getpagesize lua goos.pagesize() return number
 func Getpagesize(L *lua.LState) int {
 	L.Push(lua.LNumber(os.Getpagesize()))
 	return 1

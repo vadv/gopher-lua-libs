@@ -129,7 +129,7 @@ func checkPlugin(L *lua.LState, n int) *luaPlugin {
 	return nil
 }
 
-// DoString(): lua plugin.do_string(body) returns plugin_ud
+// DoString lua plugin.do_string(body) returns plugin_ud
 func DoString(L *lua.LState) int {
 	body := L.CheckString(1)
 	p := &luaPlugin{body: body}
@@ -140,7 +140,7 @@ func DoString(L *lua.LState) int {
 	return 1
 }
 
-// DoFile(): lua plugin.do_file(filename) returns plugin_ud
+// DoFile lua plugin.do_file(filename) returns plugin_ud
 func DoFile(L *lua.LState) int {
 	filename := L.CheckString(1)
 	p := &luaPlugin{filename: filename}
@@ -151,21 +151,21 @@ func DoFile(L *lua.LState) int {
 	return 1
 }
 
-// Run(): lua plugin_ud:run()
+// Run lua plugin_ud:run()
 func Run(L *lua.LState) int {
 	p := checkPlugin(L, 1)
 	go p.start()
 	return 0
 }
 
-// IsRunning(): lua plugin_ud:is_running()
+// IsRunning lua plugin_ud:is_running()
 func IsRunning(L *lua.LState) int {
 	p := checkPlugin(L, 1)
 	L.Push(lua.LBool(p.getRunning()))
 	return 1
 }
 
-// Error(): lua plugin_ud:error() returns err
+// Error lua plugin_ud:error() returns err
 func Error(L *lua.LState) int {
 	p := checkPlugin(L, 1)
 	err := p.getError()
@@ -176,7 +176,7 @@ func Error(L *lua.LState) int {
 	return 1
 }
 
-// Stop(): lua plugin_ud:stop()
+// Stop lua plugin_ud:stop()
 func Stop(L *lua.LState) int {
 	p := checkPlugin(L, 1)
 	p.Lock()

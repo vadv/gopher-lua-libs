@@ -6,7 +6,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// QueryEscape(): lua http.query_escape(string) returns escaped string
+// QueryEscape lua http.query_escape(string) returns escaped string
 func QueryEscape(L *lua.LState) int {
 	query := L.CheckString(1)
 	escapedUrl := url.QueryEscape(query)
@@ -14,7 +14,7 @@ func QueryEscape(L *lua.LState) int {
 	return 1
 }
 
-// QueryUnescape(): lua http.query_unescape(string) returns unescaped (string, error)
+// QueryUnescape lua http.query_unescape(string) returns unescaped (string, error)
 func QueryUnescape(L *lua.LState) int {
 	query := L.CheckString(1)
 	url, err := url.QueryUnescape(query)
@@ -27,7 +27,7 @@ func QueryUnescape(L *lua.LState) int {
 	return 1
 }
 
-// ParseURL(): lua http.parse_url(string) returns (table, err)
+// ParseURL lua http.parse_url(string) returns (table, err)
 func ParseURL(L *lua.LState) int {
 	u, err := url.Parse(L.CheckString(1))
 	if err != nil {
@@ -69,7 +69,7 @@ func ParseURL(L *lua.LState) int {
 	return 1
 }
 
-// BuildURL(): lua http.parse_url(table) returns string
+// BuildURL lua http.parse_url(table) returns string
 func BuildURL(L *lua.LState) int {
 	t := L.CheckTable(1)
 	u := &url.URL{}

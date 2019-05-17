@@ -36,7 +36,7 @@ var (
 	sharedDBLock     = &sync.Mutex{}
 )
 
-// RegisterDriver(): register sql driver
+// RegisterDriver register sql driver
 func RegisterDriver(driver string, i luaDB) {
 	knownDriversLock.Lock()
 	defer knownDriversLock.Unlock()
@@ -53,7 +53,7 @@ func checkDB(L *lua.LState, n int) luaDB {
 	return nil
 }
 
-// Open(): lua db.open(driver, connection_string, config) returns (db_ud, err)
+// Open lua db.open(driver, connection_string, config) returns (db_ud, err)
 // config table:
 //   {
 //     shared=false,
@@ -116,7 +116,7 @@ func Open(L *lua.LState) int {
 	return 1
 }
 
-// Query(): lua db_ud:query(query) returns ({rows = {}, columns = {}}, err)
+// Query lua db_ud:query(query) returns ({rows = {}, columns = {}}, err)
 func Query(L *lua.LState) int {
 	dbInterface := checkDB(L, 1)
 	query := L.CheckString(2)
@@ -149,7 +149,7 @@ func Query(L *lua.LState) int {
 	return 1
 }
 
-// Exec(): lua db_ud:exec(query) returns ({rows_affected=number, last_insert_id=number}, err)
+// Exec lua db_ud:exec(query) returns ({rows_affected=number, last_insert_id=number}, err)
 func Exec(L *lua.LState) int {
 	dbInterface := checkDB(L, 1)
 	query := L.CheckString(2)
@@ -179,7 +179,7 @@ func Exec(L *lua.LState) int {
 	return 1
 }
 
-// Command(): lua db_ud:command(query) returns ({rows = {}, columns = {}}, err)
+// Command lua db_ud:command(query) returns ({rows = {}, columns = {}}, err)
 func Command(L *lua.LState) int {
 	dbInterface := checkDB(L, 1)
 	query := L.CheckString(2)
@@ -204,7 +204,7 @@ func Command(L *lua.LState) int {
 	return 1
 }
 
-// Close(): lua db_ud:close() returns err
+// Close lua db_ud:close() returns err
 func Close(L *lua.LState) int {
 	dbIface := checkDB(L, 1)
 	if err := dbIface.closeDB(); err != nil {

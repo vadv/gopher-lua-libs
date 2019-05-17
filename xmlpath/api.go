@@ -61,7 +61,7 @@ func checkLuaIter(L *lua.LState, n int) *luaIter {
 	return nil
 }
 
-// PathIter(): lua xmlpath_path_ud:iter() returns table of nodes
+// PathIter lua xmlpath_path_ud:iter() returns table of nodes
 func PathIter(L *lua.LState) int {
 	path := checkLuaPath(L, 1)
 	node := checkLuaNode(L, 2)
@@ -76,21 +76,21 @@ func PathIter(L *lua.LState) int {
 	return 1
 }
 
-// IterNode(): lua xmlpath_iter_ud:node() returns node
+// IterNode lua xmlpath_iter_ud:node() returns node
 func IterNode(L *lua.LState) int {
 	iter := checkLuaIter(L, 1)
 	L.Push(newLuaNode(L, iter.Iter.Node()))
 	return 1
 }
 
-// NodeToString(): lua xmlpath_node_ud:string() returns string
+// NodeToString lua xmlpath_node_ud:string() returns string
 func NodeToString(L *lua.LState) int {
 	node := checkLuaNode(L, 1)
 	L.Push(lua.LString(node.Node.String()))
 	return 1
 }
 
-// Load(): lua xmlpath.load(xmlpath string) return (xmlpath_node_ud, err)
+// Load lua xmlpath.load(xmlpath string) return (xmlpath_node_ud, err)
 func Load(L *lua.LState) int {
 	xmlpathStr := L.CheckString(1)
 	r := bytes.NewReader([]byte(xmlpathStr))
@@ -104,7 +104,7 @@ func Load(L *lua.LState) int {
 	return 1
 }
 
-// Compile(): lua xmlpath.compile(xpath string) return (xmlpath_path_ud, err)
+// Compile lua xmlpath.compile(xpath string) return (xmlpath_path_ud, err)
 func Compile(L *lua.LState) int {
 	xpathStr := L.CheckString(1)
 	path, err := xmlpath.Compile(xpathStr)

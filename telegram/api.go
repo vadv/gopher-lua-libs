@@ -9,7 +9,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// NewBot(): lua telegram.bot(tocken, http_ud.client) return telegram_bot_ud
+// NewBot lua telegram.bot(tocken, http_ud.client) return telegram_bot_ud
 func NewBot(L *lua.LState) int {
 	token := L.CheckString(1)
 	bot := &luaBot{token: token}
@@ -31,7 +31,7 @@ func NewBot(L *lua.LState) int {
 	return 1
 }
 
-// GetUpdates(): lua telegram_bot_ud:get_updates() returns (table, err)
+// GetUpdates lua telegram_bot_ud:get_updates() returns (table, err)
 func GetUpdates(L *lua.LState) int {
 	bot := checkBot(L, 1)
 	var c *UpdateConfig
@@ -67,7 +67,7 @@ func GetUpdates(L *lua.LState) int {
 	return 1
 }
 
-// GetOffset(): lua telegram_bot_ud:getOffset() returns int
+// GetOffset lua telegram_bot_ud:getOffset() returns int
 func GetOffset(L *lua.LState) int {
 	bot := checkBot(L, 1)
 	L.Push(lua.LNumber(bot.offset))
@@ -113,37 +113,37 @@ func sendGeneric(L *lua.LState, iface interface{}) int {
 	return 1
 }
 
-// SendMessage(): lua telegram_bot_ud:message(table) returns (table, err)
+// SendMessage lua telegram_bot_ud:message(table) returns (table, err)
 func SendMessage(L *lua.LState) int {
 	return sendGeneric(L, &MessageConfig{})
 }
 
-// ForwardMessage(): lua telegram_bot_ud:forward(table) returns (table, err)
+// ForwardMessage lua telegram_bot_ud:forward(table) returns (table, err)
 func ForwardMessage(L *lua.LState) int {
 	return sendGeneric(L, &ForwardConfig{})
 }
 
-// SendPhoto(): lua telegram_bot_ud:photo(table) returns (table, err)
+// SendPhoto lua telegram_bot_ud:photo(table) returns (table, err)
 func SendPhoto(L *lua.LState) int {
 	return sendGeneric(L, &PhotoConfig{})
 }
 
-// EditMessageText(): lua telegram_bot_ud:editMessageText(table) returns (bool, err)
+// EditMessageText lua telegram_bot_ud:editMessageText(table) returns (bool, err)
 func EditMessageText(L *lua.LState) int {
 	return sendGeneric(L, &EditMessageTextConfig{})
 }
 
-// EditMessageCaption(): lua telegram_bot_ud:editMessageCaption(table) returns (bool, err)
+// EditMessageCaption lua telegram_bot_ud:editMessageCaption(table) returns (bool, err)
 func EditMessageCaption(L *lua.LState) int {
 	return sendGeneric(L, &EditMessageCaptionConfig{})
 }
 
-// EditMessageReplyMarkup(): lua telegram_bot_ud:editMessageReplyMarkup(table) returns (bool, err)
+// EditMessageReplyMarkup lua telegram_bot_ud:editMessageReplyMarkup(table) returns (bool, err)
 func EditMessageReplyMarkup(L *lua.LState) int {
 	return sendGeneric(L, &EditMessageReplyMarkupConfig{})
 }
 
-// EditMessageReplyMarkup(): lua telegram_bot_ud:deleteMessage(table) returns (bool, err)
+// EditMessageReplyMarkup lua telegram_bot_ud:deleteMessage(table) returns (bool, err)
 func DeleteMessage(L *lua.LState) int {
 	return sendGeneric(L, &DeleteMessageConfig{})
 }

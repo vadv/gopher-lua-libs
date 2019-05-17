@@ -11,7 +11,7 @@ type luaStmt struct {
 	d *sql.DB
 }
 
-// Stmt(): lua db_ud:stmt(query) returns (stmt_ud, err)
+// Stmt lua db_ud:stmt(query) returns (stmt_ud, err)
 func Stmt(L *lua.LState) int {
 	dbInterface := checkDB(L, 1)
 	query := L.CheckString(2)
@@ -43,7 +43,7 @@ func getSTMTArgs(L *lua.LState) []interface{} {
 	return args
 }
 
-// StmtQuery(): lua stmt_ud:query(args) returns ({rows = {}, columns = {}}, err)
+// StmtQuery lua stmt_ud:query(args) returns ({rows = {}, columns = {}}, err)
 func StmtQuery(L *lua.LState) int {
 	ud := L.CheckUserData(1)
 	s, ok := ud.Value.(*luaStmt)
@@ -71,7 +71,7 @@ func StmtQuery(L *lua.LState) int {
 	return 1
 }
 
-// StmtExec(): lua stmt_ud:exec(args) returns ({rows_affected=number, last_insert_id=number}, err)
+// StmtExec lua stmt_ud:exec(args) returns ({rows_affected=number, last_insert_id=number}, err)
 func StmtExec(L *lua.LState) int {
 	ud := L.CheckUserData(1)
 	s, ok := ud.Value.(*luaStmt)
@@ -96,7 +96,7 @@ func StmtExec(L *lua.LState) int {
 	return 1
 }
 
-// StmtClose(): lua stmt_ud:close() returns err
+// StmtClose lua stmt_ud:close() returns err
 func StmtClose(L *lua.LState) int {
 	ud := L.CheckUserData(1)
 	s, ok := ud.Value.(*luaStmt)

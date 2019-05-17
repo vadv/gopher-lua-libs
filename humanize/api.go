@@ -8,14 +8,14 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// Time(): lua humanize.time(number) return string
+// Time lua humanize.time(number) return string
 func Time(L *lua.LState) int {
 	then := time.Unix(L.CheckInt64(1), 0)
 	L.Push(lua.LString(humanize.Time(then)))
 	return 1
 }
 
-// IBytes(): lua humanize.ibytes(number) return string
+// IBytes lua humanize.ibytes(number) return string
 func IBytes(L *lua.LState) int {
 	bytes := L.CheckInt64(1)
 	if bytes < 0 {
@@ -25,7 +25,7 @@ func IBytes(L *lua.LState) int {
 	return 1
 }
 
-// ParseBytes(): lua humanize.parse_bytes(string) returns (number, err)
+// ParseBytes lua humanize.parse_bytes(string) returns (number, err)
 func ParseBytes(L *lua.LState) int {
 	data := L.CheckString(1)
 	size, err := humanize.ParseBytes(data)
@@ -38,7 +38,7 @@ func ParseBytes(L *lua.LState) int {
 	return 1
 }
 
-// SI(): lua humanize.si(number, string) return string
+// SI lua humanize.si(number, string) return string
 func SI(L *lua.LState) int {
 	value := L.CheckNumber(1)
 	input := float64(value)

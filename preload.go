@@ -32,7 +32,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// Preload(): preload all gopher lua packages
+// Preload preload all gopher lua packages
 func Preload(L *lua.LState) {
 	time.Preload(L)
 	strings.Preload(L)

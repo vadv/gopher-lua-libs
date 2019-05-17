@@ -9,10 +9,11 @@ import (
 )
 
 const (
-	DefaultDriver = `memory` // default driver mode
+	// default driver mode
+	DefaultDriver = `memory`
 )
 
-// New(): lua storage.new(path, driver) returns (storage_ud, err)
+// New lua storage.new(path, driver) returns (storage_ud, err)
 func New(L *lua.LState) int {
 	path := L.CheckString(1)
 	driverName := DefaultDriver
@@ -47,7 +48,7 @@ func checkStorage(L *lua.LState, n int) interfaces.Driver {
 	return nil
 }
 
-// Set(): lua storage_ud:set(key, value, ttl) return err
+// Set lua storage_ud:set(key, value, ttl) return err
 func Set(L *lua.LState) int {
 	s := checkStorage(L, 1)
 	key := L.CheckString(2)
@@ -72,7 +73,7 @@ func Set(L *lua.LState) int {
 	return 0
 }
 
-// Get(): lua storage_ud:set(key) returns (value, bool, err)
+// Get lua storage_ud:set(key) returns (value, bool, err)
 func Get(L *lua.LState) int {
 	s := checkStorage(L, 1)
 	key := L.CheckString(2)
@@ -88,7 +89,7 @@ func Get(L *lua.LState) int {
 	return 2
 }
 
-// Sync(): lua storage_ud:sync() return err
+// Sync lua storage_ud:sync() return err
 func Sync(L *lua.LState) int {
 	s := checkStorage(L, 1)
 	err := s.Sync()
@@ -99,7 +100,7 @@ func Sync(L *lua.LState) int {
 	return 0
 }
 
-// Close(): lua storage_ud:close() return err
+// Close lua storage_ud:close() return err
 func Close(L *lua.LState) int {
 	s := checkStorage(L, 1)
 	err := s.Close()
@@ -110,7 +111,7 @@ func Close(L *lua.LState) int {
 	return 0
 }
 
-// Keys(): lua storage_ud:list_keys() return (table, error)
+// Keys lua storage_ud:list_keys() return (table, error)
 func Keys(L *lua.LState) int {
 	s := checkStorage(L, 1)
 	keys, err := s.Keys()
@@ -127,7 +128,7 @@ func Keys(L *lua.LState) int {
 	return 1
 }
 
-// Dump(): lua storage_ud:dump() return (table, error)
+// Dump lua storage_ud:dump() return (table, error)
 func Dump(L *lua.LState) int {
 	s := checkStorage(L, 1)
 	result := L.NewTable()

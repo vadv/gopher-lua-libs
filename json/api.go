@@ -6,7 +6,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// Decode(): lua json.decode(string) returns (table, err)
+// Decode lua json.decode(string) returns (table, err)
 func Decode(L *lua.LState) int {
 	str := L.CheckString(1)
 
@@ -20,7 +20,7 @@ func Decode(L *lua.LState) int {
 	return 1
 }
 
-// Encode(): lua json.encode(obj) returns (string, err)
+// Encode lua json.encode(obj) returns (string, err)
 func Encode(L *lua.LState) int {
 	value := L.CheckAny(1)
 

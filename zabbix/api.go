@@ -12,7 +12,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// NewBot(): lua zabbix.bot(config table, http_ud.client) return zabbix_bot_ud
+// NewBot lua zabbix.bot(config table, http_ud.client) return zabbix_bot_ud
 // config = {
 //    url = "http://zabbix.url",
 //    user = "user",
@@ -74,7 +74,7 @@ func NewBot(L *lua.LState) int {
 	return 1
 }
 
-// Login(): lua zabbix_bot_ud:login() return error
+// Login lua zabbix_bot_ud:login() return error
 func Login(L *lua.LState) int {
 	b := checkBot(L, 1)
 	err := b.login()
@@ -85,7 +85,7 @@ func Login(L *lua.LState) int {
 	return 0
 }
 
-// Logout(): lua zabbix_bot_ud:logout() return error
+// Logout lua zabbix_bot_ud:logout() return error
 func Logout(L *lua.LState) int {
 	b := checkBot(L, 1)
 	err := b.logout()
@@ -96,7 +96,7 @@ func Logout(L *lua.LState) int {
 	return 0
 }
 
-// ApiVersion(): lua zabbix_bot_ud:api_version() returns (string, err)
+// ApiVersion lua zabbix_bot_ud:api_version() returns (string, err)
 func ApiVersion(L *lua.LState) int {
 	b := checkBot(L, 1)
 	version, err := b.apiVersion()
@@ -109,7 +109,7 @@ func ApiVersion(L *lua.LState) int {
 	return 1
 }
 
-// Request(): lua zabbix_bot_ud:request(method, params={}) returns (table, err)
+// Request lua zabbix_bot_ud:request(method, params={}) returns (table, err)
 func Request(L *lua.LState) int {
 	b := checkBot(L, 1)
 	method := L.CheckString(2)
@@ -164,7 +164,7 @@ func Request(L *lua.LState) int {
 	return 1
 }
 
-// SaveGraph(): lua zabbix_bot_ud:save_graph(itemID, filename, {period, width, height}) return err
+// SaveGraph lua zabbix_bot_ud:save_graph(itemID, filename, {period, width, height}) return err
 // default graph settings {period = 3600, width = 500, height = 300}
 func SaveGraph(L *lua.LState) int {
 	b := checkBot(L, 1)

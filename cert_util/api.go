@@ -10,7 +10,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// NotAfter(): lua cert.not_after(hostname, <ip>) returns (unixts cert_not_after, err)
+// NotAfter lua cert.not_after(hostname, <ip>) returns (unixts cert_not_after, err)
 func NotAfter(L *lua.LState) int {
 	serverName, address := L.CheckString(1), ""
 	if L.GetTop() > 1 {

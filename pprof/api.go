@@ -34,7 +34,7 @@ func Register(L *lua.LState) int {
 	return 1
 }
 
-// Enable(): start pprof
+// Enable start pprof
 func Enable(L *lua.LState) int {
 	pp := checkPprof(L, 1)
 	go func() {
@@ -51,7 +51,7 @@ func Enable(L *lua.LState) int {
 	return 0
 }
 
-// Disable(): pprof stop
+// Disable pprof stop
 func Disable(L *lua.LState) int {
 	pp := checkPprof(L, 1)
 	pp.stop <- true

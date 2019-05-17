@@ -18,7 +18,7 @@ type luaTemplateEngine interface {
 	Render(string, *lua.LTable) (string, error)
 }
 
-// RegisterTemplateEngine(): register template engine
+// RegisterTemplateEngine register template engine
 func RegisterTemplateEngine(driver string, i luaTemplateEngine) {
 	knownTemplateEngineLock.Lock()
 	defer knownTemplateEngineLock.Unlock()
@@ -35,7 +35,7 @@ func checkEngine(L *lua.LState, n int) luaTemplateEngine {
 	return nil
 }
 
-// Choose(): lua template.get(engine) returns (template_ud, err)
+// Choose lua template.get(engine) returns (template_ud, err)
 func Choose(L *lua.LState) int {
 	knownTemplateEngineLock.Lock()
 	defer knownTemplateEngineLock.Unlock()
@@ -54,7 +54,7 @@ func Choose(L *lua.LState) int {
 	return 1
 }
 
-// Render(): lua template_ud:render(string, values) returns (string, err)
+// Render lua template_ud:render(string, values) returns (string, err)
 func Render(L *lua.LState) int {
 	t := checkEngine(L, 1)
 	body := L.CheckString(2)
@@ -69,7 +69,7 @@ func Render(L *lua.LState) int {
 	return 1
 }
 
-// RenderFile(): lua template_ud:render(string, values) returns (string, err)
+// RenderFile lua template_ud:render(string, values) returns (string, err)
 func RenderFile(L *lua.LState) int {
 	t := checkEngine(L, 1)
 	file := L.CheckString(2)

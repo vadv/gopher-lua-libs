@@ -32,7 +32,7 @@ func (t *luaTac) open() error {
 	return nil
 }
 
-// Open(): lua tac.open(filename) open filename for tac scan returns (tac_ud, err)
+// Open lua tac.open(filename) open filename for tac scan returns (tac_ud, err)
 func Open(L *lua.LState) int {
 	t := &luaTac{filename: L.CheckString(1)}
 	if err := t.open(); err != nil {
@@ -47,7 +47,7 @@ func Open(L *lua.LState) int {
 	return 1
 }
 
-// Line(): lua tac_ud:line() return next upper line: string or nil
+// Line lua tac_ud:line() return next upper line: string or nil
 func Line(L *lua.LState) int {
 	t := checkTac(L, 1)
 	if t.scanner == nil {
@@ -63,7 +63,7 @@ func Line(L *lua.LState) int {
 	return 1
 }
 
-// Close(): lua tac_ud:close() close current file for tac
+// Close lua tac_ud:close() close current file for tac
 func Close(L *lua.LState) int {
 	t := checkTac(L, 1)
 	if t.fd == nil {

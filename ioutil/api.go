@@ -7,7 +7,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// ReadFile(): lua ioutil.read_file(filepath) reads the file named by filename and returns the contents, returns (string,error)
+// ReadFile lua ioutil.read_file(filepath) reads the file named by filename and returns the contents, returns (string,error)
 func ReadFile(L *lua.LState) int {
 	filename := L.CheckString(1)
 	data, err := ioutil.ReadFile(filename)
@@ -21,7 +21,7 @@ func ReadFile(L *lua.LState) int {
 	}
 }
 
-// WriteFile(): lua ioutil.write_file(filepath, data) reads the file named by filename and returns the contents, returns (string,error)
+// WriteFile lua ioutil.write_file(filepath, data) reads the file named by filename and returns the contents, returns (string,error)
 func WriteFile(L *lua.LState) int {
 	filename := L.CheckString(1)
 	data := L.CheckString(2)
