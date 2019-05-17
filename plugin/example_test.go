@@ -23,7 +23,7 @@ func Example_package() {
         while true do
             print(i)
             i = i + 1
-            time.sleep(1)
+            time.sleep(1.01)
         end
     ]]
 
