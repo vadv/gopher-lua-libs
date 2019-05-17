@@ -41,3 +41,26 @@ if err then error(err) end
 print(data)
 local i = tonumber(data)
 if i < 1 then error("i < 1") end
+
+
+-- test with payload
+local plugin_body_2 = [[
+    local ioutil = require("ioutil")
+    local err = ioutil.write_file("./test/payload.txt", payload)
+    if err then error(err) end
+]]
+local test_payload = "OK"
+local plugin_with_payload = plugin.do_string_with_payload(plugin_body_2, test_payload)
+plugin_with_payload:run()
+
+time.sleep(1)
+local i = 0
+while plugin_with_payload:is_running() do
+    time.sleep(1)
+    i = i + 1
+    if i > 3 then error("timeout") end
+end
+
+local data, err = ioutil.read_file("./test/payload.txt")
+if err then error(err) end
+if not(data == test_payload) then error("data <> test_payload") end

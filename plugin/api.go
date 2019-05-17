@@ -38,8 +38,9 @@ type luaPlugin struct {
 	cancelFunc context.CancelFunc
 	running    bool
 	error      error
-	body       string
-	filename   string
+	body       *string
+	filename   *string
+	jobPayload *string
 }
 
 func (p *luaPlugin) getError() error {
@@ -68,7 +69,7 @@ func (p *luaPlugin) setRunning(val bool) {
 	p.running = val
 }
 
-// NewPluginState return lua state for plugin
+// NewPluginState return lua state
 func NewPluginState() *lua.LState {
 	state := lua.NewState()
 	// preload all
@@ -100,22 +101,27 @@ func NewPluginState() *lua.LState {
 
 func (p *luaPlugin) start() {
 	p.Lock()
-
 	state := NewPluginState()
 	p.state = state
 	p.error = nil
 	p.running = true
+	isBody := (p.filename == nil)
+	if !(p.jobPayload == nil) {
+		payload := *p.jobPayload
+		state.SetGlobal(`payload`, lua.LString(payload))
+	}
 	ctx, cancelFunc := context.WithCancel(context.Background())
-	p.state.SetContext(ctx)
 	p.cancelFunc = cancelFunc
-	isBody := (p.filename == "")
+	p.state.SetContext(ctx)
 	p.Unlock()
 
 	// blocking
 	if isBody {
-		p.setError(p.state.DoString(p.body))
+		body := *p.body
+		p.setError(p.state.DoString(body))
 	} else {
-		p.setError(p.state.DoFile(p.filename))
+		filename := *p.filename
+		p.setError(p.state.DoFile(filename))
 	}
 	p.setRunning(false)
 }
@@ -132,7 +138,7 @@ func checkPlugin(L *lua.LState, n int) *luaPlugin {
 // DoString lua plugin.do_string(body) returns plugin_ud
 func DoString(L *lua.LState) int {
 	body := L.CheckString(1)
-	p := &luaPlugin{body: body}
+	p := &luaPlugin{body: &body}
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
@@ -143,7 +149,31 @@ func DoString(L *lua.LState) int {
 // DoFile lua plugin.do_file(filename) returns plugin_ud
 func DoFile(L *lua.LState) int {
 	filename := L.CheckString(1)
-	p := &luaPlugin{filename: filename}
+	p := &luaPlugin{filename: &filename}
+	ud := L.NewUserData()
+	ud.Value = p
+	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
+	L.Push(ud)
+	return 1
+}
+
+// DoFileWithPayload lua plugin.async() returns (plugin_ud, err)
+func DoFileWithPayload(L *lua.LState) int {
+	filename := L.CheckString(1)
+	payload := L.CheckString(2)
+	p := &luaPlugin{filename: &filename, jobPayload: &payload}
+	ud := L.NewUserData()
+	ud.Value = p
+	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
+	L.Push(ud)
+	return 1
+}
+
+// DoStringWithPayload lua plugin.async() returns (plugin_ud, err)
+func DoStringWithPayload(L *lua.LState) int {
+	body := L.CheckString(1)
+	payload := L.CheckString(2)
+	p := &luaPlugin{body: &body, jobPayload: &payload}
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))

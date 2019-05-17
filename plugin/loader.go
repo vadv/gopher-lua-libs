@@ -15,9 +15,9 @@ func Preload(L *lua.LState) {
 // Loader is the module loader function.
 func Loader(L *lua.LState) int {
 
-	plugin_ud := L.NewTypeMetatable(`plugin_ud`)
-	L.SetGlobal(`plugin_ud`, plugin_ud)
-	L.SetField(plugin_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
+	pluginUd := L.NewTypeMetatable(`plugin_ud`)
+	L.SetGlobal(`plugin_ud`, pluginUd)
+	L.SetField(pluginUd, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
 		"run":        Run,
 		"error":      Error,
 		"stop":       Stop,
@@ -31,6 +31,8 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"do_string": DoString,
-	"do_file":   DoFile,
+	"do_string":              DoString,
+	"do_file":                DoFile,
+	"do_string_with_payload": DoStringWithPayload,
+	"do_file_with_payload":   DoFileWithPayload,
 }
