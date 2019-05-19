@@ -14,6 +14,7 @@ import (
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
+	log "github.com/vadv/gopher-lua-libs/log"
 	plugin "github.com/vadv/gopher-lua-libs/plugin"
 	pprof "github.com/vadv/gopher-lua-libs/pprof"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
@@ -49,6 +50,7 @@ func Preload(L *lua.LState) {
 	tcp.Preload(L)
 	xmlpath.Preload(L)
 	db.Preload(L)
+	log.Preload(L)
 	cert_util.Preload(L)
 	runtime.Preload(L)
 	telegram.Preload(L)
