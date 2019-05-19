@@ -11,7 +11,7 @@ func Example_package() {
 	Preload(state)
 	source := `
 local log = require("log")
-logger = log.logger({flags=100000, level='debug'})
+local logger = log.logger({flags=100000, level='debug'})
 logger:debug('2nd DEBUG')
 logger:info('2nd INFO')
 `

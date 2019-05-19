@@ -3,18 +3,18 @@
  - `logger([flags], [level])` - return logger with given format and level. `level(string)` defines minimail level to handle message. `flags(int)` defines (log Flags)[https://golang.org/pkg/log/#pkg-constants] via bitmask.
 
 ## Methods
- - debug
+ - `debug`
     The DEBUG level designates fine-grained informational events that are most useful to debug an application. Sends messages to stdout.
- - info
+ - `info`
     The INFO level designates informational messages that highlight the progress of the application at coarse-grained level.
     Sends messages to stdout
- - warn
+ - `warn`
     The WARN level designates potentially harmful situations.
     Sends messages to stderr
- - error
+ - `error`
     The ERROR level designates error events that might still allow the application to continue running.
     Sends messages to stderr
- - fatal
+ - `fatal`
     The FATAL level designates very severe error events that would presumably lead the application to abort. Sends messages to stderr and raise lua Error
 
 
