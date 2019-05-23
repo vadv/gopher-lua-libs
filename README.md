@@ -29,6 +29,7 @@ go get github.com/vadv/gopher-lua-libs
 * [inspect](/inspect) pretty print [github.com/kikito/inspect.lua](https://github.com/kikito/inspect.lua)
 * [ioutil](/ioutil) io/ioutil port
 * [json](/json) json implementation
+* [log](/log) log port
 * [plugin](/plugin) run lua code in lua code
 * [pprof](/pprof) pprof http-server for golang from lua
 * [regexp](/regexp) regexp port

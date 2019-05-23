@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	cloudwatch "github.com/vadv/gopher-lua-libs/aws/cloudwatch"
 	cert_util "github.com/vadv/gopher-lua-libs/cert_util"
 	chef "github.com/vadv/gopher-lua-libs/chef"
 	cmd "github.com/vadv/gopher-lua-libs/cmd"
@@ -20,6 +21,7 @@ import (
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
+	lua_log "github.com/vadv/gopher-lua-libs/log"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
 	runtime "github.com/vadv/gopher-lua-libs/runtime"
 	storage "github.com/vadv/gopher-lua-libs/storage"
@@ -123,6 +125,8 @@ func newHandlerState(data *serveData) *lua.LState {
 	chef.Preload(state)
 	template.Preload(state)
 	http_client.Preload(state)
+	lua_log.Preload(state)
+	cloudwatch.Preload(state)
 	http_util.Preload(state)
 
 	http_server_response_writer_ud := state.NewTypeMetatable(`http_server_response_writer_ud`)

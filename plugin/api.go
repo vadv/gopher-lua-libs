@@ -17,6 +17,7 @@ import (
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
+	log "github.com/vadv/gopher-lua-libs/log"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
 	storage "github.com/vadv/gopher-lua-libs/storage"
 	strings "github.com/vadv/gopher-lua-libs/strings"
@@ -96,6 +97,7 @@ func NewPluginState() *lua.LState {
 	cmd.Preload(state)
 	template.Preload(state)
 	cloudwatch.Preload(state)
+	log.Preload(state)
 	return state
 }
 

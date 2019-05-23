@@ -14,6 +14,7 @@ import (
 	inspect "github.com/vadv/gopher-lua-libs/inspect"
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
+	log "github.com/vadv/gopher-lua-libs/log"
 	plugin "github.com/vadv/gopher-lua-libs/plugin"
 	pprof "github.com/vadv/gopher-lua-libs/pprof"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
@@ -61,4 +62,5 @@ func Preload(L *lua.LState) {
 	chef.Preload(L)
 	template.Preload(L)
 	cloudwatch.Preload(L)
+	log.Preload(L)
 }

@@ -10,6 +10,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/lib/pq v1.0.0
+	github.com/lucagrulla/cw v1.7.2 // indirect
 	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1
