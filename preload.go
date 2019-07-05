@@ -17,6 +17,7 @@ import (
 	log "github.com/vadv/gopher-lua-libs/log"
 	plugin "github.com/vadv/gopher-lua-libs/plugin"
 	pprof "github.com/vadv/gopher-lua-libs/pprof"
+	prometheus "github.com/vadv/gopher-lua-libs/prometheus/client"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
 	runtime "github.com/vadv/gopher-lua-libs/runtime"
 	storage "github.com/vadv/gopher-lua-libs/storage"
@@ -55,6 +56,7 @@ func Preload(L *lua.LState) {
 	telegram.Preload(L)
 	zabbix.Preload(L)
 	pprof.Preload(L)
+	prometheus.Preload(L)
 	crypto.Preload(L)
 	goos.Preload(L)
 	storage.Preload(L)

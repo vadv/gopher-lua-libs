@@ -32,6 +32,7 @@ go get github.com/vadv/gopher-lua-libs
 * [log](/log) log port
 * [plugin](/plugin) run lua code in lua code
 * [pprof](/pprof) pprof http-server for golang from lua
+* [prometheus](/prometheus/client) prometheus exporter
 * [regexp](/regexp) regexp port
 * [runtime](/runtime) runtime port
 * [storage](/storage) package for store persist data and share values between lua states

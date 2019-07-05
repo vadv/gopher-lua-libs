@@ -1,8 +1,0 @@
-[[constraint]]
-  branch = "master"
-  name = "github.com/yuin/gopher-lua"
-
-[prune]
-  non-go = true
-  go-tests = true
-  unused-packages = true

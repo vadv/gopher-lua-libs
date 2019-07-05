@@ -11,7 +11,7 @@ require (
 	github.com/lib/pq v1.1.1
 	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
-	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/prometheus/client_golang v1.0.0
 	github.com/technoweenie/multipartstreamer v1.0.1
 	github.com/yuin/gluamapper v0.0.0-20150323120927-d836955830e7
 	github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036
