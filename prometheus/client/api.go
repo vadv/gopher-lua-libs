@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	promhttp "github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -40,11 +40,26 @@ func Start(L *lua.LState) int {
 		m := http.NewServeMux()
 		m.Handle("/metrics", promhttp.Handler())
 		h := &http.Server{Addr: pp.addr, Handler: m}
+
+		// register shutdown
+		go func() {
+			ctx := L.Context()
+			if ctx != nil {
+				select {
+				case <-ctx.Done():
+					pp.stop <- true
+				}
+			}
+		}()
+
+		// start listen
 		go func() {
 			if err := h.ListenAndServe(); err != nil {
 				return
 			}
 		}()
+
+		// wait shutdown
 		<-pp.stop
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()

@@ -22,11 +22,12 @@ func Loader(L *lua.LState) int {
 		"stop":  Stop,
 	}))
 
-	prometheusGuageUd := L.NewTypeMetatable(`prometheus_client_gauge_ud`)
-	L.SetGlobal(`prometheus_client_gauge_ud`, prometheusGuageUd)
-	L.SetField(prometheusGuageUd, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"set": GaugeSet,
-		"add": GaugeAdd,
+	prometheusMetricUd := L.NewTypeMetatable(`prometheus_client_metric_ud`)
+	L.SetGlobal(`prometheus_client_metric_ud`, prometheusMetricUd)
+	L.SetField(prometheusMetricUd, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
+		"set": Set,
+		"add": Add,
+		"inc": Inc,
 	}))
 
 	t := L.NewTable()
@@ -37,5 +38,6 @@ func Loader(L *lua.LState) int {
 
 var api = map[string]lua.LGFunction{
 	"register": Register,
+	"counter":  Counter,
 	"gauge":    Gauge,
 }
