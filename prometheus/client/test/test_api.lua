@@ -1,10 +1,12 @@
 local prometheus = require("prometheus")
 local http = require("http_client")
 local strings = require("strings")
---local time = require("time")
+local time = require("time")
 
 local pp = prometheus.register(":18080")
 pp:start()
+
+time.sleep(1)
 
 -- gauge
 local gauge = prometheus.gauge({
