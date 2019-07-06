@@ -1,8 +1,9 @@
-package prometheus_client
+package prometheus_client_test
 
 import (
 	"log"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vadv/gopher-lua-libs/http"
 	"github.com/vadv/gopher-lua-libs/time"
 	lua "github.com/yuin/gopher-lua"
@@ -11,7 +12,7 @@ import (
 // prometheus:start(string)
 func ExampleStart() {
 	state := lua.NewState()
-	Preload(state)
+	prometheus.Preload(state)
 	time.Preload(state)
 	http.Preload(state)
 
@@ -27,11 +28,11 @@ func ExampleStart() {
 	local client = http.client({timeout=5})
 
 	local request = http.request("GET", "http://127.0.0.1:18080/")
-	local result, err = client:do_request(request)
+	local result = client:do_request(request)
 	print(result.code)
 
 	local request = http.request("GET", "http://127.0.0.1:18080/metrics")
-	local result, err = client:do_request(request)
+	local result = client:do_request(request)
 	print(result.code)
 `
 	if err := state.DoString(source); err != nil {

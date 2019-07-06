@@ -1,9 +1,10 @@
-package prometheus_client
+package prometheus_client_test
 
 import (
 	"context"
 	"testing"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vadv/gopher-lua-libs/http"
 	"github.com/vadv/gopher-lua-libs/strings"
 	"github.com/vadv/gopher-lua-libs/time"
@@ -13,7 +14,7 @@ import (
 func TestApi(t *testing.T) {
 	state := lua.NewState()
 	state.SetContext(context.Background())
-	Preload(state)
+	prometheus.Preload(state)
 	http.Preload(state)
 	strings.Preload(state)
 	time.Preload(state)

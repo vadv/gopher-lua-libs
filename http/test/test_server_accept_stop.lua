@@ -57,6 +57,7 @@ if not(p:error()) then error("must be internal error") end
 
 -- test successful start
 p:stop()
+time.sleep(1)
 p:run()
 time.sleep(1)
 if p:error() then error( p:error() ) end
