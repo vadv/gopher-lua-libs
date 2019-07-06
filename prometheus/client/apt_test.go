@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vadv/gopher-lua-libs/http"
+	prometheus "github.com/vadv/gopher-lua-libs/prometheus/client"
 	"github.com/vadv/gopher-lua-libs/strings"
 	"github.com/vadv/gopher-lua-libs/time"
 	lua "github.com/yuin/gopher-lua"
