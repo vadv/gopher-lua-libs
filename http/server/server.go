@@ -22,6 +22,7 @@ import (
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
 	lua_log "github.com/vadv/gopher-lua-libs/log"
+	"github.com/vadv/gopher-lua-libs/prometheus/client"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
 	runtime "github.com/vadv/gopher-lua-libs/runtime"
 	storage "github.com/vadv/gopher-lua-libs/storage"
@@ -62,8 +63,21 @@ func checkServer(L *lua.LState, n int) *luaServer {
 }
 
 // run serve
-func (s *luaServer) serve() {
-	s.err = http.Serve(s.Listener, s)
+func (s *luaServer) serve(L *lua.LState) {
+	// start serve
+	go func() {
+		s.err = http.Serve(s.Listener, s)
+	}()
+	// process shutdown
+	go func(s *luaServer) {
+		ctx := L.Context()
+		if ctx != nil {
+			select {
+			case <-ctx.Done():
+				s.Listener.Close()
+			}
+		}
+	}(s)
 }
 
 // http.server(bind, handler) returns (user data, error)
@@ -79,7 +93,7 @@ func New(L *lua.LState) int {
 		Listener:  l,
 		serveData: make(chan *serveData, 1),
 	}
-	go server.serve()
+	server.serve(L)
 	ud := L.NewUserData()
 	ud.Value = server
 	L.SetMetatable(ud, L.GetTypeMetatable("http_server_ud"))
@@ -128,10 +142,11 @@ func newHandlerState(data *serveData) *lua.LState {
 	lua_log.Preload(state)
 	cloudwatch.Preload(state)
 	http_util.Preload(state)
+	prometheus_client.Preload(state)
 
-	http_server_response_writer_ud := state.NewTypeMetatable(`http_server_response_writer_ud`)
-	state.SetGlobal(`http_server_response_writer_ud`, http_server_response_writer_ud)
-	state.SetField(http_server_response_writer_ud, "__index", state.SetFuncs(state.NewTable(), map[string]lua.LGFunction{
+	httpServerResponseWriterUD := state.NewTypeMetatable(`http_server_response_writer_ud`)
+	state.SetGlobal(`http_server_response_writer_ud`, httpServerResponseWriterUD)
+	state.SetField(httpServerResponseWriterUD, "__index", state.SetFuncs(state.NewTable(), map[string]lua.LGFunction{
 		"code":     HeaderCode,
 		"header":   Header,
 		"write":    Write,

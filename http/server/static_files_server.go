@@ -19,6 +19,18 @@ func ServeStaticFiles(L *lua.LState) int {
 		return 1
 	}
 	server := &http.Server{Handler: fs, IdleTimeout: time.Second * 60}
+
+	// shutdown
+	go func(L *lua.LState, l net.Listener) {
+		ctx := L.Context()
+		if ctx != nil {
+			select {
+			case <-ctx.Done():
+				l.Close()
+			}
+		}
+	}(L, listener)
+
 	err = server.Serve(listener)
 	if err != nil {
 		L.Push(lua.LString(err.Error()))
