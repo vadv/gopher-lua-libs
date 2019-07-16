@@ -39,10 +39,13 @@ func ExampleEncode() {
     local result, err = json.encode(table)
     if err then error(err) end
     print(inspect(result, {newline="", indent=""}))
+
+	print(inspect( json.encode( {} ) ))
 `
 	if err := state.DoString(source); err != nil {
 		log.Fatal(err.Error())
 	}
 	// Output:
 	// '{"a":{"b":1}}'
+	// "{}"
 }

@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	knownTemplateEngine     = make(map[string]luaTemplateEngine, 0)
-	knownTemplateEngineLock = &sync.Mutex{}
+	allEngines     = make(map[string]luaTemplateEngine, 0)
+	allEnginesLock = &sync.Mutex{}
 )
 
 type luaTemplateEngine interface {
@@ -20,10 +20,10 @@ type luaTemplateEngine interface {
 
 // RegisterTemplateEngine register template engine
 func RegisterTemplateEngine(driver string, i luaTemplateEngine) {
-	knownTemplateEngineLock.Lock()
-	defer knownTemplateEngineLock.Unlock()
+	allEnginesLock.Lock()
+	defer allEnginesLock.Unlock()
 
-	knownTemplateEngine[driver] = i
+	allEngines[driver] = i
 }
 
 func checkEngine(L *lua.LState, n int) luaTemplateEngine {
@@ -37,11 +37,11 @@ func checkEngine(L *lua.LState, n int) luaTemplateEngine {
 
 // Choose lua template.get(engine) returns (template_ud, err)
 func Choose(L *lua.LState) int {
-	knownTemplateEngineLock.Lock()
-	defer knownTemplateEngineLock.Unlock()
+	allEnginesLock.Lock()
+	defer allEnginesLock.Unlock()
 
 	engine := L.CheckString(1)
-	e, ok := knownTemplateEngine[engine]
+	e, ok := allEngines[engine]
 	if !ok {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(fmt.Sprintf("unknown template engine: %s", engine)))
