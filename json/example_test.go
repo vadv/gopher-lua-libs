@@ -47,5 +47,5 @@ func ExampleEncode() {
 	}
 	// Output:
 	// '{"a":{"b":1}}'
-	// "{}"
+	// "[]"
 }
