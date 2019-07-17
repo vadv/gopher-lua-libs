@@ -1,6 +1,25 @@
 # http [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs/http?status.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs/http)
 
-## Usage
+## Functions
+
+- `client()` - returns http client instance for further usage. Avaliable options as table:
+```
+proxy="http(s)://<user>:<password>@host:<port>",
+timeout= 10,
+insecure_ssl=false,
+user_agent = "gopher-lua",
+basic_auth_user = "",
+basic_auth_password = "",
+headers = {"key"="value"},
+debug = false,
+```
+- `request(method, url, [data])` - make request userdata.
+
+## Methods
+### client
+- `do_request(request)` - returns result of request. Avaliable data are: 'body', 'headers', 'code'
+
+## Examples
 
 ### Client
 
