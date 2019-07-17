@@ -13,6 +13,7 @@ local req, err = http.request("GET", "http://127.0.0.1:1111/get")
 if err then error(err) end
 local resp, err = client_1:do_request(req)
 if err then error(err) end
+if not(resp.headers['Content-Length'] == "2") then error("resp headers") end
 if not(resp.code == 200) then error("resp code") end
 if not(resp.body == "OK") then error("resp body") end
 print("done: http.client:get")

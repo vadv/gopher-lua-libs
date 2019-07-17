@@ -64,8 +64,9 @@ func HeaderSet(L *lua.LState) int {
 // DoRequest lua http_client_ud:do_request()
 // http_client_ud:do_request(http_request_ud) returns (response, error)
 //    response: {
-//      code=http_code (200, 201, ..., 500, ...),
-//      body=string
+//      code = http_code (200, 201, ..., 500, ...),
+//      body = string
+//      headers = table
 //    }
 func DoRequest(L *lua.LState) int {
 	client := checkClient(L)
@@ -78,6 +79,13 @@ func DoRequest(L *lua.LState) int {
 		return 2
 	}
 	defer response.Body.Close()
+	headers := L.NewTable()
+	for k, v := range response.Header {
+		if len(v) > 0 {
+			headers.RawSetString(k, lua.LString(v[0]))
+		}
+	}
+
 	data, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		L.Push(lua.LNil)
@@ -87,6 +95,7 @@ func DoRequest(L *lua.LState) int {
 	result := L.NewTable()
 	L.SetField(result, `code`, lua.LNumber(response.StatusCode))
 	L.SetField(result, `body`, lua.LString(string(data)))
+	L.SetField(result, `headers`, headers)
 	L.Push(result)
 	return 1
 }
