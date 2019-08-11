@@ -34,9 +34,9 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-type luaPlugin struct {
+type LuaPlugin struct {
 	sync.Mutex
-	state      *lua.LState
+	State      *lua.LState
 	cancelFunc context.CancelFunc
 	running    bool
 	error      error
@@ -45,27 +45,27 @@ type luaPlugin struct {
 	jobPayload *string
 }
 
-func (p *luaPlugin) getError() error {
+func (p *LuaPlugin) getError() error {
 	p.Lock()
 	defer p.Unlock()
 	err := p.error
 	return err
 }
 
-func (p *luaPlugin) getRunning() bool {
+func (p *LuaPlugin) getRunning() bool {
 	p.Lock()
 	defer p.Unlock()
 	running := p.running
 	return running
 }
 
-func (p *luaPlugin) setError(err error) {
+func (p *LuaPlugin) setError(err error) {
 	p.Lock()
 	defer p.Unlock()
 	p.error = err
 }
 
-func (p *luaPlugin) setRunning(val bool) {
+func (p *LuaPlugin) setRunning(val bool) {
 	p.Lock()
 	defer p.Unlock()
 	p.running = val
@@ -103,36 +103,38 @@ func NewPluginState() *lua.LState {
 	return state
 }
 
-func (p *luaPlugin) start() {
+func (p *LuaPlugin) start() {
 	p.Lock()
-	state := NewPluginState()
-	p.state = state
+	if p.State == nil {
+		state := NewPluginState()
+		p.State = state
+	}
 	p.error = nil
 	p.running = true
 	isBody := (p.filename == nil)
 	if !(p.jobPayload == nil) {
 		payload := *p.jobPayload
-		state.SetGlobal(`payload`, lua.LString(payload))
+		p.State.SetGlobal(`payload`, lua.LString(payload))
 	}
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
-	p.state.SetContext(ctx)
+	p.State.SetContext(ctx)
 	p.Unlock()
 
 	// blocking
 	if isBody {
 		body := *p.body
-		p.setError(p.state.DoString(body))
+		p.setError(p.State.DoString(body))
 	} else {
 		filename := *p.filename
-		p.setError(p.state.DoFile(filename))
+		p.setError(p.State.DoFile(filename))
 	}
 	p.setRunning(false)
 }
 
-func checkPlugin(L *lua.LState, n int) *luaPlugin {
+func checkPlugin(L *lua.LState, n int) *LuaPlugin {
 	ud := L.CheckUserData(n)
-	if v, ok := ud.Value.(*luaPlugin); ok {
+	if v, ok := ud.Value.(*LuaPlugin); ok {
 		return v
 	}
 	L.ArgError(n, "plugin expected")
@@ -142,7 +144,7 @@ func checkPlugin(L *lua.LState, n int) *luaPlugin {
 // DoString lua plugin.do_string(body) returns plugin_ud
 func DoString(L *lua.LState) int {
 	body := L.CheckString(1)
-	p := &luaPlugin{body: &body}
+	p := &LuaPlugin{body: &body}
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
@@ -153,7 +155,7 @@ func DoString(L *lua.LState) int {
 // DoFile lua plugin.do_file(filename) returns plugin_ud
 func DoFile(L *lua.LState) int {
 	filename := L.CheckString(1)
-	p := &luaPlugin{filename: &filename}
+	p := &LuaPlugin{filename: &filename}
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
@@ -165,7 +167,7 @@ func DoFile(L *lua.LState) int {
 func DoFileWithPayload(L *lua.LState) int {
 	filename := L.CheckString(1)
 	payload := L.CheckString(2)
-	p := &luaPlugin{filename: &filename, jobPayload: &payload}
+	p := &LuaPlugin{filename: &filename, jobPayload: &payload}
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
@@ -177,7 +179,7 @@ func DoFileWithPayload(L *lua.LState) int {
 func DoStringWithPayload(L *lua.LState) int {
 	body := L.CheckString(1)
 	payload := L.CheckString(2)
-	p := &luaPlugin{body: &body, jobPayload: &payload}
+	p := &LuaPlugin{body: &body, jobPayload: &payload}
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
