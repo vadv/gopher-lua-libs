@@ -20,6 +20,7 @@ import (
 	prometheus "github.com/vadv/gopher-lua-libs/prometheus/client"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
 	runtime "github.com/vadv/gopher-lua-libs/runtime"
+	"github.com/vadv/gopher-lua-libs/stats"
 	storage "github.com/vadv/gopher-lua-libs/storage"
 	strings "github.com/vadv/gopher-lua-libs/strings"
 	tac "github.com/vadv/gopher-lua-libs/tac"
@@ -65,4 +66,5 @@ func Preload(L *lua.LState) {
 	template.Preload(L)
 	cloudwatch.Preload(L)
 	log.Preload(L)
+	stats.Preload(L)
 }
