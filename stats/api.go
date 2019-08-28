@@ -60,3 +60,21 @@ func Percentile(L *lua.LState) int {
 	L.Push(lua.LNumber(result))
 	return 1
 }
+
+// StandardDeviation lua stats.median(table, percentile): port of go montanaflynn/stats.StandardDeviation() returns value and error
+func StandardDeviation(L *lua.LState) int {
+	data, err := getFloatSliceFromTable(L, 1)
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
+	}
+	result, err := gostats.StandardDeviation(data)
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
+	}
+	L.Push(lua.LNumber(result))
+	return 1
+}

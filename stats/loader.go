@@ -21,6 +21,7 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"median":     Median,
-	"percentile": Percentile,
+	"median":             Median,
+	"percentile":         Percentile,
+	"standard_deviation": StandardDeviation,
 }
