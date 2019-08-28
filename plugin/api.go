@@ -5,6 +5,8 @@ import (
 	"context"
 	"sync"
 
+	"github.com/vadv/gopher-lua-libs/stats"
+
 	cloudwatch "github.com/vadv/gopher-lua-libs/aws/cloudwatch"
 	chef "github.com/vadv/gopher-lua-libs/chef"
 	cmd "github.com/vadv/gopher-lua-libs/cmd"
@@ -100,6 +102,7 @@ func NewPluginState() *lua.LState {
 	cloudwatch.Preload(state)
 	log.Preload(state)
 	prometheus.Preload(state)
+	stats.Preload(state)
 	return state
 }
 

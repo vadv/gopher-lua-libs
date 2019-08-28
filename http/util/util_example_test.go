@@ -12,7 +12,7 @@ func ExampleParseUrl() {
 	Preload(state)
 	source := `
     local http_util = require("http_util")
-    local url, err = http_util.parse_url("http://u1:p2@host:port/pathx?k1=v1&k2=v2&k1=vx")
+    local url, err = http_util.parse_url("http://u1:p2@host:80/pathx?k1=v1&k2=v2&k1=vx")
     if err then error(err) end
     print(url.path)
 `
@@ -29,7 +29,7 @@ func ExampleBuidUrl() {
 	Preload(state)
 	source := `
     local http_util = require("http_util")
-    local url, err = http_util.parse_url("http://u1:p2@host:port/pathx?k1=v1&k2=v2&k1=vx")
+    local url, err = http_util.parse_url("http://u1:p2@host:80/pathx?k1=v1&k2=v2&k1=vx")
     if err then error(err) end
     url.path = "path2"
     print(http_util.build_url(url))
@@ -38,5 +38,5 @@ func ExampleBuidUrl() {
 		log.Fatal(err.Error())
 	}
 	// Output:
-	// http://u1:p2@host:port/path2?k1=v1&k1=vx&k2=v2
+	// http://u1:p2@host:80/path2?k1=v1&k1=vx&k2=v2
 }
