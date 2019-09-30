@@ -18,7 +18,8 @@ func Loader(L *lua.LState) int {
 	clwUd := L.NewTypeMetatable(`clw_ud`)
 	L.SetGlobal(`clw_ud`, clwUd)
 	L.SetField(clwUd, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"download": Download,
+		"download":        Download,
+		"get_metric_data": GetMetricData,
 	}))
 
 	t := L.NewTable()

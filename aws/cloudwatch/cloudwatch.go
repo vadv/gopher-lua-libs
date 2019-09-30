@@ -4,12 +4,14 @@ package cloudwatch
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	lua "github.com/yuin/gopher-lua"
 )
 
 type luaClW struct {
-	awsClwClient *cloudwatchlogs.CloudWatchLogs
+	cloudWatchClient *cloudwatch.CloudWatch
+	logClient        *cloudwatchlogs.CloudWatchLogs
 }
 
 func checkluaClW(L *lua.LState, n int) *luaClW {
@@ -32,20 +34,8 @@ func newLauClW(awsProfile *string, awsRegion *string) (*luaClW, error) {
 		opts.Config = aws.Config{Region: awsRegion}
 	}
 	sess := session.Must(session.NewSessionWithOptions(opts))
-	return &luaClW{awsClwClient: cloudwatchlogs.New(sess)}, nil
-}
-
-func (cw *luaClW) events(filterParams *cloudwatchlogs.FilterLogEventsInput, events chan *cloudwatchlogs.FilteredLogEvent, done chan error) {
-
-	processor := func(res *cloudwatchlogs.FilterLogEventsOutput, lastPage bool) bool {
-		for _, event := range res.Events {
-			events <- event
-		}
-		if lastPage {
-			close(events)
-		}
-		return !lastPage
-	}
-
-	done <- cw.awsClwClient.FilterLogEventsPages(filterParams, processor)
+	return &luaClW{
+		logClient:        cloudwatchlogs.New(sess),
+		cloudWatchClient: cloudwatch.New(sess),
+	}, nil
 }
