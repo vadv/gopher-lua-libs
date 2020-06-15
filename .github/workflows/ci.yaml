@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: ['1.13', '1.14']
+
+    services: {}
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2-beta
+        with:
+          stable: 'false'
+          go-version: ${{ matrix.go }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run tests
+        run: go test -v -tags 'sqlite' -race ./...
