@@ -1,4 +1,4 @@
-if os.getenv("TRAVIS") then
+if os.getenv("CI") then
   -- travis
 else
   dofile("./test/test_api_restream.lua")
