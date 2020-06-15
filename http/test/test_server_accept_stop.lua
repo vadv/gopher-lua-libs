@@ -22,7 +22,7 @@ local plugin_body = [[
 
 local p = plugin.do_string(plugin_body)
 p:run()
-time.sleep(1)
+time.sleep(2)
 
 local client = http.client({timeout=1})
 local req, err = http.request("GET", "http://127.0.0.1:3113")
@@ -34,7 +34,7 @@ if err then error(err) end
 
 -- stop plugin
 p:stop()
-time.sleep(1)
+time.sleep(2)
 if p:error() then error(err) end
 
 -- must error request
@@ -42,7 +42,7 @@ local _, err = client:do_request(req)
 if (err == nil) then error("must be error") end
 
 p:run()
-time.sleep(1)
+time.sleep(2)
 if p:error() then error( p:error() ) end
 -- no error request
 local _, err = client:do_request(req)
@@ -57,9 +57,9 @@ if not(p:error()) then error("must be internal error") end
 
 -- test successful start
 p:stop()
-time.sleep(1)
+time.sleep(2)
 p:run()
-time.sleep(1)
+time.sleep(2)
 if p:error() then error( p:error() ) end
 -- no error request
 local _, err = client:do_request(req)
