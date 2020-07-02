@@ -4,12 +4,13 @@ go 1.13
 
 require (
 	github.com/aws/aws-sdk-go v1.32.1
-	github.com/cbroglie/mustache v1.1.0
+	github.com/cbroglie/mustache v1.0.1
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/dustin/go-humanize v1.0.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/lib/pq v1.7.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
+	github.com/mitchellh/mapstructure v1.3.2 // indirect
 	github.com/montanaflynn/stats v0.6.3
 	github.com/prometheus/client_golang v1.5.1
 	github.com/technoweenie/multipartstreamer v1.0.1
