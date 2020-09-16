@@ -9,7 +9,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/lib/pq v1.7.0
-	github.com/mattn/go-sqlite3 v2.0.3+incompatible
+	github.com/mattn/go-sqlite3 v1.14.3
 	github.com/mitchellh/mapstructure v1.3.2 // indirect
 	github.com/montanaflynn/stats v0.6.3
 	github.com/prometheus/client_golang v1.5.1
