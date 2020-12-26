@@ -5,7 +5,6 @@ import (
 	"fmt"
 	lua "github.com/yuin/gopher-lua"
 	yaml "gopkg.in/yaml.v2"
-	"math"
 )
 
 // Decode lua yaml.decode(string) returns (table, error)
@@ -55,10 +54,11 @@ func toYAML(L *lua.LState, value lua.LValue) interface{} {
 		return lua.LVAsBool(value)
 	case lua.LTNumber:
 		num := float64(lua.LVAsNumber(value))
-		if math.Floor(num) != num {
+		intNum := int64(num)
+		if num != float64(intNum) {
 			return num
 		}
-		return int64(num)
+		return intNum
 	case lua.LTString:
 		return lua.LVAsString(value)
 	case lua.LTTable:
