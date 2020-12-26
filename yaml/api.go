@@ -29,7 +29,7 @@ func Encode(L *lua.LState) int {
 	err := L.GPCall(func(state *lua.LState) int {
 		value = toYAML(L, arg)
 		return 0
-	}, nil)
+	}, lua.LNil)
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))
