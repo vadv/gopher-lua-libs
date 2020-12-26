@@ -26,7 +26,7 @@ func Decode(L *lua.LState) int {
 func Encode(L *lua.LState) int {
 	arg := L.CheckAny(1)
 	var value interface{}
-	err := L.GPCall(func(state *lua.LState) int {
+	err := L.GPCall(func(L *lua.LState) int {
 		value = toYAML(L, arg)
 		return 0
 	}, lua.LNil)
