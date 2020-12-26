@@ -41,3 +41,8 @@ bar:
 - 3.45
 foo: bar
 ]], tostring(encodedMap))
+
+-- test encode(function) fails
+local ok, errMsg = pcall(yaml.encode, function() return "" end)
+assert(not ok)
+assert(errMsg:find("cannot encode values with function in them"), errMsg)
