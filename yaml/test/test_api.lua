@@ -9,6 +9,12 @@ assert(not err, tostring(err))
 assert(result["a"]["b"] == 1, tostring(result["a"]["b"]))
 print("done: yaml.decode()")
 
+-- test decode with no args throws exception
+local ok, errMsg = pcall(yaml.decode)
+assert(not ok)
+assert(errMsg)
+assert(errMsg:find("(string expected, got nil)"), tostring(errMsg))
+
 -- test encode of decoded(text) == text
 local encodedResult, err = yaml.encode(result)
 assert(not err, tostring(err))
@@ -46,3 +52,8 @@ foo: bar
 local _, errMsg = yaml.encode(function() return "" end)
 assert(errMsg)
 assert(errMsg:find("cannot encode values with function in them"), errMsg)
+
+-- test encode with no args throws exception
+local ok, errMsg = pcall(yaml.encode)
+assert(not ok)
+assert(errMsg:find("(value expected)"), tostring(errMsg))
