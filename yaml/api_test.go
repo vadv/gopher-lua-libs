@@ -9,13 +9,18 @@ import (
 )
 
 func TestApi(t *testing.T) {
+	// Setup the VM
 	L := lua.NewState()
 	defer L.Close()
 	Preload(L)
+
+	// Load the test cases from file
 	err := L.DoFile("./test/test_api.lua")
 	require.NoError(t, err)
 	test := L.CheckTable(1)
 	L.Pop(1)
+
+	// For each method on the returned test object, invoke it safely with PCall.
 	testCount := 0
 	test.ForEach(func(key lua.LValue, value lua.LValue) {
 		if value.Type() != lua.LTFunction {
@@ -28,5 +33,7 @@ func TestApi(t *testing.T) {
 			require.NoError(t, L.PCall(1, 0, nil))
 		})
 	})
+
+	// Ensure we ran non-zero tests.
 	assert.NotEqual(t, 0, testCount, "test should not be empty")
 }
