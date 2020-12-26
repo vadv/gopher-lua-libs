@@ -24,7 +24,17 @@ func Decode(L *lua.LState) int {
 
 // Encode lua yaml.encode(any) returns (string, error)
 func Encode(L *lua.LState) int {
-	value := toYAML(L, L.CheckAny(1))
+	arg := L.CheckAny(1)
+	var value interface{}
+	err := L.GPCall(func(state *lua.LState) int {
+		value = toYAML(L, arg)
+		return 0
+	}, nil)
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
+	}
 	data, err := yaml.Marshal(value)
 	if err != nil {
 		L.Push(lua.LNil)
