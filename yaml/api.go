@@ -3,6 +3,7 @@ package yaml
 
 import (
 	"fmt"
+
 	lua "github.com/yuin/gopher-lua"
 	yaml "gopkg.in/yaml.v2"
 )

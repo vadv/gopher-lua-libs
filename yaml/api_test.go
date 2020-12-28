@@ -1,9 +1,10 @@
 package yaml
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 
 	lua "github.com/yuin/gopher-lua"
 )
