@@ -22,7 +22,6 @@ print(inspect(result, {newline="", indent=""}))
 ### encode
 ```lua
     local yaml = require("yaml")
-    local inspect = require("inspect")
     local encoded, err = yaml.encode({a = {b = 1}})
     if err then error(err) end
     print(encoded)

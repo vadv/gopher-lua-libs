@@ -36,7 +36,6 @@ func ExampleEncode() {
 	inspect.Preload(state)
 	source := `
     local yaml = require("yaml")
-    local inspect = require("inspect")
     local encoded, err = yaml.encode({a = {b = 1}})
     if err then error(err) end
     print(encoded)
