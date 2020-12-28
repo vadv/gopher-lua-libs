@@ -17,6 +17,7 @@ for i=1, count, 1 do
 end
 
 bar:finish()
+```
 
 ### Configure progress bar
 - `bar:configure({})` - change progress bar parameters. Avaliable options:
