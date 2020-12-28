@@ -35,6 +35,7 @@ go get github.com/vadv/gopher-lua-libs
 * [prometheus](/prometheus/client) prometheus exporter
 * [regexp](/regexp) regexp port
 * [runtime](/runtime) runtime port
+* [pb](/pb) [https://github.com/cheggaaa/pb](https://github.com/cheggaaa/pb) port (v3)
 * [stats](/stats) stats [https://github.com/montanaflynn/stats](https://github.com/montanaflynn/stats) port
 * [storage](/storage) package for store persist data and share values between lua states
 * [strings](/strings) strings port (utf supported)

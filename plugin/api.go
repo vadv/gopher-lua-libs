@@ -20,6 +20,7 @@ import (
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
 	log "github.com/vadv/gopher-lua-libs/log"
+	pb "github.com/vadv/gopher-lua-libs/pb"
 	prometheus "github.com/vadv/gopher-lua-libs/prometheus/client"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
 	storage "github.com/vadv/gopher-lua-libs/storage"
@@ -102,6 +103,7 @@ func NewPluginState() *lua.LState {
 	cloudwatch.Preload(state)
 	log.Preload(state)
 	prometheus.Preload(state)
+	pb.Preload(state)
 	stats.Preload(state)
 	return state
 }
