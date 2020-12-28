@@ -28,7 +28,8 @@ func Encode(L *lua.LState) int {
 	arg := L.CheckAny(1)
 	var value interface{}
 	err := L.GPCall(func(L *lua.LState) int {
-		value = toYAML(L, arg)
+		visited := make(map[*lua.LTable]bool)
+		value = toYAML(L, visited, arg)
 		return 0
 	}, lua.LNil)
 	if err != nil {
@@ -57,7 +58,7 @@ func tableIsSlice(table *lua.LTable) bool {
 	return true
 }
 
-func toYAML(L *lua.LState, value lua.LValue) interface{} {
+func toYAML(L *lua.LState, visited map[*lua.LTable]bool, value lua.LValue) interface{} {
 	switch value.Type() {
 	case lua.LTNil:
 		return nil
@@ -74,16 +75,20 @@ func toYAML(L *lua.LState, value lua.LValue) interface{} {
 		return lua.LVAsString(value)
 	case lua.LTTable:
 		valueTable := value.(*lua.LTable)
+		if visited[valueTable] {
+			L.RaiseError("nested table %s", valueTable)
+		}
+		visited[valueTable] = true
 		if tableIsSlice(valueTable) {
 			ret := make([]interface{}, 0, valueTable.Len())
 			valueTable.ForEach(func(_ lua.LValue, tValue lua.LValue) {
-				ret = append(ret, toYAML(L, tValue))
+				ret = append(ret, toYAML(L, visited, tValue))
 			})
 			return ret
 		}
 		ret := make(map[interface{}]interface{})
 		valueTable.ForEach(func(tKey lua.LValue, tValue lua.LValue) {
-			ret[toYAML(L, tKey)] = toYAML(L, tValue)
+			ret[toYAML(L, visited, tKey)] = toYAML(L, visited, tValue)
 		})
 		return ret
 	default:

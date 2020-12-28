@@ -82,4 +82,14 @@ function test:encode_function_fails()
     assert(errMsg:find("(value expected)"), tostring(errMsg))
 end
 
+-- test cycles
+function test:cycles_return_error()
+    local t1 = {}
+    local t2 = { t1 = t1 }
+    t1[t2] = t2
+    local _, errMsg = yaml.encode(t1)
+    assert(errMsg)
+    assert(errMsg:find("nested table"), tostring(errMsg))
+end
+
 return test
