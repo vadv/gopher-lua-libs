@@ -15,6 +15,7 @@ import (
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
 	log "github.com/vadv/gopher-lua-libs/log"
+	pb "github.com/vadv/gopher-lua-libs/pb"
 	plugin "github.com/vadv/gopher-lua-libs/plugin"
 	pprof "github.com/vadv/gopher-lua-libs/pprof"
 	prometheus "github.com/vadv/gopher-lua-libs/prometheus/client"
@@ -58,6 +59,7 @@ func Preload(L *lua.LState) {
 	zabbix.Preload(L)
 	pprof.Preload(L)
 	prometheus.Preload(L)
+	pb.Preload(L)
 	crypto.Preload(L)
 	goos.Preload(L)
 	storage.Preload(L)
