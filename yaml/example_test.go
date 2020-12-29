@@ -29,3 +29,22 @@ a:
 	// Output:
 	// {a = {b = 1}}
 }
+
+func ExampleEncode() {
+	state := lua.NewState()
+	Preload(state)
+	inspect.Preload(state)
+	source := `
+    local yaml = require("yaml")
+    local encoded, err = yaml.encode({a = {b = 1}})
+    if err then error(err) end
+    print(encoded)
+`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+	// Output:
+	// a:
+	//   b: 1
+	//
+}

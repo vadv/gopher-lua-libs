@@ -2,6 +2,7 @@
 
 ## Usage
 
+### decode
 ```lua
 local yaml = require("yaml")
 local inspect = require("inspect")
@@ -18,3 +19,14 @@ print(inspect(result, {newline="", indent=""}))
 -- {a = {b = 1}}
 ```
 
+### encode
+```lua
+    local yaml = require("yaml")
+    local encoded, err = yaml.encode({a = {b = 1}})
+    if err then error(err) end
+    print(encoded)
+	-- Output:
+	-- a:
+	--   b: 1
+	--
+```
