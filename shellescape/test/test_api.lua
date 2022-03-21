@@ -34,6 +34,7 @@ function TestQuote(t)
 
 end
 
+-- Tests for QuoteCommand
 function TestQuoteCommand(t)
     tests = {
         {
@@ -50,6 +51,7 @@ function TestQuoteCommand(t)
     end
 end
 
+-- Tests for StripUnsafe
 function TestStripUnsafe(t)
     tests = {
         {
