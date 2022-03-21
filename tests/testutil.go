@@ -63,10 +63,7 @@ func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) {
 	preload(L)
 	L.SetGlobal("t", tLua(L, t))
 
-	fn, err := L.LoadFile(filename)
-	require.NoError(t, err)
-	L.Push(fn)
-	require.NoError(t, L.PCall(0, lua.MultRet, nil))
+	require.NoError(t, L.DoFile(filename))
 	L.G.Global.ForEach(func(key lua.LValue, value lua.LValue) {
 		key_str := lua.LVAsString(key)
 		if strings.HasPrefix(key_str, "Test") && value.Type() == lua.LTFunction {
