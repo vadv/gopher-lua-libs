@@ -21,6 +21,7 @@ import (
 	prometheus "github.com/vadv/gopher-lua-libs/prometheus/client"
 	regexp "github.com/vadv/gopher-lua-libs/regexp"
 	runtime "github.com/vadv/gopher-lua-libs/runtime"
+	"github.com/vadv/gopher-lua-libs/shellescape"
 	"github.com/vadv/gopher-lua-libs/stats"
 	storage "github.com/vadv/gopher-lua-libs/storage"
 	strings "github.com/vadv/gopher-lua-libs/strings"
@@ -55,6 +56,7 @@ func Preload(L *lua.LState) {
 	db.Preload(L)
 	cert_util.Preload(L)
 	runtime.Preload(L)
+	shellescape.Preload(L)
 	telegram.Preload(L)
 	zabbix.Preload(L)
 	pprof.Preload(L)
