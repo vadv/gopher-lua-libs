@@ -1,62 +1,72 @@
 local shellescape = require("shellescape")
 local inspect = require('inspect')
 
-local test = {}
+-- Tests for the Quote function
+function TestQuote(t)
+    tests = {
+        {
+            name="simple string is itself",
+            input="foo",
+            expected="foo",
+        },
+        {
+            name="string with spaces is quoted",
+            input="foo bar",
+            expected=[['foo bar']],
+        },
+        {
+            name="string with apostrophe is quoted",
+            input="don't sweat the technique",
+            expected=[['don'"'"'t sweat the technique']],
+        },
+        {
+            name="string with double quotes is quoted",
+            input=[[She said, "that's what she said."]],
+            expected=[['She said, "that'"'"'s what she said."']],
+        },
+    }
+    for _, tt in ipairs(tests) do
+        t:Run(tt.name, function(t)
+            escaped = shellescape.quote(tt.input)
+            assert(escaped == tt.expected, string.format("%s != %s", escaped, tt.expected))
+        end)
+    end
 
--- Test string without quotes is string
-function test:quote_foo_is_foo()
-    input = "foo"
-    expected = "foo"
-    escaped = shellescape.quote(input)
-    assert(escaped == expected, string.format("%s != %s", escaped, expected))
 end
 
--- Test string with space is quoted
-function test:quote_text_with_spaces_is_quoted()
-    input = "foo bar"
-    expected = "'foo bar'"
-    escaped = shellescape.quote(input)
-    assert(escaped == expected, string.format("%s != %s", escaped, expected))
+function TestQuoteCommand(t)
+    tests = {
+        {
+            name="mixed args are all quoted",
+            input={"foo", "bar baz", "don't do it"},
+            expected=[[foo 'bar baz' 'don'"'"'t do it']],
+        },
+    }
+    for _, tt in ipairs(tests) do
+        t:Run(tt.name, function(t)
+            escaped = shellescape.quote_command(tt.input)
+            assert(escaped == tt.expected, string.format("%s != %s", escaped, tt.expected))
+        end)
+    end
 end
 
--- Test string with apostrophe is quoted
-function test:quote_text_with_apostrophe_is_quoted()
-    input = "don't sweat the technique"
-    expected = [['don'"'"'t sweat the technique']]
-    escaped = shellescape.quote(input)
-    assert(escaped == expected, string.format("%s != %s", escaped, expected))
+function TestStripUnsafe(t)
+    tests = {
+        {
+            name="safe chars are left alone",
+            input=[[don't say "foo."]],
+            expected=[[don't say "foo."]],
+        },
+        {
+            name="unsafe chars like newline are removed",
+            input="foo\nbar",
+            expected="foobar",
+        },
+    }
+    for _, tt in ipairs(tests) do
+        t:Run(tt.name, function(t)
+            escaped = shellescape.strip_unsafe(tt.input)
+            assert(escaped == tt.expected, string.format("%s != %s", escaped, tt.expected))
+        end)
+    end
 end
-
--- Test string with double quotes is quoted
-function test:quote_text_with_double_quotes_is_quoted()
-    input = [[She said, "that's what she said."]]
-    expected = [['She said, "that'"'"'s what she said."']]
-    escaped = shellescape.quote(input)
-    assert(escaped == expected, string.format("%s != %s", escaped, expected))
-end
-
--- Test QuoteCommand: mixed args are all quoted
-function test:quote_command__array_with_mixture_is_escaped()
-    input = {"foo", "bar baz", "don't do it"}
-    expected = [[foo 'bar baz' 'don'"'"'t do it']]
-    escaped = shellescape.quote_command(input)
-    assert(escaped == expected, string.format("%s != %s", escaped, expected))
-end
-
--- Test StripUnsafe: safe chars are left alone
-function test:strip_unsafe__safe_are_preserved()
-    input = [[don't say "foo."]]
-    expected = [[don't say "foo."]]
-    escaped = shellescape.strip_unsafe(input)
-    assert(escaped == expected, string.format("%s != %s", escaped, expected))
-end
-
--- Test StripUnsafe: safe chars are left alone
-function test:strip_unsafe__remove_newline()
-    input = "test\ntwolines"
-    expected = "testtwolines"
-    escaped = shellescape.strip_unsafe(input)
-    assert(escaped == expected, string.format("%s != %s", escaped, expected))
-end
-
-return test
