@@ -58,6 +58,8 @@ func registerTType(L *lua.LState) {
 // This allows the lua test files to operate similar to go tests - see shellescape/test/test_api.lua
 func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) (numTests int) {
 	L := lua.NewState()
+	defer L.Close()
+
 	registerTType(L)
 	require.NotNil(t, preload)
 	preload(L)
