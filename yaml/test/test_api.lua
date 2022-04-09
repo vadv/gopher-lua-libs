@@ -1,5 +1,4 @@
 local yaml = require("yaml")
-local test = {}
 
 -- test decode
 function Test_decode(t)
@@ -92,4 +91,3 @@ function Test_cycles_return_error(t)
     assert(errMsg:find("nested table"), tostring(errMsg))
 end
 
-return test
