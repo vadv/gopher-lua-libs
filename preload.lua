@@ -1,6 +1,5 @@
 function TestRequireModule(t)
     modules = {
-	    "shellescape",
         "cert_util",
         "chef",
         "cloudwatch",
@@ -20,6 +19,7 @@ function TestRequireModule(t)
         "prometheus",
         "regexp",
         "runtime",
+        "shellescape",
         "stats",
         "storage",
         "strings",
