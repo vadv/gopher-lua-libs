@@ -56,7 +56,7 @@ func registerTType(L *lua.LState) {
 
 //RunLuaTestFile fires up a new state, registers the *testing.T and invokes all methods starting with Test.
 // This allows the lua test files to operate similar to go tests - see shellescape/test/test_api.lua
-func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) {
+func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) (numTests int) {
 	L := lua.NewState()
 	registerTType(L)
 	require.NotNil(t, preload)
@@ -65,13 +65,24 @@ func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) {
 
 	require.NoError(t, L.DoFile(filename))
 	L.G.Global.ForEach(func(key lua.LValue, value lua.LValue) {
-		key_str := lua.LVAsString(key)
-		if strings.HasPrefix(key_str, "Test") && value.Type() == lua.LTFunction {
-			t.Run(key_str, func(t *testing.T) {
+		keyStr := lua.LVAsString(key)
+		if strings.HasPrefix(keyStr, "Test") && value.Type() == lua.LTFunction {
+			t.Run(keyStr, func(t *testing.T) {
+				numTests++
 				L.Push(value)
 				L.Push(tLua(L, t))
 				assert.NoError(t, L.PCall(1, 0, nil))
 			})
 		}
 	})
+	return
+}
+
+//SeveralPreloadFuncs combines several PreloadFuncs to one such as when tests want to preload theirs + inspect
+func SeveralPreloadFuncs(preloadFuncs ...PreloadFunc) PreloadFunc {
+	return func(L *lua.LState) {
+		for _, preloadFunc := range preloadFuncs {
+			preloadFunc(L)
+		}
+	}
 }

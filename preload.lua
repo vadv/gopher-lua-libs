@@ -1,30 +1,41 @@
-require("cert_util")
-require("db")
-require("filepath")
-require("inspect")
-require("ioutil")
-require("json")
-require("regexp")
-require("strings")
-require("tac")
-require("tcp")
-require("time")
-require("xmlpath")
-require("yaml")
-require("plugin")
-require("runtime")
-require("cmd")
-require("telegram")
-require("zabbix")
-require("storage")
-require("crypto")
-require("goos")
-require("humanize")
-require("chef")
-require("template")
-require("pprof")
-require("cloudwatch")
-require("log")
-require("prometheus")
-require("pb")
-require("stats")
+function TestRequireModule(t)
+    modules = {
+	    "shellescape",
+        "cert_util",
+        "chef",
+        "cloudwatch",
+        "cmd",
+        "crypto",
+        "db",
+        "filepath",
+        "goos",
+        "humanize",
+        "inspect",
+        "ioutil",
+        "json",
+        "log",
+        "pb",
+        "plugin",
+        "pprof",
+        "prometheus",
+        "regexp",
+        "runtime",
+        "stats",
+        "storage",
+        "strings",
+        "tac",
+        "tcp",
+        "telegram",
+        "template",
+        "time",
+        "xmlpath",
+        "yaml",
+        "zabbix",
+    }
+    for _, module in ipairs(modules) do
+        t:Run(module, function(t)
+            require(module)
+        end)
+    end
+end
+

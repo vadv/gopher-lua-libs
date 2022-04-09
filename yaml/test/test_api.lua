@@ -2,7 +2,7 @@ local yaml = require("yaml")
 local test = {}
 
 -- test decode
-function test:decode()
+function Test_decode(t)
     local text = [[
 a:
   b: 1
@@ -10,11 +10,11 @@ a:
     local result, err = yaml.decode(text)
     assert(not err, tostring(err))
     assert(result["a"]["b"] == 1, tostring(result["a"]["b"]))
-    print("done: yaml.decode()")
+    print("done: yaml.decode(t)n")
 end
 
 -- test decode with no args throws exception
-function test:decode_no_args()
+function Test_decode_no_args(t)
     local ok, errMsg = pcall(yaml.decode)
     assert(not ok)
     assert(errMsg)
@@ -22,7 +22,7 @@ function test:decode_no_args()
 end
 
 -- test encode of decoded(text) == text
-function test:decoded_text_equals_text()
+function Test_decoded_text_equals_text(t)
     local text = [[
 a:
   b: 1
@@ -35,7 +35,7 @@ a:
 end
 
 -- test encode(slice) works
-function test:encode_slice_works()
+function Test_encode_slice_works(t)
     local encodedSlice = yaml.encode({ "foo", "bar", "baz" })
     assert(encodedSlice == [[
 - foo
@@ -45,7 +45,7 @@ function test:encode_slice_works()
 end
 
 -- test encode(sparse slice) works
-function test:encode_sparse_slice_returns_map()
+function Test_encode_sparse_slice_returns_map(t)
     local slice = { [0] = "foo", [1] = "bar", [2] = "baz" }
     local encodedSlice = yaml.encode(slice)
     assert(encodedSlice == [[
@@ -56,7 +56,7 @@ function test:encode_sparse_slice_returns_map()
 end
 
 -- test encode(map) works
-function test:encode_map_returns_map()
+function Test_encode_map_returns_map(t)
     local map = { foo = "bar", bar = { 1, 2, 3.45 } }
     local encodedMap = yaml.encode(map)
     assert(encodedMap == [[
@@ -69,7 +69,7 @@ foo: bar
 end
 
 -- test encode(function) fails
-function test:encode_function_fails()
+function Test_encode_function_fails(t)
     local _, errMsg = yaml.encode(function()
         return ""
     end)
@@ -83,7 +83,7 @@ function test:encode_function_fails()
 end
 
 -- test cycles
-function test:cycles_return_error()
+function Test_cycles_return_error(t)
     local t1 = {}
     local t2 = { t1 = t1 }
     t1[t2] = t2
