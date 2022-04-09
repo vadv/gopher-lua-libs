@@ -1,15 +1,11 @@
 package libs
 
 import (
+	"github.com/stretchr/testify/assert"
+	"github.com/vadv/gopher-lua-libs/tests"
 	"testing"
-
-	lua "github.com/yuin/gopher-lua"
 )
 
 func TestPreload(t *testing.T) {
-	state := lua.NewState()
-	Preload(state)
-	if err := state.DoFile("./preload.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	assert.NotZero(t, tests.RunLuaTestFile(t, Preload, "./preload.lua"))
 }

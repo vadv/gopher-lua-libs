@@ -2,25 +2,29 @@ local strings = require("strings")
 
 local str = "hello world"
 
-local t = strings.split(str, " ")
-local count_t = 0
-for k, v in pairs(t) do
-    count_t = count_t + 1
-    if k == 1 then if not(v == "hello") then error("strings.split()") end end
-    if k == 2 then if not(v == "world") then error("strings.split()") end end
+function TestSplit(t)
+    local str_parts = strings.split(str, " ")
+    assert(type(str_parts) == 'table')
+    assert(#str_parts == 2, string.format("%d ~= 2", #str_parts))
+    assert(str_parts[1] == "hello", string.format("%s ~= hello", str_parts[1]))
+    assert(str_parts[2] == "world", string.format("%s ~= world", str_parts[2]))
 end
-if not(count_t == 2) then error("string.split()") end
-print("done: strings.split()")
 
-if not(strings.has_prefix(str, "hello")) then error("strings.has_prefix()") end
-if not(strings.has_suffix(str, "world")) then error("strings.has_suffix()") end
-print("done: strings.has_suffix, strings.has_prefix")
+function TestHasPrefix(t)
+    assert(strings.has_prefix(str, "hello"), [[not strings.has_prefix("hello")]])
+end
 
-if not(strings.trim(str, "world") == "hello ") then error("strings.trim()") end
-if not(strings.trim(str, "hello ") == "world") then error("strings.trim()") end
-if not(strings.trim_prefix(str, "hello ") == "world") then error("strings.trim()") end
-if not(strings.trim_suffix(str, "hello ") == "hello world") then error("strings.trim()") end
-print("done: strings.trim()")
+function TestHasSuffix(t)
+    assert(strings.has_suffix(str, "world"), [[not strings.has_suffix("world")]])
+end
 
-if not(strings.contains(str, "hello ") == true) then error("strings.contains()") end
-print("done: strings.contains()")
+function TestTrim(t)
+    assert(strings.trim(str, "world") == "hello ", "strings.trim()")
+    assert(strings.trim(str, "hello ") == "world", "strings.trim()")
+    assert(strings.trim_prefix(str, "hello ") == "world", "strings.trim()")
+    assert(strings.trim_suffix(str, "hello ") == "hello world", "strings.trim()")
+end
+
+function TestContains(t)
+    assert(strings.contains(str, "hello ") == true, "strings.contains()")
+end
