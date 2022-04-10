@@ -3,7 +3,7 @@ module github.com/vadv/gopher-lua-libs
 go 1.13
 
 require (
-	github.com/alessio/shellescape v1.4.1 // indirect
+	github.com/alessio/shellescape v1.4.1
 	github.com/aws/aws-sdk-go v1.32.1
 	github.com/cbroglie/mustache v1.0.1
 	github.com/cheggaaa/pb/v3 v3.0.5
@@ -19,6 +19,7 @@ require (
 	github.com/technoweenie/multipartstreamer v1.0.1
 	github.com/yuin/gluamapper v0.0.0-20150323120927-d836955830e7
 	github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da
+	golang.org/x/sys v0.0.0-20220328115105-d36c6a25d886 // indirect
 	gopkg.in/xmlpath.v2 v2.0.0-20150820204837-860cbeca3ebc
 	gopkg.in/yaml.v2 v2.3.0
 )
