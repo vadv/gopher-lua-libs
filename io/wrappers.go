@@ -30,6 +30,7 @@ func NewLuaIOWrapper(L *lua.LState, io lua.LValue) *luaIOWrapper {
 	return ret
 }
 
+//CheckIOWriter tries to cast to UserData and to io.Writer, otherwise it wraps and checks for "write" method
 func CheckIOWriter(L *lua.LState, n int) io.Writer {
 	any := L.CheckAny(n)
 	if ud, ok := any.(*lua.LUserData); ok {
@@ -45,6 +46,7 @@ func CheckIOWriter(L *lua.LState, n int) io.Writer {
 	return wrapped
 }
 
+//CheckIOReader tries to cast to UserData and to io.Reader, otherwise it wraps and checks for "read" method
 func CheckIOReader(L *lua.LState, n int) io.Reader {
 	any := L.CheckAny(n)
 	if ud, ok := any.(*lua.LUserData); ok {
