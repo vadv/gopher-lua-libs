@@ -39,6 +39,8 @@ print(inspect(result, { newline = "", indent = "" }))
 
 ### decoder
 
+Using a decoder allows reading from file or strings.Reader with input that has multiple values
+
 - With file
 
 ```lua
@@ -78,6 +80,8 @@ print(inspect(result))
 ```
 
 ### encoder
+
+Using an allows writing to file or strings.Builder and to write multiple values if desired
 
 - with file
 

@@ -93,3 +93,38 @@ function TestDecoderWithStringsReader(t)
     assert(result['abc'] == 'def', string.format("%s ~= def", result['abc']))
     assert(result['num'] == 123, string.format("%d ~= 123", result['num']))
 end
+
+function TestDecoder_reading_twice(t)
+    input = [[
+{"abc": "def"}
+{"num": 123}
+]]
+    reader = strings.new_reader(input)
+    decoder = json.new_decoder(reader)
+    first, err = decoder:decode()
+    assert(not err, err)
+    second, err = decoder:decode()
+    assert(not err, err)
+
+    s = first["abc"]
+    expected = "def"
+    assert(s == expected, string.format([['%s' ~= '%s']], s, expected))
+
+    num = second["num"]
+    expected = 123
+    assert(num == expected, string.format([['%d' ~= '%d']], num, expected))
+end
+
+function TestEncoder_writing_twice(t)
+    writer = strings.new_builder()
+    encoder = json.new_encoder(writer)
+    err = encoder:encode({abc="def"})
+    assert(not err, err)
+    encoder:encode({num=123})
+    assert(not err, err)
+    s = writer:string()
+    expected = [[{"abc":"def"}
+{"num":123}
+]]
+    assert(s == expected, string.format([['%s' ~= '%s']], s, expected))
+end
