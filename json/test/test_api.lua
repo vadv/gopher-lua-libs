@@ -50,6 +50,24 @@ function TestEncoderWithStringsBuffer(t)
     assert(s == expected, string.format([['%s' ~= '%s']], expected, s))
 end
 
+function TestEncoderWithPrettyPrinting(t)
+    builder = strings.new_builder()
+    encoder = json.new_encoder(builder)
+    encoder:set_indent('', "  ")
+    err = encoder:encode({abc="def", num=123, arr={1,2,3}})
+    s = strings.trim_suffix(builder:string(), "\n")
+    expected = [[{
+  "abc": "def",
+  "arr": [
+    1,
+    2,
+    3
+  ],
+  "num": 123
+}]]
+    assert(s == expected, string.format([['%s' ~= '%s']], expected, s))
+end
+
 function TestDecoder(t)
     temp_file = '/tmp/tst.json'
     os.remove(temp_file)

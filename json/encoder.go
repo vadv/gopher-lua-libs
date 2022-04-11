@@ -10,7 +10,7 @@ const (
 	jsonEncoderType = "json.Encoder"
 )
 
-func CheckEncoder(L *lua.LState, n int) *json.Encoder {
+func CheckJSONEncoder(L *lua.LState, n int) *json.Encoder {
 	ud := L.CheckUserData(n)
 	if encoder, ok := ud.Value.(*json.Encoder); ok {
 		return encoder
@@ -19,15 +19,15 @@ func CheckEncoder(L *lua.LState, n int) *json.Encoder {
 	return nil
 }
 
-func LVEncoder(L *lua.LState, encoder *json.Encoder) lua.LValue {
+func LVJSONEncoder(L *lua.LState, encoder *json.Encoder) lua.LValue {
 	ud := L.NewUserData()
 	ud.Value = encoder
 	L.SetMetatable(ud, L.GetTypeMetatable(jsonEncoderType))
 	return ud
 }
 
-func EncoderEncode(L *lua.LState) int {
-	encoder := CheckEncoder(L, 1)
+func jsonEncoderEncode(L *lua.LState) int {
+	encoder := CheckJSONEncoder(L, 1)
 	value := L.CheckAny(2)
 	L.Pop(L.GetTop())
 	err := encoder.Encode(jsonValue{
@@ -41,8 +41,8 @@ func EncoderEncode(L *lua.LState) int {
 	return 0
 }
 
-func EncoderSetIndent(L *lua.LState) int {
-	encoder := CheckEncoder(L, 1)
+func jsonEncoderSetIndent(L *lua.LState) int {
+	encoder := CheckJSONEncoder(L, 1)
 	prefix := L.CheckString(2)
 	indent := L.CheckString(3)
 	L.Pop(L.GetTop())
@@ -50,28 +50,28 @@ func EncoderSetIndent(L *lua.LState) int {
 	return 0
 }
 
-func EncoderSetEscapeHTML(L *lua.LState) int {
-	encoder := CheckEncoder(L, 1)
+func jsonEncoderSetEscapeHTML(L *lua.LState) int {
+	encoder := CheckJSONEncoder(L, 1)
 	on := L.CheckBool(2)
 	L.Pop(L.GetTop())
 	encoder.SetEscapeHTML(on)
 	return 0
 }
 
-func registerEncoder(L *lua.LState) {
+func registerJSONEncoder(L *lua.LState) {
 	mt := L.NewTypeMetatable(jsonEncoderType)
 	L.SetGlobal(jsonEncoderType, mt)
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"encode":          EncoderEncode,
-		"set_indent":      EncoderSetIndent,
-		"set_escape_HTML": EncoderSetEscapeHTML,
+		"encode":          jsonEncoderEncode,
+		"set_indent":      jsonEncoderSetIndent,
+		"set_escape_HTML": jsonEncoderSetEscapeHTML,
 	}))
 }
 
-func NewEncoder(L *lua.LState) int {
+func newJSONEncoder(L *lua.LState) int {
 	writer := io.CheckWriter(L, 1)
 	L.Pop(L.GetTop())
 	encoder := json.NewEncoder(writer)
-	L.Push(LVEncoder(L, encoder))
+	L.Push(LVJSONEncoder(L, encoder))
 	return 1
 }

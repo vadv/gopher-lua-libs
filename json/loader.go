@@ -14,7 +14,7 @@ func Preload(L *lua.LState) {
 
 // Loader is the module loader function.
 func Loader(L *lua.LState) int {
-	registerEncoder(L)
+	registerJSONEncoder(L)
 	registerDecoder(L)
 
 	t := L.NewTable()
@@ -26,6 +26,6 @@ func Loader(L *lua.LState) int {
 var api = map[string]lua.LGFunction{
 	"decode":      Decode,
 	"encode":      Encode,
-	"new_encoder": NewEncoder,
-	"new_decoder": NewDecoder,
+	"new_encoder": newJSONEncoder,
+	"new_decoder": newJSONDecoder,
 }

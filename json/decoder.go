@@ -26,7 +26,7 @@ func LVDecoder(L *lua.LState, decoder *json.Decoder) lua.LValue {
 	return ud
 }
 
-func DecoderDecode(L *lua.LState) int {
+func jsonDecoderDecode(L *lua.LState) int {
 	decoder := CheckDecoder(L, 1)
 	L.Pop(L.GetTop())
 	var value interface{}
@@ -39,14 +39,14 @@ func DecoderDecode(L *lua.LState) int {
 	return 1
 }
 
-func DecoderInputOffset(L *lua.LState) int {
+func jsonDecoderInputOffset(L *lua.LState) int {
 	decoder := CheckDecoder(L, 1)
 	L.Pop(L.GetTop())
 	L.Push(lua.LNumber(decoder.InputOffset()))
 	return 1
 }
 
-func DecoderMore(L *lua.LState) int {
+func jsonDecoderMore(L *lua.LState) int {
 	decoder := CheckDecoder(L, 1)
 	L.Pop(L.GetTop())
 	L.Push(lua.LBool(decoder.More()))
@@ -57,13 +57,13 @@ func registerDecoder(L *lua.LState) {
 	mt := L.NewTypeMetatable(jsonDecoderType)
 	L.SetGlobal(jsonDecoderType, mt)
 	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"decode":       DecoderDecode,
-		"input_offset": DecoderInputOffset,
-		"more":         DecoderMore,
+		"decode":       jsonDecoderDecode,
+		"input_offset": jsonDecoderInputOffset,
+		"more":         jsonDecoderMore,
 	}))
 }
 
-func NewDecoder(L *lua.LState) int {
+func newJSONDecoder(L *lua.LState) int {
 	reader := io.CheckReader(L, 1)
 	L.Pop(L.GetTop())
 	decoder := json.NewDecoder(reader)

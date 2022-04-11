@@ -1,4 +1,6 @@
 local yaml = require("yaml")
+local io = require("io")
+local strings = require("strings")
 
 -- test decode
 function Test_decode(t)
@@ -91,3 +93,68 @@ function Test_cycles_return_error(t)
     assert(errMsg:find("nested table"), tostring(errMsg))
 end
 
+function TestEncoder(t)
+    temp_file = '/tmp/tst.json'
+    os.remove(temp_file)
+    writer, err = io.open(temp_file, 'w')
+    assert(not err, err)
+    encoder = yaml.new_encoder(writer)
+    err = encoder:encode({foo="bar", bar="baz"})
+    assert(not err, err)
+    writer:close()
+
+    reader = io.open(temp_file, 'r')
+    contents = reader:read('*a')
+    assert(contents, "contents should not be empty")
+    contents = yaml.decode(contents)
+    assert(contents['foo'] == 'bar', string.format("%s ~= bar", contents['foo']))
+    assert(contents['bar'] == 'baz', string.format("%s ~= baz", contents['bar']))
+end
+
+function TestEncoderWithStringsBuffer(t)
+    builder = strings.new_builder()
+    encoder = yaml.new_encoder(builder)
+    err = encoder:encode({abc="def", num=123, arr={1,2,3}})
+    s = strings.trim(builder:string(), "\n")
+    expected = strings.trim([[
+abc: def
+arr:
+- 1
+- 2
+- 3
+num: 123
+]], " \n")
+    assert(s == expected, string.format([['%s' ~= '%s']], expected, s))
+end
+
+function TestDecoder(t)
+    temp_file = '/tmp/tst.json'
+    os.remove(temp_file)
+    writer, err = io.open(temp_file, 'w')
+    assert(not err, err)
+    writer:write([[
+abc: def
+num: 123
+]])
+    writer:close()
+
+    reader = io.open(temp_file, 'r')
+    decoder = yaml.new_decoder(reader)
+    result, err = decoder:decode()
+    assert(not err, err)
+    assert(result['abc'] == 'def', string.format("%s ~= def", result['abc']))
+    assert(result['num'] == 123, string.format("%d ~= 123", result['num']))
+end
+
+function TestDecoderWithStringsReader(t)
+    s = [[
+abc: def
+num: 123
+]]
+    reader = strings.new_reader(s)
+    decoder = yaml.new_decoder(reader)
+    result, err = decoder:decode()
+    assert(not err, err)
+    assert(result['abc'] == 'def', string.format("%s ~= def", result['abc']))
+    assert(result['num'] == 123, string.format("%d ~= 123", result['num']))
+end
