@@ -28,3 +28,9 @@ local result = strings.contains("abcd", "d")
 -- Output: true
 ```
 
+### Reader/Writer classes often used with json+yaml Encoder/Decoder
+
+```lua
+reader = strings.new_reader([[{"foo":"bar","baz":"buz"}]])
+writer = strings.new_builder()
+```

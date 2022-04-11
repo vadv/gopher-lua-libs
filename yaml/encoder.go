@@ -56,7 +56,7 @@ func registerYAMLEncoder(L *lua.LState) {
 }
 
 func newYAMLEncoder(L *lua.LState) int {
-	writer := io.CheckWriter(L, 1)
+	writer := io.CheckIOWriter(L, 1)
 	L.Pop(L.GetTop())
 	encoder := yaml.NewEncoder(writer)
 	L.Push(LVYAMLEncoder(L, encoder))

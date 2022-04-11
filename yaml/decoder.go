@@ -57,7 +57,7 @@ func registerYAMLDecoder(L *lua.LState) {
 }
 
 func newYAMLDecoder(L *lua.LState) int {
-	reader := io.CheckReader(L, 1)
+	reader := io.CheckIOReader(L, 1)
 	L.Pop(L.GetTop())
 	decoder := yaml.NewDecoder(reader)
 	L.Push(LVYAMLDecoder(L, decoder))

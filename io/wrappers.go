@@ -30,7 +30,7 @@ func NewLuaIOWrapper(L *lua.LState, io lua.LValue) *luaIOWrapper {
 	return ret
 }
 
-func CheckWriter(L *lua.LState, n int) io.Writer {
+func CheckIOWriter(L *lua.LState, n int) io.Writer {
 	any := L.CheckAny(n)
 	if ud, ok := any.(*lua.LUserData); ok {
 		if writer, ok := ud.Value.(io.Writer); ok {
@@ -45,7 +45,7 @@ func CheckWriter(L *lua.LState, n int) io.Writer {
 	return wrapped
 }
 
-func CheckReader(L *lua.LState, n int) io.Reader {
+func CheckIOReader(L *lua.LState, n int) io.Reader {
 	any := L.CheckAny(n)
 	if ud, ok := any.(*lua.LUserData); ok {
 		if reader, ok := ud.Value.(io.Reader); ok {

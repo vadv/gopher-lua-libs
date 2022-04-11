@@ -64,7 +64,7 @@ func registerDecoder(L *lua.LState) {
 }
 
 func newJSONDecoder(L *lua.LState) int {
-	reader := io.CheckReader(L, 1)
+	reader := io.CheckIOReader(L, 1)
 	L.Pop(L.GetTop())
 	decoder := json.NewDecoder(reader)
 	L.Push(LVJSONDecoder(L, decoder))

@@ -69,7 +69,7 @@ func registerJSONEncoder(L *lua.LState) {
 }
 
 func newJSONEncoder(L *lua.LState) int {
-	writer := io.CheckWriter(L, 1)
+	writer := io.CheckIOWriter(L, 1)
 	L.Pop(L.GetTop())
 	encoder := json.NewEncoder(writer)
 	L.Push(LVJSONEncoder(L, encoder))
