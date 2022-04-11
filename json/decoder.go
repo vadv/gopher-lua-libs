@@ -64,9 +64,9 @@ func registerDecoder(L *lua.LState) {
 }
 
 func NewDecoder(L *lua.LState) int {
-	writer := L.CheckAny(1)
-	wrapper := io.NewLuaIOWrapper(L, writer)
-	decoder := json.NewDecoder(wrapper)
+	reader := io.CheckReader(L, 1)
+	L.Pop(L.GetTop())
+	decoder := json.NewDecoder(reader)
 	L.Push(LVDecoder(L, decoder))
 	return 1
 }

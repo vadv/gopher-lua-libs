@@ -1,6 +1,7 @@
 local json = require("json")
 local inspect = require("inspect")
 local io = require("io")
+local strings = require("strings")
 
 function TestJson(t)
     local jsonStringWithNull = [[{"a":{"b":1, "c":null}}]]
@@ -40,6 +41,15 @@ function TestEncoder(t)
     assert(contents['bar'] == 'baz', string.format("%s ~= baz", contents['bar']))
 end
 
+function TestEncoderWithStringsBuffer(t)
+    builder = strings.new_builder()
+    encoder = json.new_encoder(builder)
+    err = encoder:encode({abc="def", num=123, arr={1,2,3}})
+    s = strings.trim_suffix(builder:string(), "\n")
+    expected = [[{"abc":"def","arr":[1,2,3],"num":123}]]
+    assert(s == expected, string.format([['%s' ~= '%s']], expected, s))
+end
+
 function TestDecoder(t)
     temp_file = '/tmp/tst.json'
     os.remove(temp_file)
@@ -49,6 +59,16 @@ function TestDecoder(t)
     writer:close()
 
     reader = io.open(temp_file, 'r')
+    decoder = json.new_decoder(reader)
+    result, err = decoder:decode()
+    assert(not err, err)
+    assert(result['abc'] == 'def', string.format("%s ~= def", result['abc']))
+    assert(result['num'] == 123, string.format("%d ~= 123", result['num']))
+end
+
+function TestDecoderWithStringsReader(t)
+    s = [[{"abc": "def", "num": 123}]]
+    reader = strings.new_reader(s)
     decoder = json.new_decoder(reader)
     result, err = decoder:decode()
     assert(not err, err)

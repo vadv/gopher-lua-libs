@@ -30,6 +30,36 @@ func NewLuaIOWrapper(L *lua.LState, io lua.LValue) *luaIOWrapper {
 	return ret
 }
 
+func CheckWriter(L *lua.LState, n int) io.Writer {
+	any := L.CheckAny(n)
+	if ud, ok := any.(*lua.LUserData); ok {
+		if writer, ok := ud.Value.(io.Writer); ok {
+			return writer
+		}
+	}
+	wrapped := NewLuaIOWrapper(L, any)
+	if wrapped.writeMethod == nil {
+		L.ArgError(n, "expected writer")
+		return nil
+	}
+	return wrapped
+}
+
+func CheckReader(L *lua.LState, n int) io.Reader {
+	any := L.CheckAny(n)
+	if ud, ok := any.(*lua.LUserData); ok {
+		if reader, ok := ud.Value.(io.Reader); ok {
+			return reader
+		}
+	}
+	wrapped := NewLuaIOWrapper(L, any)
+	if wrapped.readMethod == nil {
+		L.ArgError(n, "expected reader")
+		return nil
+	}
+	return wrapped
+}
+
 func (l *luaIOWrapper) Read(p []byte) (n int, err error) {
 	if l.readMethod == nil {
 		return 0, errors.New("object does not have read method")

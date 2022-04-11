@@ -69,9 +69,9 @@ func registerEncoder(L *lua.LState) {
 }
 
 func NewEncoder(L *lua.LState) int {
-	writer := L.CheckAny(1)
-	wrapper := io.NewLuaIOWrapper(L, writer)
-	encoder := json.NewEncoder(wrapper)
+	writer := io.CheckWriter(L, 1)
+	L.Pop(L.GetTop())
+	encoder := json.NewEncoder(writer)
 	L.Push(LVEncoder(L, encoder))
 	return 1
 }
