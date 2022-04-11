@@ -5,8 +5,8 @@ import (
 	"github.com/stretchr/testify/require"
 	lua "github.com/yuin/gopher-lua"
 	"io"
-	"io/fs"
 	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -32,7 +32,7 @@ func TestRead(t *testing.T) {
 	L := lua.NewState()
 	defer L.Close()
 
-	require.NoError(t, ioutil.WriteFile("/tmp/tst.in", []byte("abc def ghi"), fs.ModePerm))
+	require.NoError(t, ioutil.WriteFile("/tmp/tst.in", []byte("abc def ghi"), os.ModePerm))
 	require.NoError(t, L.DoString(`io = require("io"); return io.open("/tmp/tst.in", "r")`))
 	reader := L.CheckAny(1)
 	L.Pop(L.GetTop())
@@ -48,7 +48,7 @@ func TestSeek(t *testing.T) {
 	L := lua.NewState()
 	defer L.Close()
 
-	require.NoError(t, ioutil.WriteFile("/tmp/tst.in", []byte("abc def ghi"), fs.ModePerm))
+	require.NoError(t, ioutil.WriteFile("/tmp/tst.in", []byte("abc def ghi"), os.ModePerm))
 	require.NoError(t, L.DoString(`io = require("io"); return io.open("/tmp/tst.in", "r")`))
 	reader := L.CheckAny(1)
 	L.Pop(L.GetTop())
