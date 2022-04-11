@@ -120,7 +120,7 @@ function TestEncoder_writing_twice(t)
     encoder = json.new_encoder(writer)
     err = encoder:encode({abc="def"})
     assert(not err, err)
-    encoder:encode({num=123})
+    err = encoder:encode({num=123})
     assert(not err, err)
     s = writer:string()
     expected = [[{"abc":"def"}
