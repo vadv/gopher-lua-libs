@@ -24,6 +24,8 @@ func Loader(L *lua.LState) int {
 	L.SetField(t, "StdEncoding", LVBase64Encoding(L, base64.StdEncoding))
 	L.SetField(t, "URLEncoding", LVBase64Encoding(L, base64.URLEncoding))
 
+	// TODO(scr): When https://github.com/vadv/gopher-lua-libs/pull/29 lands, Add NewEncoder/Decoder methods so that
+	// 			  encoding/decoding can be done directly from/to files.
 	L.Push(t)
 	return 1
 }
