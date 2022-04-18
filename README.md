@@ -16,6 +16,7 @@ go get github.com/vadv/gopher-lua-libs
 
 ## Index
 
+* [base64](/base64) [encoding/base64](https://pkg.go.dev/encoding/base64) api
 * [cloudwatch](/aws/cloudwatch) aws cloudwatch log access
 * [cert_util](/cert_util) monitoring ssl certs
 * [chef](/chef) chef client api
