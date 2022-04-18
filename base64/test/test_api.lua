@@ -29,12 +29,7 @@ function TestEncodeToString(t)
     }
     for _, tt in ipairs(tests) do
         t:Run(tt.name, function(t)
-            got, err = tt.encoder:encode_to_string(tt.input)
-            if tt.want_err then
-                assert(err, "expected err")
-                return
-            end
-            assert(not err, err)
+            got = tt.encoder:encode_to_string(tt.input)
             assert(tt.expected == got, string.format("'%s' ~= '%s'", tt.expected, got))
         end)
     end
@@ -106,9 +101,9 @@ function TestEncodeDecode(t)
     }
     for _, tt in ipairs(tests) do
         t:Run(tt.name, function(t)
-            encoded, err = tt.encoder:encode_to_string(tt.input)
+            encoded = tt.encoder:encode_to_string(tt.input)
+            decoded, err = tt.encoder:decode_string(encoded)
             assert(not err, err)
-            decoded = tt.encoder:decode_string(encoded)
             assert(tt.input == decoded, string.format("'%s' ~= '%s'", tt.input, decoded))
         end)
     end

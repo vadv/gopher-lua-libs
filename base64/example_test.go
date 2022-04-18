@@ -12,20 +12,16 @@ func ExampleEncodeToString() {
 	Preload(state)
 	source := `
     local base64 = require("base64")
-	s, err = base64.RawStdEncoding:encode_to_string("foo\01bar")
-	assert(not err, err)
+	s = base64.RawStdEncoding:encode_to_string("foo\01bar")
 	print(s)
 
-	s, err = base64.StdEncoding:encode_to_string("foo\01bar")
-	assert(not err, err)
+	s = base64.StdEncoding:encode_to_string("foo\01bar")
 	print(s)
 
-	s, err = base64.RawURLEncoding:encode_to_string("this is a <tag> and should be encoded")
-	assert(not err, err)
+	s = base64.RawURLEncoding:encode_to_string("this is a <tag> and should be encoded")
 	print(s)
 
-	s, err = base64.URLEncoding:encode_to_string("this is a <tag> and should be encoded")
-	assert(not err, err)
+	s = base64.URLEncoding:encode_to_string("this is a <tag> and should be encoded")
 	print(s)
 
 `
