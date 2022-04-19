@@ -30,9 +30,6 @@ func Loader(L *lua.LState) int {
 		"new_encoder":  NewEncoder,
 		"new_decoder":  NewDecoder,
 	})
-
-	// TODO(scr): When https://github.com/vadv/gopher-lua-libs/pull/29 lands, Add NewEncoder/Decoder methods so that
-	// 			  encoding/decoding can be done directly from/to files.
 	L.Push(t)
 	return 1
 }

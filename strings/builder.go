@@ -42,7 +42,6 @@ func newStringsBuilder(L *lua.LState) int {
 func registerStringsBuilder(L *lua.LState) {
 	mt := L.NewTypeMetatable(stringsBuilderType)
 	L.SetGlobal(stringsBuilderType, mt)
-	// TODO(scr): Does this need io methods exposed, or is String enough
 	writerTable := lio.WriterFuncTable(L)
 	L.SetField(writerTable, "string", L.NewFunction(stringsBuilderString))
 	L.SetField(mt, "__index", writerTable)
