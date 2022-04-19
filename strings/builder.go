@@ -1,6 +1,7 @@
 package strings
 
 import (
+	lio "github.com/vadv/gopher-lua-libs/io"
 	lua "github.com/yuin/gopher-lua"
 	"strings"
 )
@@ -42,7 +43,7 @@ func registerStringsBuilder(L *lua.LState) {
 	mt := L.NewTypeMetatable(stringsBuilderType)
 	L.SetGlobal(stringsBuilderType, mt)
 	// TODO(scr): Does this need io methods exposed, or is String enough
-	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"string": stringsBuilderString,
-	}))
+	writerTable := lio.WriterFuncTable(L)
+	L.SetField(writerTable, "string", L.NewFunction(stringsBuilderString))
+	L.SetField(mt, "__index", writerTable)
 }

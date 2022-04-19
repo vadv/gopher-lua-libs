@@ -16,6 +16,8 @@ func Preload(L *lua.LState) {
 // Loader is the module loader function.
 func Loader(L *lua.LState) int {
 	registerBase64Encoding(L)
+	registerBase64Encoder(L)
+	registerBase64Decoder(L)
 
 	// Register the encodings offered by base64 go module.
 	t := L.NewTable()
@@ -23,6 +25,11 @@ func Loader(L *lua.LState) int {
 	L.SetField(t, "RawURLEncoding", LVBase64Encoding(L, base64.RawURLEncoding))
 	L.SetField(t, "StdEncoding", LVBase64Encoding(L, base64.StdEncoding))
 	L.SetField(t, "URLEncoding", LVBase64Encoding(L, base64.URLEncoding))
+	L.SetFuncs(t, map[string]lua.LGFunction{
+		"new_encoding": NewEncoding,
+		"new_encoder":  NewEncoder,
+		"new_decoder":  NewDecoder,
+	})
 
 	// TODO(scr): When https://github.com/vadv/gopher-lua-libs/pull/29 lands, Add NewEncoder/Decoder methods so that
 	// 			  encoding/decoding can be done directly from/to files.

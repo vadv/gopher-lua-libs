@@ -12,7 +12,7 @@ func ReadFile(L *lua.LState) int {
 	filename := L.CheckString(1)
 	data, err := ioutil.ReadFile(filename)
 	if err == nil {
-		L.Push(lua.LString(string(data)))
+		L.Push(lua.LString(data))
 		return 1
 	} else {
 		L.Push(lua.LNil)

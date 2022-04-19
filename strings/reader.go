@@ -1,6 +1,7 @@
 package strings
 
 import (
+	"github.com/vadv/gopher-lua-libs/io"
 	lua "github.com/yuin/gopher-lua"
 	"strings"
 )
@@ -36,6 +37,6 @@ func newStringsReader(L *lua.LState) int {
 func registerStringsReader(L *lua.LState) {
 	mt := L.NewTypeMetatable(stringsReaderType)
 	L.SetGlobal(stringsReaderType, mt)
-	// TODO(scr): Does this need methods exposed, or is just the type sufficient for passing to json/yaml.NewDecoder
-	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{}))
+	readerTable := io.ReaderFuncTable(L)
+	L.SetField(mt, "__index", readerTable)
 }

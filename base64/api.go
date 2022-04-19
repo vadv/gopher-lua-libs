@@ -3,11 +3,15 @@ package base64
 
 import (
 	"encoding/base64"
+	lio "github.com/vadv/gopher-lua-libs/io"
 	lua "github.com/yuin/gopher-lua"
+	"io"
 )
 
 const (
 	base64EncodingType = "base64.Encoding"
+	base64EncoderType  = "base64.Encoder"
+	base64DecoderType  = "base64.Decoder"
 )
 
 //CheckBase64Encoding checks the argument at position n is a *base64.Encoding
@@ -25,6 +29,20 @@ func LVBase64Encoding(L *lua.LState, encoding *base64.Encoding) lua.LValue {
 	ud := L.NewUserData()
 	ud.Value = encoding
 	L.SetMetatable(ud, L.GetTypeMetatable(base64EncodingType))
+	return ud
+}
+
+func LVBase64Encoder(L *lua.LState, writer io.Writer) lua.LValue {
+	ud := L.NewUserData()
+	ud.Value = writer
+	L.SetMetatable(ud, L.GetTypeMetatable(base64EncoderType))
+	return ud
+}
+
+func LVBase64Decoder(L *lua.LState, reader io.Reader) lua.LValue {
+	ud := L.NewUserData()
+	ud.Value = reader
+	L.SetMetatable(ud, L.GetTypeMetatable(base64DecoderType))
 	return ud
 }
 
@@ -60,4 +78,49 @@ func registerBase64Encoding(L *lua.LState) {
 		"decode_string":    DecodeString,
 		"encode_to_string": EncodeToString,
 	}))
+}
+
+//registerBase64Encoder Registers the encoder type and its methods
+func registerBase64Encoder(L *lua.LState) {
+	mt := L.NewTypeMetatable(base64EncoderType)
+	L.SetGlobal(base64EncoderType, mt)
+	L.SetField(mt, "__index", lio.WriterFuncTable(L))
+}
+
+//registerBase64Decoder Registers the decoder type and its methods
+func registerBase64Decoder(L *lua.LState) {
+	mt := L.NewTypeMetatable(base64DecoderType)
+	L.SetGlobal(base64DecoderType, mt)
+	L.SetField(mt, "__index", lio.ReaderFuncTable(L))
+}
+
+func NewEncoding(L *lua.LState) int {
+	encoder := L.CheckString(1)
+	if len(encoder) != 64 {
+		L.ArgError(1, "encoder must have 64 characters")
+		return 0
+	}
+	L.Pop(L.GetTop())
+
+	encoding := base64.NewEncoding(encoder)
+	L.Push(LVBase64Encoding(L, encoding))
+	return 1
+}
+
+func NewEncoder(L *lua.LState) int {
+	encoding := CheckBase64Encoding(L, 1)
+	writer := lio.CheckIOWriter(L, 2)
+	L.Pop(L.GetTop())
+	encoder := base64.NewEncoder(encoding, writer)
+	L.Push(LVBase64Encoder(L, encoder))
+	return 1
+}
+
+func NewDecoder(L *lua.LState) int {
+	encoding := CheckBase64Encoding(L, 1)
+	reader := lio.CheckIOReader(L, 2)
+	L.Pop(L.GetTop())
+	decoder := base64.NewDecoder(encoding, reader)
+	L.Push(LVBase64Decoder(L, decoder))
+	return 1
 }

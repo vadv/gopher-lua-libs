@@ -5,6 +5,7 @@ import (
 	"fmt"
 	lua "github.com/yuin/gopher-lua"
 	"io"
+	"io/ioutil"
 )
 
 type luaIOWrapper struct {
@@ -138,4 +139,139 @@ func (l *luaIOWrapper) Close() error {
 	L.Push(l.closeMethod)
 	L.Push(l.obj)
 	return L.PCall(1, 0, nil)
+}
+
+func IOWriterWrite(L *lua.LState) int {
+	writer := CheckIOWriter(L, 1)
+	var toWrite []string
+	for i := 2; i <= L.GetTop(); i++ {
+		toWrite = append(toWrite, L.CheckString(i))
+	}
+	L.Pop(L.GetTop())
+	for i, s := range toWrite {
+		if _, err := io.WriteString(writer, s); err != nil {
+			L.ArgError(i+2, err.Error())
+			return 0
+		}
+	}
+	return 0
+}
+
+func IOWriterClose(L *lua.LState) int {
+	writer := CheckIOWriter(L, 1)
+	L.Pop(L.GetTop())
+	if closer, ok := writer.(io.Closer); ok {
+		if err := closer.Close(); err != nil {
+			L.RaiseError(err.Error())
+		}
+	}
+	return 0
+}
+
+func IOReaderRead(L *lua.LState) int {
+	reader := CheckIOReader(L, 1)
+	lFormat := L.Get(2)
+	if lFormat == lua.LNil {
+		lFormat = lua.LString("*l")
+	}
+	L.Pop(L.GetTop())
+
+	if lFormat.Type() == lua.LTNumber {
+		num := int(lua.LVAsNumber(lFormat))
+		if num <= 0 {
+			L.Push(lua.LString(""))
+			return 1
+		}
+		buf := make([]byte, num)
+		numRead, err := reader.Read(buf)
+		if err == io.EOF {
+			L.Push(lua.LNil)
+			return 1
+		}
+		if err != nil {
+			L.RaiseError(err.Error())
+			return 0
+		}
+		if numRead < num {
+			buf = buf[:numRead]
+		}
+		L.Push(lua.LString(buf))
+		return 1
+	}
+
+	format := lua.LVAsString(lFormat)
+	if len(format) >= 2 && format[0] == '*' {
+		switch format[1] {
+		case 'n':
+			var num lua.LNumber
+			_, err := fmt.Fscan(reader, &num)
+			if err == io.EOF {
+				L.Push(lua.LNumber(0))
+				return 1
+			}
+			if err != nil {
+				L.RaiseError(err.Error())
+				return 0
+			}
+			L.Push(num)
+			return 1
+		case 'a':
+			data, err := ioutil.ReadAll(reader)
+			if err == io.EOF {
+				L.Push(lua.LString(""))
+				return 1
+			}
+			if err != nil {
+				L.RaiseError(err.Error())
+				return 0
+			}
+			L.Push(lua.LString(data))
+			return 1
+		case 'l':
+			var line lua.LString
+			_, err := fmt.Fscanln(reader, &line)
+			if err == io.EOF {
+				L.Push(lua.LNil)
+				return 1
+			}
+			if err != nil {
+				L.RaiseError(err.Error())
+				return 0
+			}
+			L.Push(line)
+			return 1
+		}
+	}
+
+	L.ArgError(2, "unknown fmt string")
+	return 0
+}
+
+func IOReaderClose(L *lua.LState) int {
+	reader := CheckIOReader(L, 1)
+	L.Pop(L.GetTop())
+	if closer, ok := reader.(io.Closer); ok {
+		if err := closer.Close(); err != nil {
+			L.RaiseError(err.Error())
+		}
+	}
+	return 0
+}
+
+func WriterFuncTable(L *lua.LState) *lua.LTable {
+	table := L.NewTable()
+	L.SetFuncs(table, map[string]lua.LGFunction{
+		"write": IOWriterWrite,
+		"close": IOWriterClose,
+	})
+	return table
+}
+
+func ReaderFuncTable(L *lua.LState) *lua.LTable {
+	table := L.NewTable()
+	L.SetFuncs(table, map[string]lua.LGFunction{
+		"read":  IOReaderRead,
+		"close": IOReaderClose,
+	})
+	return table
 }

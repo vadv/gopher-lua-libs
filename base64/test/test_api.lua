@@ -1,7 +1,8 @@
 local base64 = require("base64")
+local strings = require("strings")
 
 function TestEncodeToString(t)
-    tests = {
+    local tests = {
         {
             name="input with \1 chars and RawStdEncoding",
             input="foo\01bar",
@@ -29,14 +30,14 @@ function TestEncodeToString(t)
     }
     for _, tt in ipairs(tests) do
         t:Run(tt.name, function(t)
-            got = tt.encoder:encode_to_string(tt.input)
+            local got = tt.encoder:encode_to_string(tt.input)
             assert(tt.expected == got, string.format("'%s' ~= '%s'", tt.expected, got))
         end)
     end
 end
 
 function TestDecodeString(t)
-    tests = {
+    local tests = {
         {
             name="input with \1 chars and RawStdEncoding",
             input="Zm9vAWJhcg",
@@ -64,7 +65,7 @@ function TestDecodeString(t)
     }
     for _, tt in ipairs(tests) do
         t:Run(tt.name, function(t)
-            got, err = tt.encoder:decode_string(tt.input)
+            local got, err = tt.encoder:decode_string(tt.input)
             if tt.want_err then
                 assert(err, "expected err")
                 return
@@ -76,8 +77,7 @@ function TestDecodeString(t)
 end
 
 function TestEncodeDecode(t)
-
-    tests = {
+    local tests = {
         {
             name="input with \1 chars and RawStdEncoding",
             input="foo\01bar",
@@ -101,10 +101,48 @@ function TestEncodeDecode(t)
     }
     for _, tt in ipairs(tests) do
         t:Run(tt.name, function(t)
-            encoded = tt.encoder:encode_to_string(tt.input)
-            decoded, err = tt.encoder:decode_string(encoded)
+            local encoded = tt.encoder:encode_to_string(tt.input)
+            local decoded, err = tt.encoder:decode_string(encoded)
             assert(not err, err)
             assert(tt.input == decoded, string.format("'%s' ~= '%s'", tt.input, decoded))
         end)
     end
+end
+
+function TestEncoder(t)
+    local writer = strings.new_builder()
+    local encoder = base64.new_encoder(base64.StdEncoding, writer)
+    encoder:write("foo", "bar", "baz")
+    encoder:close()
+    local s = writer:string()
+    assert(s == "Zm9vYmFyYmF6", string.format("'%s' ~= '%s'", s, "Zm9vYmFyYmF6"))
+end
+
+function TestDecoder(t)
+    local reader = strings.new_reader("Zm9vYmFyYmF6")
+    local decoder = base64.new_decoder(base64.StdEncoding, reader)
+    local s = decoder:read("*a")
+    assert(s == "foobarbaz", string.format("'%s' ~= '%s'", s, "foobarbaz"))
+end
+
+function TestDecoderReadnum(t)
+    local encoded = base64.StdEncoding:encode_to_string("123 456 789")
+    local reader = strings.new_reader(encoded)
+    local decoder = base64.new_decoder(base64.StdEncoding, reader)
+    local n = decoder:read("*n")
+    assert(n == 123, string.format("%d ~= %d", n, 123))
+    n = decoder:read("*n")
+    assert(n == 456, string.format("%d ~= %d", n, 456))
+    n = decoder:read("*n")
+    assert(n == 789, string.format("%d ~= %d", n, 789))
+end
+
+function TestDecoderReadline(t)
+    local encoded = base64.StdEncoding:encode_to_string("foo\nbar")
+    local reader = strings.new_reader(encoded)
+    local decoder = base64.new_decoder(base64.StdEncoding, reader)
+    local s = decoder:read("*l")
+    assert(s == "foo", string.format("'%s' ~= '%s'", s, "foo"))
+    s = decoder:read("*l")
+    assert(s == "bar", string.format("'%s' ~= '%s'", s, "bar"))
 end
