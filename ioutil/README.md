@@ -13,5 +13,14 @@ if err then error(err) end
 local result, err = ioutil.read_file("./test/file.data")
 if err then error(err) end
 if not(result == "content of test file") then error("ioutil.read_file()") end
+
+-- ioutil.copy()
+local input_fh, err = io.open("./test/file.test", "r")
+assert(not err, err)
+local output_fh, err = io.open("./test/file2.data", "w")
+assert(not err, err)
+ioutil.copy(output_fh, input_fh)
+input_fh:close()
+output_fh:close()
 ```
 
