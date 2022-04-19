@@ -125,7 +125,7 @@ function TestDecoder(t)
     assert(s == "foobarbaz", string.format("'%s' ~= '%s'", s, "foobarbaz"))
 end
 
-function TestDecoderReadnum(t)
+function TestDecoderReadNum(t)
     local encoded = base64.StdEncoding:encode_to_string("123 456 789")
     local reader = strings.new_reader(encoded)
     local decoder = base64.new_decoder(base64.StdEncoding, reader)
@@ -135,6 +135,14 @@ function TestDecoderReadnum(t)
     assert(n == 456, string.format("%d ~= %d", n, 456))
     n = decoder:read("*n")
     assert(n == 789, string.format("%d ~= %d", n, 789))
+end
+
+function TestDecoderReadCount(t)
+    local encoded = base64.StdEncoding:encode_to_string("123 456 789")
+    local reader = strings.new_reader(encoded)
+    local decoder = base64.new_decoder(base64.StdEncoding, reader)
+    local s = decoder:read(3)
+    assert(s == "123", string.format("'%s' ~= '%s'", s, "123"))
 end
 
 function TestDecoderReadline(t)
