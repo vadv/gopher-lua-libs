@@ -32,5 +32,9 @@ local result = strings.contains("abcd", "d")
 
 ```lua
 reader = strings.new_reader([[{"foo":"bar","baz":"buz"}]])
+assert(reader:read("*a") == [[{"foo":"bar","baz":"buz"}]])
+
 writer = strings.new_builder()
+writer:write("foo", "bar", 123)
+assert(writer:string() == "foobar123")
 ```
