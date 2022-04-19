@@ -84,8 +84,7 @@ func (l *luaIOWrapper) Read(p []byte) (n int, err error) {
 	}
 	readString := lua.LVAsString(result)
 	data := []byte(readString)
-	copy(p, data)
-	n = len(data)
+	n = copy(p, data)
 	return
 }
 
