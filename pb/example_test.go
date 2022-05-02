@@ -19,7 +19,7 @@ func ExampleAllParams() {
                 local bar = pb.new(count)
                 local template = string.format('%s {{ counters . }} {{percent . }} {{ etime . }}', '[custom template]')
 
-                err = bar:configure({writer='stdout', refresh_rate=2001, template=template})
+                err = bar:configure({writer='stdout', refresh_rate=3001, template=template})
                 if err then error(err) end
                 bar:start()
 

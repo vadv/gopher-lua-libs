@@ -2,6 +2,8 @@
 package ioutil
 
 import (
+	lio "github.com/vadv/gopher-lua-libs/io"
+	"io"
 	"io/ioutil"
 
 	lua "github.com/yuin/gopher-lua"
@@ -12,7 +14,7 @@ func ReadFile(L *lua.LState) int {
 	filename := L.CheckString(1)
 	data, err := ioutil.ReadFile(filename)
 	if err == nil {
-		L.Push(lua.LString(string(data)))
+		L.Push(lua.LString(data))
 		return 1
 	} else {
 		L.Push(lua.LNil)
@@ -29,6 +31,27 @@ func WriteFile(L *lua.LState) int {
 	if err != nil {
 		L.Push(lua.LString(err.Error()))
 		return 1
+	}
+	return 0
+}
+
+func Copy(L *lua.LState) int {
+	writer := lio.CheckIOWriter(L, 1)
+	reader := lio.CheckIOReader(L, 2)
+	L.Pop(L.GetTop())
+	if _, err := io.Copy(writer, reader); err != nil {
+		L.RaiseError(err.Error())
+	}
+	return 0
+}
+
+func CopyN(L *lua.LState) int {
+	writer := lio.CheckIOWriter(L, 1)
+	reader := lio.CheckIOReader(L, 2)
+	n := L.CheckInt64(3)
+	L.Pop(L.GetTop())
+	if _, err := io.CopyN(writer, reader, n); err != nil {
+		L.RaiseError(err.Error())
 	}
 	return 0
 }

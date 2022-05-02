@@ -28,3 +28,17 @@ end
 function TestContains(t)
     assert(strings.contains(str, "hello ") == true, "strings.contains()")
 end
+
+function TestReader(t)
+    local s = [[{"foo":"bar","baz":"buz"}]]
+    local reader = strings.new_reader(s)
+    local got = reader:read("*a")
+    assert(got == s, string.format("'%s' ~= '%s'", got, s))
+end
+
+function TestBuilder(t)
+    local builder = strings.new_builder()
+    builder:write("foo", "bar", 123)
+    local got = builder:string()
+    assert(got == "foobar123", string.format("'%s' ~= '%s'", got, "foobar123"))
+end
