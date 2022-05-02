@@ -40,7 +40,8 @@ func Copy(L *lua.LState) int {
 	reader := lio.CheckIOReader(L, 2)
 	L.Pop(L.GetTop())
 	if _, err := io.Copy(writer, reader); err != nil {
-		L.RaiseError(err.Error())
+		L.Push(lua.LString(err.Error()))
+		return 1
 	}
 	return 0
 }
@@ -51,7 +52,8 @@ func CopyN(L *lua.LState) int {
 	n := L.CheckInt64(3)
 	L.Pop(L.GetTop())
 	if _, err := io.CopyN(writer, reader, n); err != nil {
-		L.RaiseError(err.Error())
+		L.Push(lua.LString(err.Error()))
+		return 1
 	}
 	return 0
 }
