@@ -3,8 +3,8 @@ local http_util = require("http_util")
 
 local client_1 = http.client()
 local client_2 = http.client({timeout=1})
-local client_3 = http.client({insecure_skip_verify=true})
-local client_4 = http.client({insecure_skip_verify=false, timeout=1})
+local client_3 = http.client({insecure_ssl=false})
+local client_4 = http.client({insecure_ssl=true, timeout=1})
 local client_5 = http.client({basic_auth_user="admin", basic_auth_password="123456"})
 local client_6 = http.client({headers={simple_header="check_header"}})
 local client_7 = http.client({user_agent="check_ua"})
@@ -39,7 +39,7 @@ local _, err = client_3:do_request(req)
 if err == nil then error("must be error") end
 print("done: http.client:ssl+error")
 
-local req, err = http.request("GET", "http://127.0.0.1:1111/getBasicAuth")
+local req, err = http.request("GET", "https://127.0.0.1:1112/getBasicAuth")
 if err then error(err) end
 req:set_basic_auth("admin", "123456")
 local resp, err = client_4:do_request(req)
