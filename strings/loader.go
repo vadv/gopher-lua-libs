@@ -33,4 +33,5 @@ var api = map[string]lua.LGFunction{
 	"contains":    Contains,
 	"new_reader":  newStringsReader,
 	"new_builder": newStringsBuilder,
+	"fields":      Fields,
 }

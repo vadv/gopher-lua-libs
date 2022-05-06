@@ -23,6 +23,18 @@ func Split(L *lua.LState) int {
 	return 1
 }
 
+// Fields lua strings.fields(string) Port of go string.Fields() returns table
+func Fields(L *lua.LState) int {
+	str := L.CheckString(1)
+	strSlice := strings.Fields(str)
+	result := L.CreateTable(len(strSlice), 0)
+	for _, str := range strSlice {
+		result.Append(lua.LString(str))
+	}
+	L.Push(result)
+	return 1
+}
+
 // HasPrefix lua strings.has_prefix(string, suffix): port of go string.HasPrefix() return bool
 func HasPrefix(L *lua.LState) int {
 	str1 := L.CheckString(1)
