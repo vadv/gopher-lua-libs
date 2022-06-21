@@ -39,4 +39,5 @@ func Loader(L *lua.LState) int {
 var api = map[string]lua.LGFunction{
 	"client":  New,
 	"request": NewRequest,
+	"file_request": NewFileRequest,
 }

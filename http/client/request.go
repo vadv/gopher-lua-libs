@@ -2,8 +2,13 @@ package http
 
 import (
 	"bytes"
+	"errors"
+	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -38,6 +43,72 @@ func NewRequest(L *lua.LState) int {
 
 	req := &luaRequest{Request: httpReq}
 	req.Request.Header.Set(`User-Agent`, DefaultUserAgent)
+	ud := L.NewUserData()
+	ud.Value = req
+	L.SetMetatable(ud, L.GetTypeMetatable("http_request_ud"))
+	L.Push(ud)
+	return 1
+}
+
+// http.filerequest(url, files, params) returns user-data, error
+func NewFileRequest(L *lua.LState) int {
+	url := L.CheckString(1)
+	files := L.CheckTable(2)
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	var writeFile = func(info *lua.LTable, w *multipart.Writer) (err error) {
+		fieldname := info.RawGetString("fieldname")
+		path := info.RawGetString("path")
+		if fieldname == lua.LNil || path == lua.LNil {
+			return errors.New("fieldname or path is nil")
+		}
+		filename := info.RawGetString("filename")
+		if filename == lua.LNil {
+			filename = lua.LString(filepath.Base(path.String()))
+		}
+
+		part, err := writer.CreateFormFile(fieldname.String(), filename.String())
+		if err != nil {
+			return
+		}
+		file, err := os.Open(path.String())
+		if err != nil {
+			return
+		}
+		_, err = io.Copy(part, file)
+		return
+	}
+
+	if err := writeFile(files, writer); err != nil{
+		files.ForEach(func(k, v lua.LValue) {
+			writeFile(v.(*lua.LTable), writer)
+		})
+	}
+
+	if L.GetTop() > 2 {
+		L.CheckTable(3).ForEach(func(k, v lua.LValue) {
+			writer.WriteField(k.String(), v.String())
+		})
+	}
+
+	err := writer.Close()
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
+	}
+
+	httpReq, err := http.NewRequest("POST", url, body)
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
+	}
+
+	req := &luaRequest{Request: httpReq}
+	req.Request.Header.Set(`User-Agent`, DefaultUserAgent)
+	req.Request.Header.Set(`Content-Type`, writer.FormDataContentType())
 	ud := L.NewUserData()
 	ud.Value = req
 	L.SetMetatable(ud, L.GetTypeMetatable("http_request_ud"))

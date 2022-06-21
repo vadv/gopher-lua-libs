@@ -46,6 +46,72 @@ func httpCheckUserAgent(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`OK`))
 }
 
+func getFormFile(r*http.Request, key, filename string)(err error){
+	file, header, err := r.FormFile(key)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	if header.Filename != filename {
+		return fmt.Errorf("bad filename, get: %s except: %s\n", header.Filename, filename)
+	}
+	return nil
+}
+
+func httpUploadFile(w http.ResponseWriter, r *http.Request) {
+	err := getFormFile(r, "file", "test.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	w.Write([]byte(`OK`))
+}
+
+func httpUploadFileWithFields(w http.ResponseWriter, r *http.Request) {
+	err := getFormFile(r, "file", "test.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	if r.FormValue("foo") != "bar" {
+		w.WriteHeader(400)
+		return
+	}
+	w.Write([]byte(`OK`))
+}
+
+func httpUploadMultipleFile(w http.ResponseWriter, r *http.Request) {
+	err := getFormFile(r, "file", "test.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	err = getFormFile(r, "file1", "test1.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	w.Write([]byte(`OK`))
+}
+
+func httpUploadMultipleFileWithFields(w http.ResponseWriter, r *http.Request) {
+	err := getFormFile(r, "file", "test.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	err = getFormFile(r, "file1", "test1.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	if r.FormValue("foo") != "bar" {
+		w.WriteHeader(400)
+		return
+	}
+	w.Write([]byte(`OK`))
+}
+
 func httpRouterGet(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`OK`))
 }
@@ -110,6 +176,10 @@ func TestApi(t *testing.T) {
 	http.HandleFunc("/timeout", httpRouterGetTimeout)
 	http.HandleFunc("/checkHeader", httpCheckHeaders)
 	http.HandleFunc("/checkUserAgent", httpCheckUserAgent)
+	http.HandleFunc("/upload", httpUploadFile)
+	http.HandleFunc("/uploadWithFields", httpUploadFileWithFields)
+	http.HandleFunc("/uploadMultiple", httpUploadMultipleFile)
+	http.HandleFunc("/uploadMultipleWithFields", httpUploadMultipleFileWithFields)
 
 	go runHttp(":1111")
 	go runHttps(":1112")
