@@ -76,6 +76,7 @@ func NewFileRequest(L *lua.LState) int {
 		if err != nil {
 			return
 		}
+		defer file.Close()
 		_, err = io.Copy(part, file)
 		return
 	}
