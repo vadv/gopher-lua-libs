@@ -4,6 +4,7 @@ import (
 	"crypto/subtle"
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/sync/errgroup"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -137,8 +138,7 @@ func runHttps(addr string) {
 }
 
 func request(url string) error {
-	client := &http.Client{}
-	resp, err := client.Get(url)
+	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}
@@ -153,22 +153,21 @@ func request(url string) error {
 	return nil
 }
 
-func manyRequest(addr string) {
-	time.Sleep(5 * time.Second)
-	count := 0
-	for {
-		if count > 10 {
-			break
+func manyRequest(addr string) *errgroup.Group {
+	eg := &errgroup.Group{}
+	eg.Go(func() error {
+		time.Sleep(5 * time.Second)
+		for count := 0; count < 10; count++ {
+			url := fmt.Sprintf("%s/%s?d=%d", addr, "url", count)
+			func(url string) {
+				eg.Go(func() error {
+					return request(url)
+				})
+			}(url)
 		}
-		url := fmt.Sprintf("%s/%s?d=%d", addr, "url", count)
-		// TODO(scr): See https://pkg.go.dev/golang.org/x/sync/errgroup to wait for manyRequest to complete
-		go func(url string) {
-			if err := request(url); err != nil {
-				panic(err)
-			}
-		}(url)
-		count++
-	}
+		return nil
+	})
+	return eg
 }
 
 func TestApi(t *testing.T) {
@@ -200,15 +199,15 @@ func TestApi(t *testing.T) {
 	})
 
 	t.Run("test_server_accept", func(t *testing.T) {
-		// TODO(scr): See https://pkg.go.dev/golang.org/x/sync/errgroup to wait for manyRequest to complete
-		go manyRequest("http://127.0.0.1:1113")
+		eg := manyRequest("http://127.0.0.1:1113")
 		assert.NoError(t, state.DoFile("./test/test_server_accept.lua"))
+		assert.NoError(t, eg.Wait())
 	})
 
 	t.Run("test_server_handle", func(t *testing.T) {
-		// TODO(scr): See https://pkg.go.dev/golang.org/x/sync/errgroup to wait for manyRequest to complete
-		go manyRequest("http://127.0.0.1:2113")
+		eg := manyRequest("http://127.0.0.1:2113")
 		assert.NoError(t, state.DoFile("./test/test_server_handle.lua"))
+		assert.NoError(t, eg.Wait())
 	})
 
 	t.Run("test_server_accept_stop", func(t *testing.T) {
