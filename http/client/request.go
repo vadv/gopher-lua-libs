@@ -17,13 +17,22 @@ type luaRequest struct {
 	*http.Request
 }
 
+const luaRequestType = "http_request_ud"
+
 func checkRequest(L *lua.LState, n int) *luaRequest {
 	ud := L.CheckUserData(n)
 	if v, ok := ud.Value.(*luaRequest); ok {
 		return v
 	}
-	L.ArgError(1, "http request excepted")
+	L.ArgError(n, "http request expected")
 	return nil
+}
+
+func lvRequest(L *lua.LState, request *luaRequest) lua.LValue {
+	ud := L.NewUserData()
+	ud.Value = request
+	L.SetMetatable(ud, L.GetTypeMetatable(luaRequestType))
+	return ud
 }
 
 // http.request(verb, url, body) returns user-data, error
@@ -43,10 +52,7 @@ func NewRequest(L *lua.LState) int {
 
 	req := &luaRequest{Request: httpReq}
 	req.Request.Header.Set(`User-Agent`, DefaultUserAgent)
-	ud := L.NewUserData()
-	ud.Value = req
-	L.SetMetatable(ud, L.GetTypeMetatable("http_request_ud"))
-	L.Push(ud)
+	L.Push(lvRequest(L, req))
 	return 1
 }
 
@@ -121,10 +127,7 @@ func NewFileRequest(L *lua.LState) int {
 	req := &luaRequest{Request: httpReq}
 	req.Request.Header.Set(`User-Agent`, DefaultUserAgent)
 	req.Request.Header.Set(`Content-Type`, writer.FormDataContentType())
-	ud := L.NewUserData()
-	ud.Value = req
-	L.SetMetatable(ud, L.GetTypeMetatable("http_request_ud"))
-	L.Push(ud)
+	L.Push(lvRequest(L, req))
 	return 1
 }
 
