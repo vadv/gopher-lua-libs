@@ -3,6 +3,7 @@ package http_test
 import (
 	"crypto/subtle"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -46,7 +47,7 @@ func httpCheckUserAgent(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`OK`))
 }
 
-func getFormFile(r*http.Request, key, filename string)(err error){
+func getFormFile(r *http.Request, key, filename string) (err error) {
 	file, header, err := r.FormFile(key)
 	if err != nil {
 		return err
@@ -160,6 +161,7 @@ func manyRequest(addr string) {
 			break
 		}
 		url := fmt.Sprintf("%s/%s?d=%d", addr, "url", count)
+		// TODO(scr): See https://pkg.go.dev/golang.org/x/sync/errgroup to wait for manyRequest to complete
 		go func(url string) {
 			if err := request(url); err != nil {
 				panic(err)
@@ -186,30 +188,34 @@ func TestApi(t *testing.T) {
 	time.Sleep(time.Second)
 
 	state := lua.NewState()
+	defer state.Close()
+
 	lua_http.Preload(state)
 	lua_time.Preload(state)
 	inspect.Preload(state)
 	plugin.Preload(state)
 
-	if err := state.DoFile("./test/test_client.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	t.Run("test_client", func(t *testing.T) {
+		assert.NoError(t, state.DoFile("./test/test_client.lua"))
+	})
 
-	go manyRequest("http://127.0.0.1:1113")
-	if err := state.DoFile("./test/test_server_accept.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	t.Run("test_server_accept", func(t *testing.T) {
+		// TODO(scr): See https://pkg.go.dev/golang.org/x/sync/errgroup to wait for manyRequest to complete
+		go manyRequest("http://127.0.0.1:1113")
+		assert.NoError(t, state.DoFile("./test/test_server_accept.lua"))
+	})
 
-	go manyRequest("http://127.0.0.1:2113")
-	if err := state.DoFile("./test/test_server_handle.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	t.Run("test_server_handle", func(t *testing.T) {
+		// TODO(scr): See https://pkg.go.dev/golang.org/x/sync/errgroup to wait for manyRequest to complete
+		go manyRequest("http://127.0.0.1:2113")
+		assert.NoError(t, state.DoFile("./test/test_server_handle.lua"))
+	})
 
-	if err := state.DoFile("./test/test_server_accept_stop.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	t.Run("test_server_accept_stop", func(t *testing.T) {
+		assert.NoError(t, state.DoFile("./test/test_server_accept_stop.lua"))
+	})
 
-	if err := state.DoFile("./test/test_serve_static.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	t.Run("test_serve_static", func(t *testing.T) {
+		assert.NoError(t, state.DoFile("./test/test_serve_static.lua"))
+	})
 }
