@@ -81,10 +81,21 @@ func NewFileRequest(L *lua.LState) int {
 		return
 	}
 
-	if err := writeFile(files, writer); err != nil{
-		files.ForEach(func(k, v lua.LValue) {
-			writeFile(v.(*lua.LTable), writer)
-		})
+	var err error
+	if files.Len() == 0 {
+		err = writeFile(files, writer)
+	} else {
+		for key, value := files.Next(lua.LNil); key != lua.LNil; key, value = files.Next(key) {
+			err = writeFile(value.(*lua.LTable), writer)
+			if err != nil {
+				break
+			}
+		}
+	}
+	if err != nil {
+		L.Push(lua.LNil)
+		L.Push(lua.LString(err.Error()))
+		return 2
 	}
 
 	if L.GetTop() > 2 {
@@ -93,7 +104,7 @@ func NewFileRequest(L *lua.LState) int {
 		})
 	}
 
-	err := writer.Close()
+	err = writer.Close()
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))
