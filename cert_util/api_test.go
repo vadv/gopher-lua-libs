@@ -1,34 +1,35 @@
 package cert_util
 
 import (
-	"log"
+	"context"
+	"github.com/stretchr/testify/assert"
+	"github.com/vadv/gopher-lua-libs/tests"
+	"io"
 	"net/http"
 	"testing"
 	"time"
-
-	lua "github.com/yuin/gopher-lua"
 )
 
-func runHttps(addr string) {
-	err := http.ListenAndServeTLS(addr, "./test/cert.pem", "./test/key.pem", nil)
-	if err != nil {
-		log.Fatal("ListenAndServeTLS: ", err)
-	}
+func runHttps(addr string, handler http.Handler) *http.Server {
+	server := &http.Server{Addr: addr, Handler: handler}
+	go func() {
+		_ = server.ListenAndServeTLS("./test/cert.pem", "./test/key.pem")
+	}()
+	return server
 }
 
 func httpRouterGet(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(`OK`))
+	_, _ = io.WriteString(w, "OK")
 }
 
 func TestApi(t *testing.T) {
-
-	http.HandleFunc("/get", httpRouterGet)
-	go runHttps(":1443")
+	mux := http.NewServeMux()
+	mux.HandleFunc("/get", httpRouterGet)
+	server := runHttps(":1443", mux)
+	t.Cleanup(func() {
+		_ = server.Shutdown(context.Background())
+	})
 	time.Sleep(time.Second)
 
-	state := lua.NewState()
-	Preload(state)
-	if err := state.DoFile("./test/test_api.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	assert.NotZero(t, tests.RunLuaTestFile(t, Preload, "./test/test_api.lua"))
 }

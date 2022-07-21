@@ -2,58 +2,68 @@ local storage = require("storage")
 local inspect = require("inspect")
 local time = require("time")
 
-local s, err = storage.open("./test/db.json")
-if err then error(err) end
+function Test_storage(t)
+    local s, err = storage.open("./test/db.json")
+    assert(not err, err)
 
--- set
-local err = s:set("key", {"one", "two", 1}, 1)
-if err then error(err) end
+    t:Run("set", function(t)
+        local err = s:set("key", { "one", "two", 1 }, 1)
+        assert(not err, err)
 
-local err = s:set("key2", "value2", 60)
-if err then error(err) end
+        local err = s:set("key2", "value2", 60)
+        assert(not err, err)
 
-local err = s:set("key3", 10.64, nil)
-if err then error(err) end
+        local err = s:set("key3", 10.64, nil)
+        assert(not err, err)
 
-local value, found, err = s:get("key")
-if err then error(err) end
-if not found then error("must be found") end
+        local value, found, err = s:get("key")
+        assert(not err, err)
+        assert(found, "must be found")
 
-if not(value[1] == "one") then error("value") end
-if not(value[3] == 1) then error("value") end
+        assert(value[1] == "one", "value: " .. value[1])
+        assert(value[3] == 1, "value: " .. value[3])
 
-local value, found, err = s:get("key2")
-if err then error(err) end
-if not(value == "value2") then error("value") end
+        local value, found, err = s:get("key2")
+        assert(not err, err)
+        assert(value == "value2", "value: " .. value)
 
-local value, found, err = s:get("key3")
-if err then error(err) end
-if not(value == 10.64) then error("value") end
+        local value, found, err = s:get("key3")
+        assert(not err, err)
+        assert(value == 10.64, "value: " .. value)
+    end)
 
-time.sleep(1)
+    t:Run("after ttl", function(t)
+        time.sleep(1)
 
--- wait ttl
-local value, found, err = s:get("key")
-if err then error(err) end
-if found then error("must be not found") end
+        -- wait ttl
+        local value, found, err = s:get("key")
+        assert(not err, err)
+        assert(not found, "must be not found")
+    end)
 
--- close
-local err = s:close()
-if err then error(err) end
+    t:Run("close", function(t)
+        -- close
+        local err = s:close()
+        assert(not err, err)
+    end)
 
--- get nil
-local err = s:set("key2", nil, 60)
-if err then error(err) end
-local value, found, err = s:get("key")
-if err then error(err) end
-if found then error("must be not found") end
-if not(value == nil) then error("must be nil") end
+    t:Run("get nil", function(t)
+        local err = s:set("key2", nil, 60)
+        assert(not err, err)
+        local value, found, err = s:get("key")
+        assert(not err, err)
+        assert(not found, "must be not found")
+        assert(value == nil, "value must be nil, but was: " .. tostring(value))
+    end)
 
--- keys
-local keys = s:keys()
-if not(#keys == 2) then error("keys") end
+    t:Run("keys", function(t)
+        local keys = s:keys()
+        assert(#keys == 2, "keys: " .. #keys)
+    end)
 
--- dump
-local dump, err = s:dump()
-if err then error(err) end
-if not(dump.key3 == 10.64) then error("dump: "..tostring(dump.key3)) end
+    t:Run("dump", function(t)
+        local dump, err = s:dump()
+        assert(not err, err)
+        assert(dump.key3 == 10.64, "dump: " .. tostring(dump.key3))
+    end)
+end

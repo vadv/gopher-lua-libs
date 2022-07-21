@@ -1,20 +1,11 @@
 package filepath
 
 import (
-	"io/ioutil"
+	"github.com/stretchr/testify/assert"
+	"github.com/vadv/gopher-lua-libs/tests"
 	"testing"
-
-	lua "github.com/yuin/gopher-lua"
 )
 
 func TestApi(t *testing.T) {
-	data, err := ioutil.ReadFile("./test/test_api.lua")
-	if err != nil {
-		t.Fatalf("%s\n", err.Error())
-	}
-	state := lua.NewState()
-	Preload(state)
-	if err := state.DoString(string(data)); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	assert.NotZero(t, tests.RunLuaTestFile(t, Preload, "./test/test_api.lua"))
 }

@@ -4,26 +4,27 @@ local time = require('time')
 local count = 2
 
 local function run(bar)
-  bar:start()
+    bar:start()
 
-  for i=1, count, 1 do
-    time.sleep(1)
-    bar:increment()
-  end
+    for i = 1, count, 1 do
+        time.sleep(1)
+        bar:increment()
+    end
 
-  bar:finish()
+    bar:finish()
 end
 
--- Predefined template
-local bar = pb.new(count)
-bar:configure({template='simple'})
+function Test_predefined_template(t)
+    local bar = pb.new(count)
+    bar:configure({ template = 'simple' })
 
-run(bar)
+    run(bar)
+end
 
+function Test_custom_template(t)
+    local tmpl = string.format('%s {{ counters . }} {{bar . }} {{percent . }} {{ etime . }}', 'THIS IS PREFIX')
 
--- Custom template
-local tmpl = string.format('%s {{ counters . }} {{bar . }} {{percent . }} {{ etime . }}', 'THIS IS PREFIX')
-
-local bar = pb.new(count)
-bar:configure({template=tmpl})
-run(bar)
+    local bar = pb.new(count)
+    bar:configure({ template = tmpl })
+    run(bar)
+end

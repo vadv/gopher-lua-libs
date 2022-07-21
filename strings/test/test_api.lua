@@ -42,3 +42,35 @@ function TestBuilder(t)
     local got = builder:string()
     assert(got == "foobar123", string.format("'%s' ~= '%s'", got, "foobar123"))
 end
+
+function TestTrimSpace(t)
+    tests = {
+        {
+            name = "string with trailing whitespace",
+            input = "foo bar    ",
+            expected = "foo bar",
+        },
+        {
+            name = "string with leading whitespace",
+            input = "   foo bar",
+            expected = "foo bar",
+        },
+        {
+            name = "string with leading and trailing whitespace",
+            input = "   foo bar   ",
+            expected = "foo bar",
+        },
+        {
+            name = "string with no leading or trailing whitespace",
+            input = "foo bar",
+            expected = "foo bar",
+        },
+    }
+
+    for _, tt in ipairs(tests) do
+        t:Run(tt.name, function(t)
+            got = strings.trim_space(tt.input)
+            assert(got == tt.expected, string.format([[expected "%s"; got "%s"]], expected, got))
+        end)
+    end
+end
