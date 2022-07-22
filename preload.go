@@ -16,6 +16,7 @@ import (
 	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
 	json "github.com/vadv/gopher-lua-libs/json"
 	log "github.com/vadv/gopher-lua-libs/log"
+	"github.com/vadv/gopher-lua-libs/optparse"
 	pb "github.com/vadv/gopher-lua-libs/pb"
 	plugin "github.com/vadv/gopher-lua-libs/plugin"
 	pprof "github.com/vadv/gopher-lua-libs/pprof"
@@ -73,4 +74,5 @@ func Preload(L *lua.LState) {
 	cloudwatch.Preload(L)
 	log.Preload(L)
 	stats.Preload(L)
+	optparse.Preload(L)
 }

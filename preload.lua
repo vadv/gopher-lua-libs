@@ -14,6 +14,7 @@ function TestRequireModule(t)
         "ioutil",
         "json",
         "log",
+        "optparse",
         "pb",
         "plugin",
         "pprof",
