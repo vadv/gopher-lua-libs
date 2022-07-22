@@ -98,19 +98,20 @@ func NewFileRequest(L *lua.LState) int {
 			}
 		}
 	}
-	if err != nil {
-		L.Push(lua.LNil)
-		L.Push(lua.LString(err.Error()))
-		return 2
+
+	if err == nil && L.GetTop() > 2 {
+		fields := L.CheckTable(3)
+		for key, value := fields.Next(lua.LNil); key != lua.LNil; key, value = fields.Next(key) {
+			err = writer.WriteField(key.String(), value.String())
+			if err != nil {
+				break
+			}
+		}
 	}
 
-	if L.GetTop() > 2 {
-		L.CheckTable(3).ForEach(func(k, v lua.LValue) {
-			writer.WriteField(k.String(), v.String())
-		})
+	if err == nil {
+		err = writer.Close()
 	}
-
-	err = writer.Close()
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))
