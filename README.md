@@ -31,6 +31,7 @@ go get github.com/vadv/gopher-lua-libs
 * [ioutil](/ioutil) io/ioutil port
 * [json](/json) json implementation
 * [log](/log) log port
+* [optparse](/optparse) pythonic.optparse <https://github.com/davidm/lua-pythonic-optparse>
 * [plugin](/plugin) run lua code in lua code
 * [pprof](/pprof) pprof http-server for golang from lua
 * [prometheus](/prometheus/client) prometheus exporter
