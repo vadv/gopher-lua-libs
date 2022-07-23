@@ -42,3 +42,12 @@ function TestBuilder(t)
     local got = builder:string()
     assert(got == "foobar123", string.format("'%s' ~= '%s'", got, "foobar123"))
 end
+
+function TestFields(t)
+    local fields = strings.fields("a b c d")
+    assert(#fields == 4, string.format("%d ~= 4", #fields))
+    assert(fields[1] == "a", string.format("%s ~= 'a'", fields[1]))
+    assert(fields[2] == "b", string.format("%s ~= 'b'", fields[2]))
+    assert(fields[3] == "c", string.format("%s ~= 'c'", fields[3]))
+    assert(fields[4] == "d", string.format("%s ~= 'd'", fields[3]))
+end
