@@ -33,3 +33,10 @@ function Test_argparse(t)
     assert_equal(test_output, args.output)
     assert_inspect_equal(test_include, args.include)
 end
+
+function Test_argparse_help(t)
+    local parser = argparse("script", "An example.")
+    parser:option("-f --foo", "Foo parameter", "default")
+    local help = parser:get_help()
+    assert(#help > 0, "help is empty")
+end
