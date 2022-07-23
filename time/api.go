@@ -27,10 +27,23 @@ func Sleep(L *lua.LState) int {
 	return 0
 }
 
-// Parse lua time.parse(value, layout) returns (number, error)
+// Parse lua time.parse(value, layout, ...location) returns (number, error)
 func Parse(L *lua.LState) int {
 	layout, value := L.CheckString(2), L.CheckString(1)
-	result, err := time.Parse(layout, value)
+	var (
+		err    error
+		result time.Time
+	)
+	if L.GetTop() > 2 {
+		location := L.CheckString(3)
+		var loc *time.Location
+		loc, err = time.LoadLocation(location)
+		if err == nil {
+			result, err = time.ParseInLocation(layout, value, loc)
+		}
+	} else {
+		result, err = time.Parse(layout, value)
+	}
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))

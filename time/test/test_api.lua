@@ -24,6 +24,12 @@ function Test_time(t)
         assert(err, "time.parse(): must be error")
     end)
 
+    t:Run("parse with timezone", function(t)
+        local parse, err = time.parse("Dec  2 03:33:05 2018", "Jan  2 15:04:05 2006", "Asia/Shanghai")
+        assert(not err, err)
+        assert(parse == 1543721585 - 8 * 3600, "time.parse(): 3")
+    end)
+
     t:Run("format", function(t)
         local result, err = time.format(1543721585, "Jan  2 15:04:05 2006", "Europe/Moscow")
         assert(not err, err)

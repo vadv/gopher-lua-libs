@@ -24,7 +24,7 @@ func Loader(L *lua.LState) int {
 	}))
 
 	http_request_ud := L.NewTypeMetatable(`http_request_ud`)
-	L.SetGlobal(`http_request_ud`, http_request_ud)
+	L.SetGlobal(luaRequestType, http_request_ud)
 	L.SetField(http_request_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
 		"set_basic_auth": SetBasicAuth,
 		"header_set":     HeaderSet,
@@ -37,6 +37,7 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"client":  New,
-	"request": NewRequest,
+	"client":       New,
+	"request":      NewRequest,
+	"file_request": NewFileRequest,
 }

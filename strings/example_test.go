@@ -25,6 +25,24 @@ func ExampleSplit() {
 	// { "a", "b", "c", "d" }
 }
 
+// strings.fields(string)
+func ExampleFields() {
+	state := lua.NewState()
+	Preload(state)
+	inspect.Preload(state)
+	source := `
+    local strings = require("strings")
+    local inspect = require("inspect")
+    local result = strings.fields("a b c d")
+    print(inspect(result, {newline="", indent=""}))
+`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+	// Output:
+	// { "a", "b", "c", "d" }
+}
+
 // strings.has_prefix(string, prefix)
 func ExampleHasPrefix() {
 	state := lua.NewState()

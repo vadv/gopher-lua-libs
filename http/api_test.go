@@ -3,6 +3,8 @@ package http_test
 import (
 	"crypto/subtle"
 	"fmt"
+	"github.com/stretchr/testify/assert"
+	"golang.org/x/sync/errgroup"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -46,6 +48,72 @@ func httpCheckUserAgent(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`OK`))
 }
 
+func getFormFile(r *http.Request, key, filename string) (err error) {
+	file, header, err := r.FormFile(key)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	if header.Filename != filename {
+		return fmt.Errorf("bad filename, get: %s except: %s\n", header.Filename, filename)
+	}
+	return nil
+}
+
+func httpUploadFile(w http.ResponseWriter, r *http.Request) {
+	err := getFormFile(r, "file", "test.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	w.Write([]byte(`OK`))
+}
+
+func httpUploadFileWithFields(w http.ResponseWriter, r *http.Request) {
+	err := getFormFile(r, "file", "test.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	if r.FormValue("foo") != "bar" {
+		w.WriteHeader(400)
+		return
+	}
+	w.Write([]byte(`OK`))
+}
+
+func httpUploadMultipleFile(w http.ResponseWriter, r *http.Request) {
+	err := getFormFile(r, "file", "test.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	err = getFormFile(r, "file1", "test1.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	w.Write([]byte(`OK`))
+}
+
+func httpUploadMultipleFileWithFields(w http.ResponseWriter, r *http.Request) {
+	err := getFormFile(r, "file", "test.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	err = getFormFile(r, "file1", "test1.txt")
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	if r.FormValue("foo") != "bar" {
+		w.WriteHeader(400)
+		return
+	}
+	w.Write([]byte(`OK`))
+}
+
 func httpRouterGet(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`OK`))
 }
@@ -70,8 +138,7 @@ func runHttps(addr string) {
 }
 
 func request(url string) error {
-	client := &http.Client{}
-	resp, err := client.Get(url)
+	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}
@@ -86,21 +153,21 @@ func request(url string) error {
 	return nil
 }
 
-func manyRequest(addr string) {
-	time.Sleep(5 * time.Second)
-	count := 0
-	for {
-		if count > 10 {
-			break
+func manyRequest(addr string) *errgroup.Group {
+	eg := &errgroup.Group{}
+	eg.Go(func() error {
+		time.Sleep(5 * time.Second)
+		for count := 0; count < 10; count++ {
+			url := fmt.Sprintf("%s/%s?d=%d", addr, "url", count)
+			func(url string) {
+				eg.Go(func() error {
+					return request(url)
+				})
+			}(url)
 		}
-		url := fmt.Sprintf("%s/%s?d=%d", addr, "url", count)
-		go func(url string) {
-			if err := request(url); err != nil {
-				panic(err)
-			}
-		}(url)
-		count++
-	}
+		return nil
+	})
+	return eg
 }
 
 func TestApi(t *testing.T) {
@@ -110,36 +177,44 @@ func TestApi(t *testing.T) {
 	http.HandleFunc("/timeout", httpRouterGetTimeout)
 	http.HandleFunc("/checkHeader", httpCheckHeaders)
 	http.HandleFunc("/checkUserAgent", httpCheckUserAgent)
+	http.HandleFunc("/upload", httpUploadFile)
+	http.HandleFunc("/uploadWithFields", httpUploadFileWithFields)
+	http.HandleFunc("/uploadMultiple", httpUploadMultipleFile)
+	http.HandleFunc("/uploadMultipleWithFields", httpUploadMultipleFileWithFields)
 
 	go runHttp(":1111")
 	go runHttps(":1112")
 	time.Sleep(time.Second)
 
 	state := lua.NewState()
+	defer state.Close()
+
 	lua_http.Preload(state)
 	lua_time.Preload(state)
 	inspect.Preload(state)
 	plugin.Preload(state)
 
-	if err := state.DoFile("./test/test_client.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	t.Run("test_client", func(t *testing.T) {
+		assert.NoError(t, state.DoFile("./test/test_client.lua"))
+	})
 
-	go manyRequest("http://127.0.0.1:1113")
-	if err := state.DoFile("./test/test_server_accept.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	t.Run("test_server_accept", func(t *testing.T) {
+		eg := manyRequest("http://127.0.0.1:1113")
+		assert.NoError(t, state.DoFile("./test/test_server_accept.lua"))
+		assert.NoError(t, eg.Wait())
+	})
 
-	go manyRequest("http://127.0.0.1:2113")
-	if err := state.DoFile("./test/test_server_handle.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	t.Run("test_server_handle", func(t *testing.T) {
+		eg := manyRequest("http://127.0.0.1:2113")
+		assert.NoError(t, state.DoFile("./test/test_server_handle.lua"))
+		assert.NoError(t, eg.Wait())
+	})
 
-	if err := state.DoFile("./test/test_server_accept_stop.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	t.Run("test_server_accept_stop", func(t *testing.T) {
+		assert.NoError(t, state.DoFile("./test/test_server_accept_stop.lua"))
+	})
 
-	if err := state.DoFile("./test/test_serve_static.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	t.Run("test_serve_static", func(t *testing.T) {
+		assert.NoError(t, state.DoFile("./test/test_serve_static.lua"))
+	})
 }
