@@ -34,6 +34,13 @@ function Test_argparse(t)
     assert_inspect_equal(test_include, args.include)
 end
 
+function Test_argparse_default(t)
+    local parser = argparse("script", "An example.")
+    parser:option("-f --foo", "Foo parameter", "default")
+    local args = parser:parse({})
+    assert(args.foo == 'default')
+end
+
 function Test_argparse_help(t)
     local parser = argparse("script", "An example.")
     parser:option("-f --foo", "Foo parameter", "default")
