@@ -27,6 +27,47 @@ if not(resp.code == 200) then error("resp code") end
 if not(resp.body == "OK") then error("resp body") end
 print("done: http.client:getBasicAuth")
 
+local req, err = http.file_request("http://127.0.0.1:1111/upload", {
+  fieldname = "file",
+  path = "./test/data/test.txt"
+})
+if err then error(err) end
+local resp, err = client_1:do_request(req)
+if err then error(err) end
+if not(resp.code == 200) then error("resp code") end
+if not(resp.body == "OK") then error("resp body") end
+
+local req, err = http.file_request("http://127.0.0.1:1111/uploadWithFields", {
+  fieldname = "file",
+  path = "./test/data/test.txt"
+}, { foo = "bar"})
+if err then error(err) end
+local resp, err = client_1:do_request(req)
+if err then error(err) end
+if not(resp.code == 200) then error("resp code") end
+if not(resp.body == "OK") then error("resp body") end
+
+local req, err = http.file_request("http://127.0.0.1:1111/uploadMultiple", {
+  {fieldname = "file", path = "./test/data/test.txt"},
+  {fieldname = "file1", path = "./test/data/test1.txt"}
+})
+if err then error(err) end
+local resp, err = client_1:do_request(req)
+if err then error(err) end
+if not(resp.code == 200) then error("resp code") end
+if not(resp.body == "OK") then error("resp body") end
+
+local req, err = http.file_request("http://127.0.0.1:1111/uploadMultipleWithFields", {
+  {fieldname = "file", path = "./test/data/test.txt"},
+  {fieldname = "file1", path = "./test/data/test1.txt"}
+}, {foo = "bar"})
+if err then error(err) end
+local resp, err = client_1:do_request(req)
+if err then error(err) end
+if not(resp.code == 200) then error("resp code") end
+if not(resp.body == "OK") then error("resp body") end
+print("done: http.client:file_request")
+
 local req, err = http.request("GET", "http://127.0.0.1:1111/timeout")
 if err then error(err) end
 local _, err = client_2:do_request(req)

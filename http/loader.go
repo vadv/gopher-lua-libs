@@ -65,6 +65,7 @@ var api = map[string]lua.LGFunction{
 	"serve_static":   server.ServeStaticFiles,
 	"client":         client.New,
 	"request":        client.NewRequest,
+	"file_request":   client.NewFileRequest,
 	"query_escape":   util.QueryEscape,
 	"query_unescape": util.QueryUnescape,
 	"parse_url":      util.ParseURL,

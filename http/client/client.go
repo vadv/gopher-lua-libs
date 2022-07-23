@@ -75,7 +75,7 @@ func checkClient(L *lua.LState) *LuaClient {
 	if v, ok := ud.Value.(*LuaClient); ok {
 		return v
 	}
-	L.ArgError(1, "http client excepted")
+	L.ArgError(1, "http client expected")
 	return nil
 }
 
