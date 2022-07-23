@@ -1,6 +1,7 @@
 package libs
 
 import (
+	"github.com/vadv/gopher-lua-libs/argparse"
 	cloudwatch "github.com/vadv/gopher-lua-libs/aws/cloudwatch"
 	"github.com/vadv/gopher-lua-libs/base64"
 	cert_util "github.com/vadv/gopher-lua-libs/cert_util"
@@ -40,6 +41,7 @@ import (
 
 // Preload preload all gopher lua packages
 func Preload(L *lua.LState) {
+	argparse.Preload(L)
 	base64.Preload(L)
 	time.Preload(L)
 	strings.Preload(L)
