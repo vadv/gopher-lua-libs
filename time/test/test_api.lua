@@ -19,15 +19,15 @@ function Test_time(t)
         assert(parse == 1543721585, "time.parse(): 1")
     end)
 
-    t:Run("parse with error", function(t)
-        local _, err = time.parse("Dec  32 03:33:05 2018", "Jan  2 15:04:05 2006")
-        assert(err, "time.parse(): must be error")
-    end)
-
     t:Run("parse with timezone", function(t)
         local parse, err = time.parse("Dec  2 03:33:05 2018", "Jan  2 15:04:05 2006", "Asia/Shanghai")
         assert(not err, err)
         assert(parse == 1543721585 - 8 * 3600, "time.parse(): 3")
+    end)
+
+    t:Run("parse with error", function(t)
+        local _, err = time.parse("Dec  32 03:33:05 2018", "Jan  2 15:04:05 2006")
+        assert(err, "time.parse(): must be error")
     end)
 
     t:Run("format", function(t)
