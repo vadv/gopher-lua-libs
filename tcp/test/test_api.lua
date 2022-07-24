@@ -29,9 +29,11 @@ assert_equal(5, conn.dialTimeout)
 assert_equal(1, conn.writeTimeout)
 assert_equal(1, conn.readTimeout)
 assert_equal(1, conn.closeTimeout)
+print("done: tcp_client_ud read timeout fields")
 
 -- Check setting fields
 conn.closeTimeout = 2
 assert_equal(2, conn.closeTimeout)
 conn.closeTimeout = 0.5
 assert_equal(0.5, conn.closeTimeout)
+print("done: tcp_client_ud write and check timeout fields")
