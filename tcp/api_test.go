@@ -1,26 +1,33 @@
 package tcp
 
 import (
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/vadv/gopher-lua-libs/strings"
+	"github.com/vadv/gopher-lua-libs/tests"
+	"io"
 	"net"
 	"testing"
 	"time"
-
-	lua "github.com/yuin/gopher-lua"
 )
 
-func runPingPongServer(addr string) {
+func runPingPongServer(addr string) (io.Closer, error) {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
-		panic(err)
+		return nil, nil
 	}
-	defer listener.Close()
-	for {
-		conn, err := listener.Accept()
-		if err != nil {
-			panic(err)
+
+	go func() {
+		for {
+			conn, err := listener.Accept()
+			if err != nil {
+				panic(err)
+			}
+			handleTCPClient(conn)
 		}
-		handleTCPClient(conn)
-	}
+	}()
+
+	return listener, nil
 }
 
 func handleTCPClient(conn net.Conn) {
@@ -40,13 +47,16 @@ func handleTCPClient(conn net.Conn) {
 }
 
 func TestApi(t *testing.T) {
-
-	go runPingPongServer(":12345")
+	closer, err := runPingPongServer(":12345")
+	require.NoError(t, err)
+	t.Cleanup(func() {
+		_ = closer.Close()
+	})
 	time.Sleep(time.Second)
 
-	state := lua.NewState()
-	Preload(state)
-	if err := state.DoFile("./test/test_api.lua"); err != nil {
-		t.Fatalf("execute test: %s\n", err.Error())
-	}
+	preload := tests.SeveralPreloadFuncs(
+		strings.Preload,
+		Preload,
+	)
+	assert.NotZero(t, tests.RunLuaTestFile(t, preload, "./test/test_api.lua"))
 }

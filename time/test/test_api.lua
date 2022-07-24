@@ -1,29 +1,38 @@
 local time = require("time")
 
-local lua_before = os.clock()
-local before = time.unix()
-time.sleep(2)
-local after = time.unix()
-local lua_after = os.clock()
-if after - before < 1 then error("time.unix()") end
-if lua_after - lua_before < 2 then error("time.sleep()") end
-print("done: time.sleep(), time.unix()")
+function Test_time(t)
+    t:Run("time.unix", function(t)
+        local lua_before = os.clock()
+        local before = time.unix()
+        t:Logf("lua_before=%f, before=%f", lua_before, before)
+        time.sleep(2)
+        local after = time.unix()
+        local lua_after = os.clock()
+        t:Logf("lua_after=%f, after=%f", lua_after, after)
+        assert(after - before >= 1, "time.unix()")
+        assert(lua_after - lua_before >= 2, "time.sleep()")
+    end)
 
-local parse, err = time.parse("Dec  2 03:33:05 2018", "Jan  2 15:04:05 2006")
-if err then error(err) end
-if not(parse == 1543721585) then error("time.parse(): 1") end
-print("done: time.parse(): 1")
+    t:Run("parse ok", function(t)
+        local parse, err = time.parse("Dec  2 03:33:05 2018", "Jan  2 15:04:05 2006")
+        assert(not err, err)
+        assert(parse == 1543721585, "time.parse(): 1")
+    end)
 
-local _, err = time.parse("Dec  32 03:33:05 2018", "Jan  2 15:04:05 2006")
-if (err == nil) then error("time.parse(): must be error") end
-print("done: time.parse(): 2")
+    t:Run("parse with timezone", function(t)
+        local parse, err = time.parse("Dec  2 03:33:05 2018", "Jan  2 15:04:05 2006", "Asia/Shanghai")
+        assert(not err, err)
+        assert(parse == 1543721585 - 8 * 3600, "time.parse(): 3")
+    end)
 
-local parse, err = time.parse("Dec  2 03:33:05 2018", "Jan  2 15:04:05 2006", "Asia/Shanghai")
-if err then error(err) end
-if not(parse == 1543721585 - 8 * 3600) then error("time.parse(): 3") end
-print("done: time.parse(): 3")
+    t:Run("parse with error", function(t)
+        local _, err = time.parse("Dec  32 03:33:05 2018", "Jan  2 15:04:05 2006")
+        assert(err, "time.parse(): must be error")
+    end)
 
-local result, err = time.format(1543721585, "Jan  2 15:04:05 2006", "Europe/Moscow")
-if err then error(err) end
-if not(result == "Dec  2 06:33:05 2018") then error("time.format()") end
-print("done: time.format(): 1")
+    t:Run("format", function(t)
+        local result, err = time.format(1543721585, "Jan  2 15:04:05 2006", "Europe/Moscow")
+        assert(not err, err)
+        assert(result == "Dec  2 06:33:05 2018", "time.format() was " .. result)
+    end)
+end

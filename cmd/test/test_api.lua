@@ -1,20 +1,16 @@
 local cmd = require("cmd")
 local runtime = require("runtime")
 
-local command = "sleep 1"
-if runtime.goos() == "windows" then command = "timeout 1" end
+function TestNoTimeout(t)
+    local command = runtime.goos() == "windows" and "timeout 1" or "sleep 1"
+    local result, err = cmd.exec(command)
+    assert(not err, err)
+    t:Log(result.stdout)
+end
 
-local result, err = cmd.exec(command)
-if err then error(err) end
-print(result.stdout)
-
--- Test timeout
-local cmd = require("cmd")
-local runtime = require("runtime")
-
-local command = "sleep 5"
-if runtime.goos() == "windows" then command = "timeout 1" end
-
-local result, err = cmd.exec(command, 1)
-if err == nil then error("timeout expected but did not occur") end
-if err ~= "execute timeout" then error("expected 'execute timeout' but instead got '" .. err .. "'") end
+function TestTimeout(t)
+    local command = runtime.goos() == "windows" and "timeout 5" or "sleep 5"
+    local result, err = cmd.exec(command, 1)
+    assert(err, "timeout expected but did not occur")
+    assert(err == "execute timeout", "expected 'execute timeout' but instead got '" .. err .. "'")
+end

@@ -1,17 +1,21 @@
 local goos = require("goos")
 
--- stat
-local info, err = goos.stat("./test/test.file")
-if err then error(err) end
-if not(info.is_dir == false) then error("is dir") end
-if not(0 == info.size) then error("size") end
-if not(info.mod_time > 0) then error("mod_time") end
-if not(info.mode > "") then error("mode") end
+function Test_stat(t)
+    local info, err = goos.stat("./test/test.file")
+    assert(not err, err)
+    assert(info.is_dir == false, "is dir")
+    assert(0 == info.size, "non-zero size: " .. info.size)
+    assert(info.mod_time > 0, "mod_time: " .. info.mod_time)
+    assert(info.mode > "", "mode: " .. info.mode)
+end
 
--- hostname
-local hostname, err = goos.hostname()
-if err then error(err) end
-if not(hostname > "") then error("hostname") end
+function Test_hostname(t)
+    -- hostname
+    local hostname, err = goos.hostname()
+    assert(not err, err)
+    assert(hostname > "", "hostname")
+end
 
--- get_pagesize
-if not(goos.get_pagesize() > 0) then error("pagesize") end
+function Test_pagesize(t)
+    assert(goos.get_pagesize() > 0, "pagesize")
+end

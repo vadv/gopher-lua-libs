@@ -1,14 +1,28 @@
 local template = require("template")
 
-local mustache, err = template.choose("mustache")
-if err then error(err) end
+function Test_template(t)
+    local mustache, err = template.choose("mustache")
+    assert(not err, err)
 
-local values = {name="world"}
-local result, err = mustache:render("Hello {{name}}!", values)
-if err then error(err) end
-if not(result == "Hello world!") then error(result) end
-
-local values = {data = {"one", "two"}}
-local result, err = mustache:render("{{#data}} {{.}} {{/data}}", values)
-if err then error(err) end
-if not(result == " one  two ") then error(result) end
+    tests = {
+        {
+            name = "hello world",
+            values = { name = "world" },
+            template = "Hello {{name}}!",
+            expected = "Hello world!",
+        },
+        {
+            name = "one two",
+            values = { data = { "one", "two" } },
+            template = "{{#data}} {{.}} {{/data}}",
+            expected = " one  two ",
+        },
+    }
+    for _, tt in ipairs(tests) do
+        t:Run(tt.name, function(t)
+            local result, err = mustache:render(tt.template, tt.values)
+            assert(not err, err)
+            assert(result == tt.expected, string.format([[expected "%s"; got "%s"]], tt.expected, result))
+        end)
+    end
+end

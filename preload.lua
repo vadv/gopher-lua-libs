@@ -1,5 +1,6 @@
 function TestRequireModule(t)
     modules = {
+        "argparse",
         "base64",
         "cert_util",
         "chef",

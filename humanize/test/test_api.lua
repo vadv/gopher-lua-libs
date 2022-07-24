@@ -1,20 +1,24 @@
 local humanize = require("humanize")
 local time = require("time")
 
--- parse_bytes
-local size, err = humanize.parse_bytes("1.3GiB")
-if err then error(err) end
-if not(size == 1395864371) then error("size: "..tostring(size)) end
+function Test_parse_bytes(t)
+    local size, err = humanize.parse_bytes("1.3GiB")
+    assert(not err, err)
+    assert(size == 1395864371, "size: " .. tostring(size))
+end
 
--- ibytes
-local size_string = humanize.ibytes(1395864371)
-if not(size_string == "1.3 GiB") then error("ibytes: "..size_string) end
+function Test_ibytes(t)
+    local size_string = humanize.ibytes(1395864371)
+    assert(size_string == "1.3 GiB", "ibytes: " .. size_string)
+end
 
--- time
-local t = time.unix() - 2
-local time_string = humanize.time(t)
-if not(time_string == "2 seconds ago") then error("time: "..time_string) end
+function Test_time(t)
+    local t = time.unix() - 2
+    local time_string = humanize.time(t)
+    assert(time_string == "2 seconds ago", "time: " .. time_string)
+end
 
--- si
-local si_result = humanize.si(1202121, "m")
-if not(si_result == "1.202121 Mm") then error("si: "..tostring(si_result)) end
+function Test_si(t)
+    local si_result = humanize.si(1202121, "m")
+    assert(si_result == "1.202121 Mm", "si: " .. tostring(si_result))
+end

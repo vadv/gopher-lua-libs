@@ -1,31 +1,40 @@
 local regexp = require("regexp")
 
-local reg, err = regexp.compile("(gopher){2}")
-if err then error(err) end
-if reg:match("gopher") then error("must not be matched") end
-if not reg:match("gophergopher") then error("must be matched") end
-print("done: regexp_ud:match()")
+function Test_compiled_regex_match(t)
+    local reg, err = regexp.compile("(gopher){2}")
+    if err then
+        error(err)
+    end
+    assert(not reg:match("gopher"), "must not be matched")
+    assert(reg:match("gophergopher"), "must be matched")
+end
 
-local reg, err = regexp.compile("string: (.*)$")
-if err then error(err) end
-local result = reg:find_all_string_submatch("my string: 'hello world'")
-if not(result[1][2] == "'hello world'") then error("not found: "..tostring(result[1][2])) end
-print("done: regexp_ud:find_all_string_submatch():1")
+function Test_find_all_string_submatch(t)
+    t:Run("1", function(t)
+        local reg, err = regexp.compile("string: (.*)$")
+        assert(not err, err)
+        local result = reg:find_all_string_submatch("my string: 'hello world'")
+        assert(result[1][2] == "'hello world'", "not found: " .. tostring(result[1][2]))
+    end)
 
-local reg, err = regexp.compile("string: '(.*)\\s+(.*)'$")
-if err then error(err) end
-local result = reg:find_all_string_submatch("my string: 'hello world'")
-if not(result[1][2] == "hello") then error("not found: "..tostring(result[1][2])) end
-if not(result[1][3] == "world") then error("not found: "..tostring(result[1][3])) end
-print("done: regexp_ud:find_all_string_submatch():2")
+    t:Run("2", function(t)
+        local reg, err = regexp.compile("string: '(.*)\\s+(.*)'$")
+        assert(not err, err)
+        local result = reg:find_all_string_submatch("my string: 'hello world'")
+        assert(result[1][2] == "hello", "not found: " .. tostring(result[1][2]))
+        assert(result[1][3] == "world", "not found: " .. tostring(result[1][3]))
+    end)
+end
 
-local found, err = regexp.match("(gopher){2}", "gophergopher")
-if err then error(err) end
-if not found then error("must be matched") end
-print("done: regexp.match()")
+function Test_match(t)
+    local found, err = regexp.match("(gopher){2}", "gophergopher")
+    assert(not err, err)
+    assert(found, "must be matched")
+end
 
-local result, err = regexp.find_all_string_submatch("string: '(.*)\\s+(.*)'$", "my string: 'hello world'")
-if err then error(err) end
-if not(result[1][2] == "hello") then error("not found: "..tostring(result[1][2])) end
-if not(result[1][3] == "world") then error("not found: "..tostring(result[1][3])) end
-print("done: regexp.find_all_string_submatch()")
+function Test_find_all_string_submatch(t)
+    local result, err = regexp.find_all_string_submatch("string: '(.*)\\s+(.*)'$", "my string: 'hello world'")
+    assert(not err, err)
+    assert(result[1][2] == "hello", "not found: " .. tostring(result[1][2]))
+    assert(result[1][3] == "world", "not found: " .. tostring(result[1][3]))
+end
