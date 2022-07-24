@@ -161,7 +161,7 @@ func IOWriterClose(L *lua.LState) int {
 	L.Pop(L.GetTop())
 	if closer, ok := writer.(io.Closer); ok {
 		if err := closer.Close(); err != nil {
-			L.RaiseError(err.Error())
+			L.RaiseError("%v", err)
 		}
 	}
 	return 0
@@ -188,7 +188,7 @@ func IOReaderRead(L *lua.LState) int {
 			return 1
 		}
 		if err != nil {
-			L.RaiseError(err.Error())
+			L.RaiseError("%v", err)
 			return 0
 		}
 		if numRead < num {
@@ -209,7 +209,7 @@ func IOReaderRead(L *lua.LState) int {
 				return 1
 			}
 			if err != nil {
-				L.RaiseError(err.Error())
+				L.RaiseError("%v", err)
 				return 0
 			}
 			L.Push(num)
@@ -221,7 +221,7 @@ func IOReaderRead(L *lua.LState) int {
 				return 1
 			}
 			if err != nil {
-				L.RaiseError(err.Error())
+				L.RaiseError("%v", err)
 				return 0
 			}
 			L.Push(lua.LString(data))
@@ -234,7 +234,7 @@ func IOReaderRead(L *lua.LState) int {
 				return 1
 			}
 			if err != nil {
-				L.RaiseError(err.Error())
+				L.RaiseError("%v", err)
 				return 0
 			}
 			L.Push(line)
@@ -251,7 +251,7 @@ func IOReaderClose(L *lua.LState) int {
 	L.Pop(L.GetTop())
 	if closer, ok := reader.(io.Closer); ok {
 		if err := closer.Close(); err != nil {
-			L.RaiseError(err.Error())
+			L.RaiseError("%v", err)
 		}
 	}
 	return 0

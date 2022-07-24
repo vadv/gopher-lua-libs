@@ -2,7 +2,7 @@
 package tcp
 
 import (
-	"fmt"
+	lio "github.com/vadv/gopher-lua-libs/io"
 	"net"
 	"time"
 
@@ -22,11 +22,15 @@ const (
 
 type luaTCPClient struct {
 	net.Conn
-	address string
+	address      string
+	dialTimeout  time.Duration
+	writeTimeout time.Duration
+	readTimeout  time.Duration
+	closeTimeout time.Duration
 }
 
 func (c *luaTCPClient) connect() error {
-	conn, err := net.DialTimeout("tcp", c.address, DefaultDialTimeout)
+	conn, err := net.DialTimeout("tcp", c.address, c.dialTimeout)
 	if err != nil {
 		return err
 	}
@@ -46,7 +50,16 @@ func checkLuaTCPClient(L *lua.LState, n int) *luaTCPClient {
 // Open lua tcp.open(string) returns (tcp_client_ud, err)
 func Open(L *lua.LState) int {
 	addr := L.CheckString(1)
-	t := &luaTCPClient{address: addr}
+	t := &luaTCPClient{
+		address:      addr,
+		dialTimeout:  DefaultDialTimeout,
+		writeTimeout: DefaultWriteTimeout,
+		readTimeout:  DefaultReadTimeout,
+		closeTimeout: DefaultCloseTimeout,
+	}
+	if dialTimeout, ok := L.Get(2).(lua.LNumber); ok {
+		t.dialTimeout = time.Duration(dialTimeout * lua.LNumber(time.Second))
+	}
 	if err := t.connect(); err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))
@@ -62,49 +75,24 @@ func Open(L *lua.LState) int {
 // Write lua tcp_client_ud:write() returns err
 func Write(L *lua.LState) int {
 	conn := checkLuaTCPClient(L, 1)
-	data := L.CheckString(2)
-	conn.SetWriteDeadline(time.Now().Add(DefaultWriteTimeout))
-	count, err := conn.Write([]byte(data))
-	if err != nil {
-		L.Push(lua.LString(fmt.Sprintf("write to `%s`: %s", conn.address, err.Error())))
-		return 1
-	}
-	if count != len(data) {
-		L.Push(lua.LString(fmt.Sprintf("write to `%s` get: %d except: %d", conn.address, count, len(data))))
-		return 1
-	}
-	return 0
+	_ = conn.SetWriteDeadline(time.Now().Add(conn.writeTimeout))
+	return lio.IOWriterWrite(L)
 }
 
 // Read lua tcp_client_ud:read(max_size_int) returns (string, err)
 func Read(L *lua.LState) int {
 	conn := checkLuaTCPClient(L, 1)
-	count := int(1024)
-	if L.GetTop() > 1 {
-		count = int(L.CheckInt64(2))
-		if count < 1 {
-			L.ArgError(2, "must be > 1")
-		}
+	// Backward compatibility for callers that don't pass a length
+	if L.GetTop() < 2 {
+		L.Push(lua.LNumber(1024))
 	}
-	buf := make([]byte, count)
-	conn.SetReadDeadline(time.Now().Add(DefaultReadTimeout))
-	count, err := conn.Read(buf)
-	if err != nil {
-		L.Push(lua.LNil)
-		L.Push(lua.LString(fmt.Sprintf("read from `%s`: %s", conn.address, err.Error())))
-		return 2
-	}
-	line := string(buf[0:count])
-	L.Push(lua.LString(line))
-	return 1
+	_ = conn.SetReadDeadline(time.Now().Add(conn.readTimeout))
+	return lio.IOReaderRead(L)
 }
 
 // Close lua tcp_client_ud:close()
 func Close(L *lua.LState) int {
 	conn := checkLuaTCPClient(L, 1)
-	conn.SetDeadline(time.Now().Add(DefaultCloseTimeout))
-	if conn != nil {
-		conn.Close()
-	}
-	return 0
+	_ = conn.SetDeadline(time.Now().Add(conn.closeTimeout))
+	return lio.IOWriterClose(L)
 }
