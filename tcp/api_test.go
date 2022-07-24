@@ -3,7 +3,6 @@ package tcp
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/vadv/gopher-lua-libs/strings"
 	"github.com/vadv/gopher-lua-libs/tests"
 	"io"
 	"net"
@@ -54,9 +53,5 @@ func TestApi(t *testing.T) {
 	})
 	time.Sleep(time.Second)
 
-	preload := tests.SeveralPreloadFuncs(
-		strings.Preload,
-		Preload,
-	)
-	assert.NotZero(t, tests.RunLuaTestFile(t, preload, "./test/test_api.lua"))
+	assert.NotZero(t, tests.RunLuaTestFile(t, Preload, "./test/test_api.lua"))
 }

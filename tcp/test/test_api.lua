@@ -1,4 +1,3 @@
-local strings = require("strings")
 local tcp = require("tcp")
 
 function Test_tcp(t)
@@ -7,18 +6,20 @@ function Test_tcp(t)
     assert(not err, err)
     t:Log("done: tcp:open()")
 
-    err = conn:write("ping")
-    assert(not err, err)
-    t:Log("done: tcp_client_ud:write()")
-
-    local result, err = conn:read()
-    assert(not err, err)
-    assert(strings.trim_space(result) == "pong", string.format([[expected "%s"; got "%s"]], "pong", result))
-    t:Log("done: tcp_client_ud:read_line()")
-
     local function assert_equal(expected, got)
-        assert(got == expected, string.format("expected %s: got %s", expected, got))
+        assert(got == expected, string.format([[expected "%s": got "%s"]], expected, got))
     end
+
+    t:Run("write ping read pong", function(t)
+        err = conn:write("ping")
+        assert(not err, err)
+        t:Log("done: tcp_client_ud:write()")
+
+        local result, err = conn:read()
+        assert(not err, err)
+        assert_equal("pong\n", result)
+        t:Log("done: tcp_client_ud:read_line()")
+    end)
 
     t:Run("read timeout fields", function(t)
         assert_equal(5, conn.dialTimeout)
@@ -26,7 +27,6 @@ function Test_tcp(t)
         assert_equal(1, conn.readTimeout)
         assert_equal(1, conn.closeTimeout)
         print("done: tcp_client_ud read timeout fields")
-
     end)
 
     t:Run('write/read timeout fields', function(t)
