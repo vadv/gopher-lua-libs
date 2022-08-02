@@ -1,6 +1,7 @@
-local plugin = require("plugin")
-local time = require("time")
-local ioutil = require("ioutil")
+local plugin = require 'plugin'
+local time = require 'time'
+local ioutil = require 'ioutil'
+local inspect = require 'inspect'
 
 function Test_plugin(t)
     t:Run("no payload", function(t)
@@ -87,4 +88,114 @@ function TestArgs(t)
     assert(ok)
     assert(answer == "ping pong", answer)
     args_plugin:stop()
+end
+
+function TestWait(t)
+    local plugin_quick_body = [[
+        local time = require 'time'
+        time.sleep(0.1)
+    ]]
+    local plugin_quick_body_fail = [[
+        error('fail')
+    ]]
+    local plugin_slow_body = [[
+        local time = require 'time'
+        time.sleep(5)
+    ]]
+
+    t:Run("no timeout", function(t)
+        local notimeout_plugin = plugin.do_string(plugin_quick_body)
+        notimeout_plugin:run()
+        local err = notimeout_plugin:wait()
+        assert(not err, err)
+    end)
+
+    t:Run("no timeout fails", function(t)
+        local notimeout_plugin = plugin.do_string(plugin_quick_body_fail)
+        notimeout_plugin:run()
+        local err = notimeout_plugin:wait()
+        assert(err)
+    end)
+
+    t:Run("timeout ok", function(t)
+        local notimeout_plugin = plugin.do_string(plugin_quick_body)
+        notimeout_plugin:run()
+        local err = notimeout_plugin:wait(1)
+        assert(not err, err)
+    end)
+
+    t:Run("timeout expires", function(t)
+        local notimeout_plugin = plugin.do_string(plugin_slow_body)
+        notimeout_plugin:run()
+        local err = notimeout_plugin:wait(0.1)
+        assert(err)
+    end)
+end
+
+function TestMultipleWorkers(t)
+    -- Fire up 5 work consumers that double each unit of work and return {work, work * 2}
+    local work_body = [[
+        local workCh, resultCh = unpack(arg)
+
+        local ok, work = workCh:receive()
+        while ok do
+            resultCh:send {work, work * 2}
+            ok, work = workCh:receive()
+        end
+    ]]
+    local workers = {}
+    local worker_channels = {}
+    local workCh = channel.make(100)
+    local resultCh = channel.make(100)
+    for i = 1, 5 do
+        worker_plugin = plugin.do_string(work_body, workCh, resultCh)
+        worker_plugin:run()
+        table.insert(workers, worker_plugin)
+        table.insert(worker_channels, worker_plugin:done_channel())
+    end
+
+    -- Fire up a watcher to close the resultCh when all workers have exited
+    local worker_watcher_body = [[
+        resultCh, worker_channels = unpack(arg)
+        for _, ch in ipairs(worker_channels) do
+            ch:receive()
+        end
+        resultCh:close()
+    ]]
+    local worker_watcher_plugin = plugin.do_string(worker_watcher_body, resultCh, worker_channels)
+    worker_watcher_plugin:run()
+
+    -- Fire up a producer of work
+    local work_producer_body = [[
+        local workCh = unpack(arg)
+        for i = 1, 10 do
+            workCh:send(i)
+        end
+        workCh:close()
+    ]]
+    local work_producer_plugin = plugin.do_string(work_producer_body, workCh)
+    work_producer_plugin:run()
+
+    -- Now just walk the results, which should close when all workers have exited
+    local count = 0
+    local ok, result = resultCh:receive()
+    while ok do
+        assert(ok)
+        assert(result[1] * 2 == result[2], inspect(result))
+        count = count + 1
+        t:Log(inspect(result))
+        ok, result = resultCh:receive()
+    end
+    t:Logf("count = %d", count)
+    assert(count == 10, tostring(count))
+
+    -- Ensure that all workers are terminated at this point and with no errors
+    assert(not worker_watcher_plugin:is_running(), "worker_watcher_plugin is still running")
+    assert(not worker_watcher_plugin:error(), worker_watcher_plugin:error())
+    assert(not work_producer_plugin:is_running(), "worker_watcher_plugin is still running")
+    assert(not work_producer_plugin:error(), work_producer_plugin:error())
+    for i, worker in ipairs(workers) do
+        assert(not worker:is_running(), string.format("worker %d is running", i))
+        assert(not worker:error(), string.format("worker %d error %s", i, worker:error()))
+    end
 end

@@ -18,10 +18,12 @@ func Loader(L *lua.LState) int {
 	pluginUd := L.NewTypeMetatable(`plugin_ud`)
 	L.SetGlobal(`plugin_ud`, pluginUd)
 	L.SetField(pluginUd, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"run":        Run,
-		"error":      Error,
-		"stop":       Stop,
-		"is_running": IsRunning,
+		"run":          Run,
+		"error":        Error,
+		"stop":         Stop,
+		"wait":         Wait,
+		"is_running":   IsRunning,
+		"done_channel": DoneChannel,
 	}))
 
 	t := L.NewTable()

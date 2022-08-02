@@ -3,13 +3,16 @@ package plugin
 
 import (
 	"context"
+	"log"
 	"sync"
+	"time"
 
 	lua "github.com/yuin/gopher-lua"
 )
 
 type luaPlugin struct {
 	sync.Mutex
+	*sync.Cond
 	state      *lua.LState
 	cancelFunc context.CancelFunc
 	running    bool
@@ -18,6 +21,8 @@ type luaPlugin struct {
 	filename   *string
 	jobPayload *string
 	args       []lua.LValue
+	doneCh     lua.LChannel
+	started    bool
 }
 
 func (p *luaPlugin) getError() error {
@@ -59,8 +64,11 @@ func (p *luaPlugin) start() {
 	p.state = state
 	p.error = nil
 	p.running = true
-	isBody := (p.filename == nil)
-	if !(p.jobPayload == nil) {
+	p.doneCh = make(lua.LChannel, 1)
+	p.started = true
+	defer close(p.doneCh)
+	isBody := p.filename == nil
+	if p.jobPayload != nil {
 		payload := *p.jobPayload
 		state.SetGlobal(`payload`, lua.LString(payload))
 	}
@@ -76,7 +84,8 @@ func (p *luaPlugin) start() {
 		}
 		newArg.Append(arg)
 	}
-	state.SetGlobal("arg", newArg)
+	state.SetGlobal(`arg`, newArg)
+	p.Signal()
 	p.Unlock()
 
 	// blocking
@@ -101,6 +110,7 @@ func checkPlugin(L *lua.LState, n int) *luaPlugin {
 
 func NewLuaPlugin(L *lua.LState, n int) *luaPlugin {
 	ret := &luaPlugin{}
+	ret.Cond = sync.NewCond(&ret.Mutex)
 	top := L.GetTop()
 	for i := n; i <= top; i++ {
 		arg := L.Get(i)
@@ -175,6 +185,20 @@ func DoStringWithPayload(L *lua.LState) int {
 func Run(L *lua.LState) int {
 	p := checkPlugin(L, 1)
 	go p.start()
+
+	defer func() {
+		if err := recover(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// ensure it's started
+	p.Lock()
+	defer p.Unlock()
+	for !p.started {
+		p.Cond.Wait()
+	}
+
 	return 0
 }
 
@@ -182,6 +206,16 @@ func Run(L *lua.LState) int {
 func IsRunning(L *lua.LState) int {
 	p := checkPlugin(L, 1)
 	L.Push(lua.LBool(p.getRunning()))
+	return 1
+}
+
+// DoneChannel lua plugin_ud:done_chan()
+func DoneChannel(L *lua.LState) int {
+	p := checkPlugin(L, 1)
+	if !p.started {
+		L.ArgError(1, "Cannot obtain done channel on unstarted plugin")
+	}
+	L.Push(p.doneCh)
 	return 1
 }
 
@@ -202,5 +236,38 @@ func Stop(L *lua.LState) int {
 	p.Lock()
 	defer p.Unlock()
 	p.cancelFunc()
+	return 0
+}
+
+// Wait lua plugin_ud:wait()
+func Wait(L *lua.LState) int {
+	p := checkPlugin(L, 1)
+	// Can't wait if never started
+	if !p.started {
+		L.RaiseError("cannot wait on unstarted plugin")
+	}
+	// Add timeout if requested
+	ctx := context.Background()
+	cancel := func() {}
+	timeout := lua.LVAsNumber(L.Get(2))
+	if timeout > 0 {
+		ctx, cancel = context.WithTimeout(ctx, time.Duration(timeout*lua.LNumber(time.Second)))
+		defer cancel()
+	}
+
+	// Wait for done or timeout
+	var err error
+	select {
+	case <-ctx.Done():
+		err = ctx.Err()
+	case <-p.doneCh:
+		err = p.error
+	}
+
+	// return error
+	if err != nil {
+		L.Push(lua.LString(err.Error()))
+		return 1
+	}
 	return 0
 }
