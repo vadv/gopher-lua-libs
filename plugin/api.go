@@ -46,6 +46,7 @@ type luaPlugin struct {
 	body       *string
 	filename   *string
 	jobPayload *string
+	args       []lua.LValue
 }
 
 func (p *luaPlugin) getError() error {
@@ -122,6 +123,16 @@ func (p *luaPlugin) start() {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
 	p.state.SetContext(ctx)
+	newArg := state.NewTable()
+	for _, arg := range p.args {
+		switch t := arg.Type(); t {
+		case lua.LTTable:
+			newTable := state.NewTable()
+			arg.(*lua.LTable).ForEach(newTable.RawSet)
+		}
+		newArg.Append(arg)
+	}
+	state.SetGlobal("arg", newArg)
 	p.Unlock()
 
 	// blocking
@@ -144,10 +155,31 @@ func checkPlugin(L *lua.LState, n int) *luaPlugin {
 	return nil
 }
 
+func NewLuaPlugin(L *lua.LState, n int) *luaPlugin {
+	ret := &luaPlugin{}
+	top := L.GetTop()
+	for i := n; i <= top; i++ {
+		arg := L.Get(i)
+		switch t := arg.Type(); t {
+		case lua.LTTable:
+			if L.GetMetatable(arg) != lua.LNil {
+				L.ArgError(i, "tables with metadata are not allowed")
+			}
+			fallthrough
+		case lua.LTNil, lua.LTBool, lua.LTNumber, lua.LTString, lua.LTChannel:
+			ret.args = append(ret.args, arg)
+		default:
+			L.ArgError(i, t.String()+" is not allowed")
+		}
+	}
+	return ret
+}
+
 // DoString lua plugin.do_string(body) returns plugin_ud
 func DoString(L *lua.LState) int {
 	body := L.CheckString(1)
-	p := &luaPlugin{body: &body}
+	p := NewLuaPlugin(L, 2)
+	p.body = &body
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
@@ -158,7 +190,8 @@ func DoString(L *lua.LState) int {
 // DoFile lua plugin.do_file(filename) returns plugin_ud
 func DoFile(L *lua.LState) int {
 	filename := L.CheckString(1)
-	p := &luaPlugin{filename: &filename}
+	p := NewLuaPlugin(L, 2)
+	p.filename = &filename
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
@@ -170,7 +203,9 @@ func DoFile(L *lua.LState) int {
 func DoFileWithPayload(L *lua.LState) int {
 	filename := L.CheckString(1)
 	payload := L.CheckString(2)
-	p := &luaPlugin{filename: &filename, jobPayload: &payload}
+	p := NewLuaPlugin(L, 2)
+	p.filename = &filename
+	p.jobPayload = &payload
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
@@ -182,7 +217,9 @@ func DoFileWithPayload(L *lua.LState) int {
 func DoStringWithPayload(L *lua.LState) int {
 	body := L.CheckString(1)
 	payload := L.CheckString(2)
-	p := &luaPlugin{body: &body, jobPayload: &payload}
+	p := NewLuaPlugin(L, 2)
+	p.body = &body
+	p.jobPayload = &payload
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))

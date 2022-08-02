@@ -68,3 +68,23 @@ end
         assert(data == test_payload, "data <> test_payload")
     end)
 end
+
+function TestArgs(t)
+    local plugin_body = [[
+        local ch, msg = unpack(arg)
+        assert(ch, tostring(ch))
+        assert(msg, tostring(msg))
+        ch:send(msg.." pong")
+        ch:close()
+    ]]
+    local ch = channel.make(1)
+    local args_plugin = plugin.do_string(plugin_body, ch, "ping")
+    args_plugin:run()
+    time.sleep(0.1)
+    local err = args_plugin:error()
+    assert(not err, err)
+    local ok, answer = ch:receive()
+    assert(ok)
+    assert(answer == "ping pong", answer)
+    args_plugin:stop()
+end
