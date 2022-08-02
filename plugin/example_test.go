@@ -47,7 +47,7 @@ func Example_package() {
     print_plugin:stop()
     time.sleep(1)
 
-	-- Ensure it's not still running
+    -- Ensure it's not still running
     assert(not print_plugin:is_running(), "still running")
 `
 	if err := state.DoString(source); err != nil {
