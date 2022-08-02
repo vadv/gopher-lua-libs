@@ -3,7 +3,6 @@ package plugin
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
@@ -185,13 +184,6 @@ func DoStringWithPayload(L *lua.LState) int {
 func Run(L *lua.LState) (nRet int) {
 	p := checkPlugin(L, 1)
 	go p.start()
-
-	defer func() {
-		if err := recover(); err != nil {
-			L.Push(lua.LString(fmt.Sprintf("%v", err)))
-			nRet = 1
-		}
-	}()
 
 	// ensure it's started
 	p.Lock()
