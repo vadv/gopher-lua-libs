@@ -60,6 +60,7 @@ func NewPluginState() *lua.LState {
 func (p *luaPlugin) start() {
 	p.Lock()
 	state := NewPluginState()
+	defer state.Close()
 	p.state = state
 	p.error = nil
 	p.running = true
