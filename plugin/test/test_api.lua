@@ -187,7 +187,6 @@ function TestMultipleWorkers(t)
     local count = 0
     local ok, result = resultCh:receive()
     while ok do
-        assert(ok)
         assert(result[1] * 2 == result[2], inspect(result))
         count = count + 1
         t:Log(inspect(result))
