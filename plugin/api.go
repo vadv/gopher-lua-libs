@@ -3,42 +3,7 @@ package plugin
 
 import (
 	"context"
-	"github.com/vadv/gopher-lua-libs/argparse"
-	"github.com/vadv/gopher-lua-libs/base64"
-	"github.com/vadv/gopher-lua-libs/cert_util"
-	"github.com/vadv/gopher-lua-libs/pprof"
-	"github.com/vadv/gopher-lua-libs/runtime"
-	"github.com/vadv/gopher-lua-libs/shellescape"
 	"sync"
-
-	"github.com/vadv/gopher-lua-libs/stats"
-
-	cloudwatch "github.com/vadv/gopher-lua-libs/aws/cloudwatch"
-	chef "github.com/vadv/gopher-lua-libs/chef"
-	cmd "github.com/vadv/gopher-lua-libs/cmd"
-	crypto "github.com/vadv/gopher-lua-libs/crypto"
-	db "github.com/vadv/gopher-lua-libs/db"
-	filepath "github.com/vadv/gopher-lua-libs/filepath"
-	goos "github.com/vadv/gopher-lua-libs/goos"
-	http "github.com/vadv/gopher-lua-libs/http"
-	humanize "github.com/vadv/gopher-lua-libs/humanize"
-	inspect "github.com/vadv/gopher-lua-libs/inspect"
-	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
-	json "github.com/vadv/gopher-lua-libs/json"
-	log "github.com/vadv/gopher-lua-libs/log"
-	pb "github.com/vadv/gopher-lua-libs/pb"
-	prometheus "github.com/vadv/gopher-lua-libs/prometheus/client"
-	regexp "github.com/vadv/gopher-lua-libs/regexp"
-	storage "github.com/vadv/gopher-lua-libs/storage"
-	strings "github.com/vadv/gopher-lua-libs/strings"
-	tac "github.com/vadv/gopher-lua-libs/tac"
-	tcp "github.com/vadv/gopher-lua-libs/tcp"
-	telegram "github.com/vadv/gopher-lua-libs/telegram"
-	template "github.com/vadv/gopher-lua-libs/template"
-	time "github.com/vadv/gopher-lua-libs/time"
-	xmlpath "github.com/vadv/gopher-lua-libs/xmlpath"
-	yaml "github.com/vadv/gopher-lua-libs/yaml"
-	zabbix "github.com/vadv/gopher-lua-libs/zabbix"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -84,43 +49,7 @@ func (p *luaPlugin) setRunning(val bool) {
 // NewPluginState return lua state
 func NewPluginState() *lua.LState {
 	state := lua.NewState()
-	// preload all
-	// TODO: refactor this so it doesn't have to be kept in sync with the libs.Preload
-	argparse.Preload(state)
-	base64.Preload(state)
-	time.Preload(state)
-	strings.Preload(state)
-	filepath.Preload(state)
-	ioutil.Preload(state)
-	http.Preload(state)
-	regexp.Preload(state)
-	tac.Preload(state)
-	inspect.Preload(state)
-	yaml.Preload(state)
-	Preload(state)
-	cmd.Preload(state)
-	json.Preload(state)
-	tcp.Preload(state)
-	xmlpath.Preload(state)
-	db.Preload(state)
-	cert_util.Preload(state)
-	runtime.Preload(state)
-	shellescape.Preload(state)
-	telegram.Preload(state)
-	zabbix.Preload(state)
-	pprof.Preload(state)
-	prometheus.Preload(state)
-	pb.Preload(state)
-	crypto.Preload(state)
-	goos.Preload(state)
-	storage.Preload(state)
-	humanize.Preload(state)
-	chef.Preload(state)
-	template.Preload(state)
-	cloudwatch.Preload(state)
-	log.Preload(state)
-	stats.Preload(state)
-
+	PreloadAll(state)
 	return state
 }
 
