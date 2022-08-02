@@ -208,7 +208,7 @@ end
 
 function TestPassingFunction(t)
     local plugin_body = [[
-        pcall(unpack(arg))
+        return pcall(unpack(arg))
     ]]
 
     function sendMe(ic, oc)

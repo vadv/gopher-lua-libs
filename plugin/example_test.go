@@ -1,9 +1,8 @@
 package plugin
 
 import (
-	"log"
-
 	time "github.com/vadv/gopher-lua-libs/time"
+	"log"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -11,6 +10,7 @@ import (
 // plugin.do_string(), plugin_ud:run(), plugin_ud:stop()
 func Example_package() {
 	state := lua.NewState()
+	defer state.Close()
 	Preload(state)
 	time.Preload(state)
 	source := `
@@ -56,4 +56,32 @@ func Example_package() {
 	// Output:
 	// 1
 	// 2
+}
+
+func Example_using_like_goroutine() {
+	state := lua.NewState()
+	defer state.Close()
+
+	Preload(state)
+
+	source := `
+	local plugin = require 'plugin'
+
+	function myfunc(...)
+		print(table.concat({...}, ""))
+	end
+
+	local background_body = [[
+		return pcall(unpack(arg))
+	]]
+	local background_plugin = plugin.do_string(background_body, myfunc, "Hello", " ", "World")
+	background_plugin:run()
+	local err = background_plugin:wait()
+	assert(not err, err)
+`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err)
+	}
+	// Output:
+	// Hello World
 }
