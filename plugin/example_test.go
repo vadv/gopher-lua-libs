@@ -18,24 +18,37 @@ func Example_package() {
     local time = require("time")
 
     local plugin_body = [[
-        local time = require("time")
+		local doCh, doneCh = unpack(arg)
         local i = 1
-        while true do
+        while doCh:receive() do
             print(i)
+			doneCh:send(i)
             i = i + 1
-            time.sleep(1.01)
         end
     ]]
 
-    local print_plugin = plugin.do_string(plugin_body)
+	-- Make synchronization channels and fire up the plugin
+	local doCh = channel.make(100)
+	local doneCh = channel.make(100)
+    local print_plugin = plugin.do_string(plugin_body, doCh, doneCh)
     print_plugin:run()
-    time.sleep(2)
+
+	-- Allow two iterations to proceed
+	doCh:send(nil)
+	local ok, got = doneCh:receive()
+	assert(ok and got == 1, string.format("ok = %s; got = %s", ok, got))
+	doCh:send(nil)
+	ok, got = doneCh:receive()
+	assert(ok and got == 2, string.format("ok = %s; got = %s", ok, got))
+
+	-- Close the doCh and wait to ensure it's closed gracefully but stop just to be sure
+	doCh:close()
+    time.sleep(1)
     print_plugin:stop()
     time.sleep(1)
 
-    local running = print_plugin:is_running()
-    if running then error("already running") end
-
+	-- Ensure it's not still running
+    assert(not print_plugin:is_running(), "still running")
 `
 	if err := state.DoString(source); err != nil {
 		log.Fatal(err.Error())
