@@ -3,7 +3,7 @@ package plugin
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"sync"
 	"time"
 
@@ -182,13 +182,14 @@ func DoStringWithPayload(L *lua.LState) int {
 }
 
 // Run lua plugin_ud:run()
-func Run(L *lua.LState) int {
+func Run(L *lua.LState) (nRet int) {
 	p := checkPlugin(L, 1)
 	go p.start()
 
 	defer func() {
 		if err := recover(); err != nil {
-			log.Fatal(err)
+			L.Push(lua.LString(fmt.Sprintf("%v", err)))
+			nRet = 1
 		}
 	}()
 
@@ -199,7 +200,7 @@ func Run(L *lua.LState) int {
 		p.Cond.Wait()
 	}
 
-	return 0
+	return
 }
 
 // IsRunning lua plugin_ud:is_running()

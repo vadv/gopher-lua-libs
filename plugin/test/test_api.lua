@@ -105,29 +105,33 @@ function TestWait(t)
 
     t:Run("no timeout", function(t)
         local notimeout_plugin = plugin.do_string(plugin_quick_body)
-        notimeout_plugin:run()
-        local err = notimeout_plugin:wait()
+        local err = notimeout_plugin:run()
+        assert(not err, err)
+        err = notimeout_plugin:wait()
         assert(not err, err)
     end)
 
     t:Run("no timeout fails", function(t)
         local notimeout_plugin = plugin.do_string(plugin_quick_body_fail)
-        notimeout_plugin:run()
-        local err = notimeout_plugin:wait()
+        local err = notimeout_plugin:run()
+        assert(not err, err)
+        err = notimeout_plugin:wait()
         assert(err)
     end)
 
     t:Run("timeout ok", function(t)
         local notimeout_plugin = plugin.do_string(plugin_quick_body)
-        notimeout_plugin:run()
-        local err = notimeout_plugin:wait(1)
+        local err = notimeout_plugin:run()
+        assert(not err, err)
+        err = notimeout_plugin:wait(1)
         assert(not err, err)
     end)
 
     t:Run("timeout expires", function(t)
         local notimeout_plugin = plugin.do_string(plugin_slow_body)
-        notimeout_plugin:run()
-        local err = notimeout_plugin:wait(0.1)
+        local err =notimeout_plugin:run()
+        assert(not err, err)
+        err = notimeout_plugin:wait(0.1)
         assert(err)
     end)
 end
@@ -149,7 +153,8 @@ function TestMultipleWorkers(t)
     local resultCh = channel.make(100)
     for i = 1, 5 do
         worker_plugin = plugin.do_string(work_body, workCh, resultCh)
-        worker_plugin:run()
+        local err = worker_plugin:run()
+        assert(not err, err)
         table.insert(workers, worker_plugin)
         table.insert(worker_channels, worker_plugin:done_channel())
     end
@@ -163,7 +168,8 @@ function TestMultipleWorkers(t)
         resultCh:close()
     ]]
     local worker_watcher_plugin = plugin.do_string(worker_watcher_body, resultCh, worker_channels)
-    worker_watcher_plugin:run()
+    err = worker_watcher_plugin:run()
+    assert(not err, err)
 
     -- Fire up a producer of work
     local work_producer_body = [[
@@ -174,7 +180,8 @@ function TestMultipleWorkers(t)
         workCh:close()
     ]]
     local work_producer_plugin = plugin.do_string(work_producer_body, workCh)
-    work_producer_plugin:run()
+    err = work_producer_plugin:run()
+    assert(not err, err)
 
     -- Now just walk the results, which should close when all workers have exited
     local count = 0
