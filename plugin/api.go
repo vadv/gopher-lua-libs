@@ -77,9 +77,8 @@ func (p *luaPlugin) start() {
 	newArg := state.NewTable()
 	for _, arg := range p.args {
 		switch t := arg.Type(); t {
-		case lua.LTTable:
-			newTable := state.NewTable()
-			arg.(*lua.LTable).ForEach(newTable.RawSet)
+		case lua.LTFunction:
+			arg = state.NewFunctionFromProto(arg.(*lua.LFunction).Proto)
 		}
 		newArg.Append(arg)
 	}
@@ -114,11 +113,17 @@ func NewLuaPlugin(L *lua.LState, n int) *luaPlugin {
 	for i := n; i <= top; i++ {
 		arg := L.Get(i)
 		switch t := arg.Type(); t {
+		case lua.LTFunction:
+			f := arg.(*lua.LFunction)
+			if len(f.Upvalues) > 0 {
+				L.ArgError(i, "cannot pass closures")
+			}
+			ret.args = append(ret.args, arg)
 		case lua.LTTable:
 			if L.GetMetatable(arg) != lua.LNil {
 				L.ArgError(i, "tables with metadata are not allowed")
 			}
-			fallthrough
+			ret.args = append(ret.args, arg)
 		case lua.LTNil, lua.LTBool, lua.LTNumber, lua.LTString, lua.LTChannel:
 			ret.args = append(ret.args, arg)
 		default:

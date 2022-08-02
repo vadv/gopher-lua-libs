@@ -205,3 +205,26 @@ function TestMultipleWorkers(t)
         assert(not worker:error(), string.format("worker %d error %s", i, worker:error()))
     end
 end
+
+function TestPassingFunction(t)
+    local plugin_body = [[
+        pcall(unpack(arg))
+    ]]
+
+    function sendMe(ic, oc)
+        local ok, msg = ic:receive()
+        if ok then
+            oc:send("Hello, "..msg)
+        end
+        oc:close()
+    end
+    local inCh = channel.make(100)
+    local outCh = channel.make(100)
+
+    local f_plugin = plugin.do_string(plugin_body, sendMe, inCh, outCh)
+    f_plugin:run()
+    inCh:send("test")
+    local ok, msg = outCh:receive()
+    assert(ok)
+    assert(msg == "Hello, test", msg)
+end
