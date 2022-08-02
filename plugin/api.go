@@ -3,6 +3,12 @@ package plugin
 
 import (
 	"context"
+	"github.com/vadv/gopher-lua-libs/argparse"
+	"github.com/vadv/gopher-lua-libs/base64"
+	"github.com/vadv/gopher-lua-libs/cert_util"
+	"github.com/vadv/gopher-lua-libs/pprof"
+	"github.com/vadv/gopher-lua-libs/runtime"
+	"github.com/vadv/gopher-lua-libs/shellescape"
 	"sync"
 
 	"github.com/vadv/gopher-lua-libs/stats"
@@ -79,33 +85,42 @@ func (p *luaPlugin) setRunning(val bool) {
 func NewPluginState() *lua.LState {
 	state := lua.NewState()
 	// preload all
-	filepath.Preload(state)
-	http.Preload(state)
-	inspect.Preload(state)
-	ioutil.Preload(state)
-	json.Preload(state)
-	regexp.Preload(state)
-	strings.Preload(state)
-	tac.Preload(state)
-	tcp.Preload(state)
+	// TODO: refactor this so it doesn't have to be kept in sync with the libs.Preload
+	argparse.Preload(state)
+	base64.Preload(state)
 	time.Preload(state)
-	xmlpath.Preload(state)
+	strings.Preload(state)
+	filepath.Preload(state)
+	ioutil.Preload(state)
+	http.Preload(state)
+	regexp.Preload(state)
+	tac.Preload(state)
+	inspect.Preload(state)
 	yaml.Preload(state)
-	zabbix.Preload(state)
+	Preload(state)
+	cmd.Preload(state)
+	json.Preload(state)
+	tcp.Preload(state)
+	xmlpath.Preload(state)
+	db.Preload(state)
+	cert_util.Preload(state)
+	runtime.Preload(state)
+	shellescape.Preload(state)
 	telegram.Preload(state)
-	storage.Preload(state)
+	zabbix.Preload(state)
+	pprof.Preload(state)
+	prometheus.Preload(state)
+	pb.Preload(state)
 	crypto.Preload(state)
 	goos.Preload(state)
+	storage.Preload(state)
 	humanize.Preload(state)
-	db.Preload(state)
 	chef.Preload(state)
-	cmd.Preload(state)
 	template.Preload(state)
 	cloudwatch.Preload(state)
 	log.Preload(state)
-	prometheus.Preload(state)
-	pb.Preload(state)
 	stats.Preload(state)
+
 	return state
 }
 
