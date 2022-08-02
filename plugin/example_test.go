@@ -18,7 +18,7 @@ func Example_package() {
     local time = require("time")
 
     local plugin_body = [[
-		local doCh, doneCh = unpack(arg)
+        local doCh, doneCh = unpack(arg)
         local i = 1
         while doCh:receive() do
             print(i)
