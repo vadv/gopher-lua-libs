@@ -1,9 +1,9 @@
 local log = require("log")
 local ioutil = require("ioutil")
 
-os.remove("./test/test.log")
-
 function Test_log(t)
+    os.remove("./test/test.log")
+
     local info, err = log.new("./test/test.log")
     assert(not err, err)
 
@@ -36,4 +36,16 @@ function Test_log(t)
         assert(not err, err)
         assert(expect_result == get_result, string.format("expected %s; got %s", expect_result, get_result))
     end)
+end
+
+function TestSetOutput(t)
+    -- Ensure that set_output does not result in an error
+    os.remove("./test/test.log")
+    local info = log.new('STDERR')
+    info:set_output("./test/test.log")
+    info:print("foo bar")
+    info:close()
+    local get_result, err = ioutil.read_file("./test/test.log")
+    assert(not err, err)
+    assert(get_result == 'foo bar\n')
 end
