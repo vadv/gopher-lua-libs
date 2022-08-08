@@ -16,7 +16,7 @@ go get github.com/vadv/gopher-lua-libs
 
 ## Index
 
-* [argparse](/argparse) argparse CLI parsing <https://github.com/mpeterv/argparse>
+* [argparse](/argparse) argparse CLI parsing <https://github.com/luarocks/argparse>
 * [base64](/base64) [encoding/base64](https://pkg.go.dev/encoding/base64) api
 * [cloudwatch](/aws/cloudwatch) aws cloudwatch log access
 * [cert_util](/cert_util) monitoring ssl certs
