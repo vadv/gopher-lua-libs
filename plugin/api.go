@@ -4,41 +4,14 @@ package plugin
 import (
 	"context"
 	"sync"
-
-	"github.com/vadv/gopher-lua-libs/stats"
-
-	cloudwatch "github.com/vadv/gopher-lua-libs/aws/cloudwatch"
-	chef "github.com/vadv/gopher-lua-libs/chef"
-	cmd "github.com/vadv/gopher-lua-libs/cmd"
-	crypto "github.com/vadv/gopher-lua-libs/crypto"
-	db "github.com/vadv/gopher-lua-libs/db"
-	filepath "github.com/vadv/gopher-lua-libs/filepath"
-	goos "github.com/vadv/gopher-lua-libs/goos"
-	http "github.com/vadv/gopher-lua-libs/http"
-	humanize "github.com/vadv/gopher-lua-libs/humanize"
-	inspect "github.com/vadv/gopher-lua-libs/inspect"
-	ioutil "github.com/vadv/gopher-lua-libs/ioutil"
-	json "github.com/vadv/gopher-lua-libs/json"
-	log "github.com/vadv/gopher-lua-libs/log"
-	pb "github.com/vadv/gopher-lua-libs/pb"
-	prometheus "github.com/vadv/gopher-lua-libs/prometheus/client"
-	regexp "github.com/vadv/gopher-lua-libs/regexp"
-	storage "github.com/vadv/gopher-lua-libs/storage"
-	strings "github.com/vadv/gopher-lua-libs/strings"
-	tac "github.com/vadv/gopher-lua-libs/tac"
-	tcp "github.com/vadv/gopher-lua-libs/tcp"
-	telegram "github.com/vadv/gopher-lua-libs/telegram"
-	template "github.com/vadv/gopher-lua-libs/template"
-	time "github.com/vadv/gopher-lua-libs/time"
-	xmlpath "github.com/vadv/gopher-lua-libs/xmlpath"
-	yaml "github.com/vadv/gopher-lua-libs/yaml"
-	zabbix "github.com/vadv/gopher-lua-libs/zabbix"
+	"time"
 
 	lua "github.com/yuin/gopher-lua"
 )
 
 type luaPlugin struct {
 	sync.Mutex
+	*sync.Cond
 	state      *lua.LState
 	cancelFunc context.CancelFunc
 	running    bool
@@ -46,6 +19,9 @@ type luaPlugin struct {
 	body       *string
 	filename   *string
 	jobPayload *string
+	args       []lua.LValue
+	doneCh     lua.LChannel
+	started    bool
 }
 
 func (p *luaPlugin) getError() error {
@@ -77,51 +53,38 @@ func (p *luaPlugin) setRunning(val bool) {
 // NewPluginState return lua state
 func NewPluginState() *lua.LState {
 	state := lua.NewState()
-	// preload all
-	filepath.Preload(state)
-	http.Preload(state)
-	inspect.Preload(state)
-	ioutil.Preload(state)
-	json.Preload(state)
-	regexp.Preload(state)
-	strings.Preload(state)
-	tac.Preload(state)
-	tcp.Preload(state)
-	time.Preload(state)
-	xmlpath.Preload(state)
-	yaml.Preload(state)
-	zabbix.Preload(state)
-	telegram.Preload(state)
-	storage.Preload(state)
-	crypto.Preload(state)
-	goos.Preload(state)
-	humanize.Preload(state)
-	db.Preload(state)
-	chef.Preload(state)
-	cmd.Preload(state)
-	template.Preload(state)
-	cloudwatch.Preload(state)
-	log.Preload(state)
-	prometheus.Preload(state)
-	pb.Preload(state)
-	stats.Preload(state)
+	PreloadAll(state)
 	return state
 }
 
 func (p *luaPlugin) start() {
 	p.Lock()
 	state := NewPluginState()
+	defer state.Close()
 	p.state = state
 	p.error = nil
 	p.running = true
-	isBody := (p.filename == nil)
-	if !(p.jobPayload == nil) {
+	p.doneCh = make(lua.LChannel, 1)
+	p.started = true
+	defer close(p.doneCh)
+	isBody := p.filename == nil
+	if p.jobPayload != nil {
 		payload := *p.jobPayload
 		state.SetGlobal(`payload`, lua.LString(payload))
 	}
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	p.cancelFunc = cancelFunc
 	p.state.SetContext(ctx)
+	newArg := state.NewTable()
+	for _, arg := range p.args {
+		switch t := arg.Type(); t {
+		case lua.LTFunction:
+			arg = state.NewFunctionFromProto(arg.(*lua.LFunction).Proto)
+		}
+		newArg.Append(arg)
+	}
+	state.SetGlobal(`arg`, newArg)
+	p.Signal()
 	p.Unlock()
 
 	// blocking
@@ -144,10 +107,38 @@ func checkPlugin(L *lua.LState, n int) *luaPlugin {
 	return nil
 }
 
+func NewLuaPlugin(L *lua.LState, n int) *luaPlugin {
+	ret := &luaPlugin{}
+	ret.Cond = sync.NewCond(&ret.Mutex)
+	top := L.GetTop()
+	for i := n; i <= top; i++ {
+		arg := L.Get(i)
+		switch t := arg.Type(); t {
+		case lua.LTFunction:
+			f := arg.(*lua.LFunction)
+			if len(f.Upvalues) > 0 {
+				L.ArgError(i, "cannot pass closures")
+			}
+			ret.args = append(ret.args, arg)
+		case lua.LTTable:
+			if L.GetMetatable(arg) != lua.LNil {
+				L.ArgError(i, "tables with metadata are not allowed")
+			}
+			ret.args = append(ret.args, arg)
+		case lua.LTNil, lua.LTBool, lua.LTNumber, lua.LTString, lua.LTChannel:
+			ret.args = append(ret.args, arg)
+		default:
+			L.ArgError(i, t.String()+" is not allowed")
+		}
+	}
+	return ret
+}
+
 // DoString lua plugin.do_string(body) returns plugin_ud
 func DoString(L *lua.LState) int {
 	body := L.CheckString(1)
-	p := &luaPlugin{body: &body}
+	p := NewLuaPlugin(L, 2)
+	p.body = &body
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
@@ -158,7 +149,8 @@ func DoString(L *lua.LState) int {
 // DoFile lua plugin.do_file(filename) returns plugin_ud
 func DoFile(L *lua.LState) int {
 	filename := L.CheckString(1)
-	p := &luaPlugin{filename: &filename}
+	p := NewLuaPlugin(L, 2)
+	p.filename = &filename
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
@@ -170,7 +162,9 @@ func DoFile(L *lua.LState) int {
 func DoFileWithPayload(L *lua.LState) int {
 	filename := L.CheckString(1)
 	payload := L.CheckString(2)
-	p := &luaPlugin{filename: &filename, jobPayload: &payload}
+	p := NewLuaPlugin(L, 2)
+	p.filename = &filename
+	p.jobPayload = &payload
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
@@ -182,7 +176,9 @@ func DoFileWithPayload(L *lua.LState) int {
 func DoStringWithPayload(L *lua.LState) int {
 	body := L.CheckString(1)
 	payload := L.CheckString(2)
-	p := &luaPlugin{body: &body, jobPayload: &payload}
+	p := NewLuaPlugin(L, 2)
+	p.body = &body
+	p.jobPayload = &payload
 	ud := L.NewUserData()
 	ud.Value = p
 	L.SetMetatable(ud, L.GetTypeMetatable(`plugin_ud`))
@@ -191,16 +187,34 @@ func DoStringWithPayload(L *lua.LState) int {
 }
 
 // Run lua plugin_ud:run()
-func Run(L *lua.LState) int {
+func Run(L *lua.LState) (nRet int) {
 	p := checkPlugin(L, 1)
 	go p.start()
-	return 0
+
+	// ensure it's started
+	p.Lock()
+	defer p.Unlock()
+	for !p.started {
+		p.Cond.Wait()
+	}
+
+	return
 }
 
 // IsRunning lua plugin_ud:is_running()
 func IsRunning(L *lua.LState) int {
 	p := checkPlugin(L, 1)
 	L.Push(lua.LBool(p.getRunning()))
+	return 1
+}
+
+// DoneChannel lua plugin_ud:done_chan()
+func DoneChannel(L *lua.LState) int {
+	p := checkPlugin(L, 1)
+	if !p.started {
+		L.ArgError(1, "Cannot obtain done channel on unstarted plugin")
+	}
+	L.Push(p.doneCh)
 	return 1
 }
 
@@ -221,5 +235,38 @@ func Stop(L *lua.LState) int {
 	p.Lock()
 	defer p.Unlock()
 	p.cancelFunc()
+	return 0
+}
+
+// Wait lua plugin_ud:wait()
+func Wait(L *lua.LState) int {
+	p := checkPlugin(L, 1)
+	// Can't wait if never started
+	if !p.started {
+		L.RaiseError("cannot wait on unstarted plugin")
+	}
+	// Add timeout if requested
+	ctx := context.Background()
+	cancel := func() {}
+	timeout := lua.LVAsNumber(L.Get(2))
+	if timeout > 0 {
+		ctx, cancel = context.WithTimeout(ctx, time.Duration(timeout*lua.LNumber(time.Second)))
+		defer cancel()
+	}
+
+	// Wait for done or timeout
+	var err error
+	select {
+	case <-ctx.Done():
+		err = ctx.Err()
+	case <-p.doneCh:
+		err = p.error
+	}
+
+	// return error
+	if err != nil {
+		L.Push(lua.LString(err.Error()))
+		return 1
+	}
 	return 0
 }
