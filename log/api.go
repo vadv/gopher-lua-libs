@@ -58,7 +58,7 @@ func setOutput(L *lua.LState, logger *luaLogger, output string) error {
 	case "STDERR":
 		logger.SetOutput(os.Stderr)
 	default:
-		fd, err := os.OpenFile(L.CheckString(1), os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+		fd, err := os.OpenFile(output, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 		if err != nil {
 			return err
 		}
