@@ -6,12 +6,14 @@ import (
 	"unicode/utf8"
 )
 
+//UnbufferedRuneReader doesn't attempt to buffer the underlying reader, but does buffer enough to decode utf8 runes.
 type UnbufferedRuneReader struct {
 	reader io.Reader
 	buf    [utf8.UTFMax]byte // used only inside ReadRune
 	single [1]byte           // to read one byte
 }
 
+//ReadLine reads a line from any reader.
 func ReadLine(reader io.Reader) (string, error) {
 	rr := ToRuneReader(reader)
 	var sb strings.Builder
@@ -44,6 +46,9 @@ func (u *UnbufferedRuneReader) readByte() (b byte, err error) {
 	return u.single[0], err
 }
 
+//ReadRune reads a single rune, and returns the rune, its byte-length, and possibly an error.
+// see the code for fmt.Scanln - which is not public, but which does, but tokenizing on space, which is not desirable.
+// The implementation in fmt.Scanln also implements io.RuneScanner, which is not needed here as newlines are discarded.
 func (u *UnbufferedRuneReader) ReadRune() (r rune, size int, err error) {
 	u.buf[0], err = u.readByte()
 	if err != nil {
