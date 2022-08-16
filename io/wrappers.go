@@ -227,8 +227,7 @@ func IOReaderRead(L *lua.LState) int {
 			L.Push(lua.LString(data))
 			return 1
 		case 'l':
-			var line lua.LString
-			_, err := fmt.Fscanln(reader, &line)
+			line, err := ReadLine(reader)
 			if err == io.EOF {
 				L.Push(lua.LNil)
 				return 1
@@ -237,7 +236,7 @@ func IOReaderRead(L *lua.LState) int {
 				L.RaiseError("%v", err)
 				return 0
 			}
-			L.Push(line)
+			L.Push(lua.LString(line))
 			return 1
 		}
 	}
