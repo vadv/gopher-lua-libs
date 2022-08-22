@@ -16,6 +16,7 @@ func Preload(L *lua.LState) {
 func Loader(L *lua.LState) int {
 	registerJSONEncoder(L)
 	registerDecoder(L)
+	registerJsonDecodedObject(L)
 
 	t := L.NewTable()
 	L.SetFuncs(t, api)
@@ -24,8 +25,9 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"decode":      Decode,
-	"encode":      Encode,
-	"new_encoder": newJSONEncoder,
-	"new_decoder": newJSONDecoder,
+	"tableIsObject": TableIsObject,
+	"decode":        Decode,
+	"encode":        Encode,
+	"new_encoder":   newJSONEncoder,
+	"new_decoder":   newJSONDecoder,
 }
