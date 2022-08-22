@@ -18,7 +18,10 @@ func ExampleDecode() {
     local jsonString = [[{"a":{"b":1}}]]
     local result, err = json.decode(jsonString)
     if err then error(err) end
-    print(inspect(result, {newline="", indent=""}))
+	local remove_all_metatables = function(item, path)
+	  if path[#path] ~= inspect.METATABLE then return item end
+	end
+    print(inspect(result, {process = remove_all_metatables, newline="", indent=""}))
 `
 	if err := state.DoString(source); err != nil {
 		log.Fatal(err.Error())
