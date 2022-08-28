@@ -6,23 +6,31 @@
 local json = require("json")
 local inspect = require("inspect")
 
--- json.encode()
+-- json.decode()
 local jsonString = [[
     {
         "a": {"b":1}
     }
 ]]
 local result, err = json.decode(jsonString)
-if err then error(err) end
-local result = inspect(result, {newline="", indent=""})
-if not(result == "{a = {b = 1}}") then error("json.encode") end
+if err then
+    error(err)
+end
+local result = inspect(result, { newline = "", indent = "" })
+if not (result == "{a = {b = 1}}") then
+    error("json.decode")
+end
 
--- json.decode()
-local table = {a={b=1}}
+-- json.encode()
+local table = { a = { b = 1 } }
 local result, err = json.encode(table)
-if err then error(err) end
-local result = inspect(result, {newline="", indent=""})
-if not(result == [[{"a":{"b":1}}]]) then error("json.decode") end
+if err then
+    error(err)
+end
+local result = inspect(result, { newline = "", indent = "" })
+if not (result == [['{"a":{"b":1}}']]) then
+    error("json.encode")
+end
 ```
 
 ### decoder
@@ -59,9 +67,8 @@ reader = strings.new_reader([[
   "arr": ["abc", "def", "ghi"]
 }
 ]])
-decoder = yaml.new_decoder(reader)
+decoder = json.new_decoder(reader)
 result, err = decoder:decode()
-f:close()
 assert(not err, err)
 print(inspect(result))
 ```
@@ -93,7 +100,7 @@ writer = strings.new_builder()
 encoder = json.new_encoder(writer)
 err = encoder:encode({ abc = "def", num = 123, arr = { 1, 2, 3 } })
 assert(not err, err)
-s = writer.string()
+s = writer:string()
 print(s)
 ```
 
@@ -105,9 +112,9 @@ local strings = require("strings")
 
 writer = strings.new_builder()
 encoder = json.new_encoder(writer)
-encoder.set_indent('', "  ")
+encoder:set_indent('', "  ")
 err = encoder:encode({ abc = "def", num = 123, arr = { 1, 2, 3 } })
 assert(not err, err)
-s = writer.string()
+s = writer:string()
 print(s)
 ```
