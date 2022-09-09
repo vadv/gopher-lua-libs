@@ -63,6 +63,11 @@ func registerDecoder(L *lua.LState) {
 	}))
 }
 
+func registerJsonDecodedObject(L *lua.LState) {
+	mt := L.NewTypeMetatable(jsonTableIsObject)
+	mt.RawSetString(jsonTableIsObject, lua.LTrue)
+}
+
 func newJSONDecoder(L *lua.LState) int {
 	reader := io.CheckIOReader(L, 1)
 	L.Pop(L.GetTop())

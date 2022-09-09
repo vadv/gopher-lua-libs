@@ -7,6 +7,8 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
+const jsonTableIsObject = "__jsonTableIsObject"
+
 var (
 	errNested      = errors.New("cannot encode recursively nested tables to JSON")
 	errSparseArray = errors.New("cannot encode sparse array")
@@ -22,6 +24,15 @@ func (i invalidTypeError) Error() string {
 type jsonValue struct {
 	lua.LValue
 	visited map[*lua.LTable]bool
+}
+
+func marshalEmptyTable(table *lua.LTable) []byte {
+	if mt, ok := table.Metatable.(*lua.LTable); ok {
+		if lua.LVAsBool(mt.RawGetString(jsonTableIsObject)) {
+			return []byte("{}")
+		}
+	}
+	return []byte("[]")
 }
 
 func (j jsonValue) MarshalJSON() (data []byte, err error) {
@@ -44,7 +55,7 @@ func (j jsonValue) MarshalJSON() (data []byte, err error) {
 
 		switch key.Type() {
 		case lua.LTNil: // empty table
-			data = []byte(`[]`)
+			data = marshalEmptyTable(converted)
 		case lua.LTNumber:
 			arr := make([]jsonValue, 0, converted.Len())
 			expectedKey := lua.LNumber(1)
@@ -108,6 +119,7 @@ func decode(L *lua.LState, value interface{}) lua.LValue {
 		return arr
 	case map[string]interface{}:
 		tbl := L.CreateTable(0, len(converted))
+		L.SetMetatable(tbl, L.GetTypeMetatable(jsonTableIsObject))
 		for key, item := range converted {
 			tbl.RawSetH(lua.LString(key), decode(L, item))
 		}

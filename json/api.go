@@ -33,3 +33,10 @@ func Encode(L *lua.LState) int {
 	L.Push(lua.LString(string(data)))
 	return 1
 }
+
+//TableIsObject lua json.tableIsObject marks a table as an object (to distinguish between [] and {})
+func TableIsObject(L *lua.LState) int {
+	table := L.CheckTable(1)
+	L.SetMetatable(table, L.GetTypeMetatable(jsonTableIsObject))
+	return 0
+}
