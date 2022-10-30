@@ -14,10 +14,12 @@ func Preload(L *lua.LState) {
 
 // Loader is the module loader function.
 func Loader(L *lua.LState) int {
-	registerStringsReader(L)
-	registerStringsBuilder(L)
+	readerMt := registerStringsReader(L)
+	builderMt := registerStringsBuilder(L)
 
 	t := L.NewTable()
+	t.RawSetString("Reader", readerMt)
+	t.RawSetString("Builder", builderMt)
 	L.SetFuncs(t, api)
 	L.Push(t)
 	return 1

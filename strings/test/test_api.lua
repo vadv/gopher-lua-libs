@@ -36,11 +36,25 @@ function TestReader(t)
     assert(got == s, string.format("'%s' ~= '%s'", got, s))
 end
 
+function TestReaderMetatable(t)
+    local reader = strings.new_reader("")
+    local got = getmetatable(reader)
+    local expected = strings.Reader
+    assert(got == expected, string.format("'%s' ~= '%s'", got, expected))
+end
+
 function TestBuilder(t)
     local builder = strings.new_builder()
     builder:write("foo", "bar", 123)
     local got = builder:string()
     assert(got == "foobar123", string.format("'%s' ~= '%s'", got, "foobar123"))
+end
+
+function TestBuilderMetatable(t)
+    local builder = strings.new_builder()
+    local got = getmetatable(builder)
+    local expected = strings.Builder
+    assert(got == expected, string.format("'%s' ~= '%s'", got, expected))
 end
 
 function TestTrimSpace(t)

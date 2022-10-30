@@ -34,9 +34,9 @@ func newStringsReader(L *lua.LState) int {
 	return 1
 }
 
-func registerStringsReader(L *lua.LState) {
+func registerStringsReader(L *lua.LState) lua.LValue {
 	mt := L.NewTypeMetatable(stringsReaderType)
-	L.SetGlobal(stringsReaderType, mt)
 	readerTable := io.ReaderFuncTable(L)
 	L.SetField(mt, "__index", readerTable)
+	return mt
 }
