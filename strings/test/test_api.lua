@@ -83,3 +83,35 @@ function TestFields(t)
     assert(fields[3] == "c", string.format("%s ~= 'c'", fields[3]))
     assert(fields[4] == "d", string.format("%s ~= 'd'", fields[3]))
 end
+
+function assert_equal(expected, actual)
+    assert(expected == actual, string.format([[expected "%s": got "%s"]], expected, actual))
+end
+
+function TestReadLine(t)
+    t:Run("single line", function(t)
+        local reader = strings.new_reader("single line\n")
+        local line = reader:read("*l")
+        assert_equal("single line", line)
+        line = reader:read("*l")
+        assert(not line, line)
+    end)
+
+    t:Run("single line no newline", function(t)
+        local reader = strings.new_reader("single line")
+        local line = reader:read("*l")
+        assert_equal("single line", line)
+        line = reader:read("*l")
+        assert(not line, line)
+    end)
+
+    t:Run("two lines with spaces in first", function(t)
+        local reader = strings.new_reader("foo bar\nbaz\n")
+        local line = reader:read("*l")
+        assert_equal("foo bar", line)
+        line = reader:read("*l")
+        assert_equal("baz", line)
+        line = reader:read("*l")
+        assert(not line, line)
+    end)
+end
