@@ -39,10 +39,10 @@ func newStringsBuilder(L *lua.LState) int {
 	return 1
 }
 
-func registerStringsBuilder(L *lua.LState) {
+func registerStringsBuilder(L *lua.LState) lua.LValue {
 	mt := L.NewTypeMetatable(stringsBuilderType)
-	L.SetGlobal(stringsBuilderType, mt)
 	writerTable := lio.WriterFuncTable(L)
 	L.SetField(writerTable, "string", L.NewFunction(stringsBuilderString))
 	L.SetField(mt, "__index", writerTable)
+	return mt
 }
