@@ -14,7 +14,6 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -233,7 +232,7 @@ func TestMTLS(t *testing.T) {
 	defer s.Close()
 	serverCert, err := tls.LoadX509KeyPair("test/data/test.cert.pem", "test/data/test.key.pem")
 	require.NoError(t, err)
-	caData, err := os.ReadFile("test/data/test.cert.pem")
+	caData, err := ioutil.ReadFile("test/data/test.cert.pem")
 	require.NoError(t, err)
 	cas := x509.NewCertPool()
 	cas.AppendCertsFromPEM(caData)

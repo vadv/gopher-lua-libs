@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -163,7 +164,7 @@ func New(L *lua.LState) int {
 			// parse root_cas
 			case `root_cas_pem_file`:
 				if value, ok := v.(lua.LString); ok {
-					pemData, err := os.ReadFile(string(value))
+					pemData, err := ioutil.ReadFile(string(value))
 					if err != nil {
 						L.RaiseError("error loading root_cas_pem_file from %s: %v", value, err)
 					}
