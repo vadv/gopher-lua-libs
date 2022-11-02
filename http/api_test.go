@@ -245,11 +245,8 @@ func TestMTLS(t *testing.T) {
 
 	preload := tests.SeveralPreloadFuncs(
 		lua_http.Preload,
-		lua_time.Preload,
-		inspect.Preload,
-		plugin.Preload,
 		func(L *lua.LState) {
-			// Attach the server URL to the testing object
+			// Pass the httptest server URL as a global, so it can be used for queries.
 			L.SetGlobal("tURL", lua.LString(s.URL))
 		},
 	)
