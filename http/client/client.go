@@ -2,6 +2,7 @@ package http
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -81,22 +82,24 @@ func checkClient(L *lua.LState) *LuaClient {
 
 // http.client(config) returns (user data, error)
 // config table:
-//   {
-//     proxy="http(s)://<user>:<password>@host:<port>",
-//     timeout= 10,
-//     insecure_ssl=false,
-//     user_agent = "gopher-lua",
-//     basic_auth_user = "",
-//     basic_auth_password = "",
-//     headers = {"key"="value"},
-//     debug = false,
-//   }
+//
+//	{
+//	  proxy="http(s)://<user>:<password>@host:<port>",
+//	  timeout= 10,
+//	  insecure_ssl=false,
+//	  user_agent = "gopher-lua",
+//	  basic_auth_user = "",
+//	  basic_auth_password = "",
+//	  headers = {"key"="value"},
+//	  debug = false,
+//	}
 func New(L *lua.LState) int {
 	var config *lua.LTable
 	if L.GetTop() > 0 {
 		config = L.CheckTable(1)
 	}
 	client := &LuaClient{Client: &http.Client{Timeout: DefaultTimeout}, userAgent: DefaultUserAgent}
+	tlsConfig := &tls.Config{}
 	transport := &http.Transport{}
 	// parse env
 	if proxyEnv := os.Getenv(`HTTP_PROXY`); proxyEnv != `` {
@@ -110,17 +113,35 @@ func New(L *lua.LState) int {
 	transport.IdleConnTimeout = DefaultTimeout
 	// parse config
 	if config != nil {
+		// Client Cert and Key go together and handling in loop is challenging - just pull them out here
+		clientPublicCertPEMFile := L.GetField(config, `client_public_cert_pem_file`)
+		clientPrivateKeyPemFile := L.GetField(config, `client_private_key_pem_file`)
+		if clientPublicCertPEMFile != lua.LNil && clientPrivateKeyPemFile != lua.LNil {
+			if _, ok := clientPublicCertPEMFile.(lua.LString); !ok {
+				L.ArgError(1, "client_public_cert_pem_file must be string")
+			}
+			if _, ok := clientPrivateKeyPemFile.(lua.LString); !ok {
+				L.ArgError(1, "client_private_key_pem_file must be string")
+			}
+			clientCert, err := tls.LoadX509KeyPair(clientPublicCertPEMFile.String(), clientPrivateKeyPemFile.String())
+			if err != nil {
+				L.RaiseError("error loading client certificate from %s and %s: %v",
+					clientPublicCertPEMFile, clientPrivateKeyPemFile, err)
+			}
+			tlsConfig.Certificates = []tls.Certificate{clientCert}
+			transport.TLSClientConfig = tlsConfig
+		}
 		config.ForEach(func(k lua.LValue, v lua.LValue) {
+			switch k.String() {
 			// parse timeout
-			if k.String() == `timeout` {
+			case `timeout`:
 				if value, ok := v.(lua.LNumber); ok {
 					client.Timeout = time.Duration(value) * time.Second
 				} else {
 					L.ArgError(1, "timeout must be number")
 				}
-			}
 			// parse proxy
-			if k.String() == `proxy` {
+			case `proxy`:
 				if value, ok := v.(lua.LString); ok {
 					proxyUrl, err := url.Parse(value.String())
 					if err == nil {
@@ -131,51 +152,59 @@ func New(L *lua.LState) int {
 				} else {
 					L.ArgError(1, "http_proxy must be string")
 				}
-			}
 			// parse insecure_ssl
-			if k.String() == `insecure_ssl` {
+			case `insecure_ssl`:
 				if value, ok := v.(lua.LBool); ok {
-					transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: bool(value)}
+					tlsConfig.InsecureSkipVerify = bool(value)
+					transport.TLSClientConfig = tlsConfig
 				} else {
 					L.ArgError(1, "insecure_ssl must be bool")
 				}
-			}
+			// parse root_cas
+			case `root_cas_pem_file`:
+				if value, ok := v.(lua.LString); ok {
+					pemData, err := os.ReadFile(string(value))
+					if err != nil {
+						L.RaiseError("error loading root_cas_pem_file from %s: %v", value, err)
+					}
+					tlsConfig.RootCAs = x509.NewCertPool()
+					tlsConfig.RootCAs.AppendCertsFromPEM(pemData)
+					transport.TLSClientConfig = tlsConfig
+				} else {
+					L.ArgError(1, "root_cas_pem_file must be string")
+				}
 			// parse user_agent
-			if k.String() == `user_agent` {
+			case `user_agent`:
 				if _, ok := v.(lua.LString); ok {
 					client.userAgent = v.String()
 				} else {
 					L.ArgError(1, "user_agent must be string")
 				}
-			}
 			// parse basic_auth_user
-			if k.String() == `basic_auth_user` {
+			case `basic_auth_user`:
 				if _, ok := v.(lua.LString); ok {
 					user := v.String()
 					client.basicAuthUser = &user
 				} else {
 					L.ArgError(1, "basic_auth_user must be string")
 				}
-			}
 			// parse basic_auth_password
-			if k.String() == `basic_auth_password` {
+			case `basic_auth_password`:
 				if _, ok := v.(lua.LString); ok {
 					password := v.String()
 					client.basicAuthPasswd = &password
 				} else {
 					L.ArgError(1, "basic_auth_password must be string")
 				}
-			}
 			// parse debug
-			if k.String() == `debug` {
+			case `debug`:
 				if value, ok := v.(lua.LBool); ok {
 					client.debug = bool(value)
 				} else {
 					L.ArgError(1, "debug must be bool")
 				}
-			}
 			// parse headers
-			if k.String() == `headers` {
+			case `headers`:
 				if tbl, ok := v.(*lua.LTable); ok {
 					headers := make(map[string]string, 0)
 					data, err := lua_json.ValueEncode(tbl)

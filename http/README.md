@@ -12,6 +12,14 @@ basic_auth_user = "",
 basic_auth_password = "",
 headers = {"key"="value"},
 debug = false,
+
+# When set, the client will present the client cert for "mTLS"
+client_public_cert_pem_file = nil,
+client_private_key_pem_file = nil,
+
+# When set, this will be used to verify the server certificate (useful for private enterprise certificate authorities).
+# Prefer this over insecure_ssl when possible
+root_cas_pem_file = "",
 ```
 - `request(method, url, [data])` - make request userdata.
 
