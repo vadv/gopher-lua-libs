@@ -225,7 +225,7 @@ func TestApi(t *testing.T) {
 	})
 }
 
-func TestMTLS(t *testing.T) {
+func TestMTLSClient(t *testing.T) {
 	s := httptest.NewUnstartedServer(http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
 		_, _ = io.WriteString(writer, "OK\n")
 	}))
@@ -250,5 +250,15 @@ func TestMTLS(t *testing.T) {
 			L.SetGlobal("tURL", lua.LString(s.URL))
 		},
 	)
-	assert.NotZero(t, tests.RunLuaTestFile(t, preload, "test/test_api.lua"))
+	assert.NotZero(t, tests.RunLuaTestFile(t, preload, "test/test_mtls_client.lua"))
+}
+
+func TestMTLSServerWithClient(t *testing.T) {
+	preload := tests.SeveralPreloadFuncs(
+		lua_http.Preload,
+		lua_time.Preload,
+		inspect.Preload,
+		plugin.Preload,
+	)
+	assert.NotZero(t, tests.RunLuaTestFile(t, preload, "test/test_mtls_server_with_client.lua"))
 }

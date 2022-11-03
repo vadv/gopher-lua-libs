@@ -1,6 +1,9 @@
 package http
 
 import (
+	"crypto/tls"
+	"crypto/x509"
+	ioutil2 "io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -82,12 +85,69 @@ func (s *luaServer) serve(L *lua.LState) {
 
 // http.server(bind, handler) returns (user data, error)
 func New(L *lua.LState) int {
-	bind := L.CheckAny(1).String()
+	var tlsConfig *tls.Config
+	bind := "127.0.0.1:0"
+	switch bindOrTable := L.CheckAny(1).(type) {
+	case lua.LString:
+		bind = string(bindOrTable)
+	case *lua.LTable:
+		if addr, ok := L.GetField(bindOrTable, "addr").(lua.LString); ok {
+			bind = string(addr)
+		}
+		serverPublicCertPEMFile := L.GetField(bindOrTable, `server_public_cert_pem_file`)
+		serverPrivateKeyPemFile := L.GetField(bindOrTable, `server_private_key_pem_file`)
+		if serverPublicCertPEMFile != lua.LNil && serverPrivateKeyPemFile != lua.LNil {
+			serverCert, err := tls.LoadX509KeyPair(serverPublicCertPEMFile.String(), serverPrivateKeyPemFile.String())
+			if err != nil {
+				L.RaiseError("error loading server cert: %v", err)
+			}
+			tlsConfig = &tls.Config{
+				Certificates: []tls.Certificate{serverCert},
+			}
+
+			clientAuth := L.GetField(bindOrTable, "client_auth")
+			if clientAuth != lua.LNil {
+				if _, ok := clientAuth.(lua.LString); !ok {
+					L.ArgError(1, "client_auth should be a string")
+				}
+				switch clientAuth.String() {
+				case "NoClientCert":
+					tlsConfig.ClientAuth = tls.NoClientCert
+				case "RequestClientCert":
+					tlsConfig.ClientAuth = tls.RequestClientCert
+				case "RequireAnyClientCert":
+					tlsConfig.ClientAuth = tls.RequireAnyClientCert
+				case "VerifyClientCertIfGiven":
+					tlsConfig.ClientAuth = tls.VerifyClientCertIfGiven
+				case "RequireAndVerifyClientCert":
+					tlsConfig.ClientAuth = tls.RequireAndVerifyClientCert
+				}
+			}
+
+			clientCAs := L.GetField(bindOrTable, "client_cas_pem_file")
+			if clientCAs != lua.LNil {
+				if _, ok := clientCAs.(lua.LString); !ok {
+					L.ArgError(1, "client_cas_pem_file must be a string")
+				}
+				data, err := ioutil2.ReadFile(clientCAs.String())
+				if err != nil {
+					L.RaiseError("error reading %s: %v", clientCAs, err)
+				}
+				tlsConfig.ClientCAs = x509.NewCertPool()
+				if !tlsConfig.ClientCAs.AppendCertsFromPEM(data) {
+					L.RaiseError("no certs loaded from %s", clientCAs)
+				}
+			}
+		}
+	}
 	l, err := net.Listen(`tcp`, bind)
 	if err != nil {
 		L.Push(lua.LNil)
 		L.Push(lua.LString(err.Error()))
 		return 2
+	}
+	if tlsConfig != nil {
+		l = tls.NewListener(l, tlsConfig)
 	}
 	server := &luaServer{
 		Listener:  l,
@@ -110,6 +170,13 @@ func Accept(L *lua.LState) int {
 		L.Push(NewWriter(L, data.w, data.req, data.done))
 		return 2
 	}
+}
+
+// Addr returns the address if, for instance, one listens on :0
+func Addr(L *lua.LState) int {
+	s := checkServer(L, 1)
+	L.Push(lua.LString(s.Listener.Addr().String()))
+	return 1
 }
 
 func newHandlerState(data *serveData) *lua.LState {
@@ -185,16 +252,18 @@ func HandleFile(L *lua.LState) int {
 func HandleString(L *lua.LState) int {
 	s := checkServer(L, 1)
 	body := L.CheckString(2)
-	select {
-	case data := <-s.serveData:
-		go func(sData *serveData, content string) {
-			state := newHandlerState(sData)
-			if err := state.DoString(content); err != nil {
-				log.Printf("[ERROR] handle: %s\n", err.Error())
-				data.done <- true
-				log.Printf("[ERROR] closed connection\n")
-			}
-		}(data, body)
+	for {
+		select {
+		case data := <-s.serveData:
+			go func(sData *serveData, content string) {
+				state := newHandlerState(sData)
+				if err := state.DoString(content); err != nil {
+					log.Printf("[ERROR] handle: %s\n", err.Error())
+					data.done <- true
+					log.Printf("[ERROR] closed connection\n")
+				}
+			}(data, body)
+		}
 	}
 	return 0
 }

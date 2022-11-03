@@ -12,7 +12,7 @@ import (
 // Preload adds http to the given Lua state's package.preload table. After it
 // has been preloaded, it can be loaded using require:
 //
-//  local http = require("http")
+//	local http = require("http")
 func Preload(L *lua.LState) {
 	L.PreloadModule("http", Loader)
 	client.Preload(L)
@@ -50,6 +50,7 @@ func Loader(L *lua.LState) int {
 	L.SetGlobal(`http_server_ud`, http_server_ud)
 	L.SetField(http_server_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
 		"accept":           server.Accept,
+		"addr":             server.Addr,
 		"do_handle_file":   server.HandleFile,
 		"do_handle_string": server.HandleString,
 	}))
