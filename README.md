@@ -84,6 +84,7 @@ var (
 func main() {
         flag.Parse()
         state := lua.NewState()
+        defer state.Close()
         libs.Preload(state)
         if *exec != `` {
                 if err := state.DoFile(*exec); err != nil {
