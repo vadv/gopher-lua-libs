@@ -14,12 +14,11 @@ function TestMTLSServerWithClient(t)
         }
         assert(not err, tostring(err))
         addr_ch:send(server:addr())
-        while true do
-            local request, response = server:accept()
+        server:do_handle_string([=[
             response:code(200)
             response:write("OK\n")
             response:done()
-        end
+        ]=])
     ]]
     local server_plugin = plugin.do_string(server_body, addr_ch)
     server_plugin:run()

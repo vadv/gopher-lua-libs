@@ -236,6 +236,7 @@ func HandleFile(L *lua.LState) int {
 		case data := <-s.serveData:
 			go func(sData *serveData, filename string) {
 				state := newHandlerState(data)
+				defer state.Close()
 				if err := state.DoFile(filename); err != nil {
 					log.Printf("[ERROR] handle file %s: %s\n", filename, err.Error())
 					data.done <- true
@@ -248,7 +249,7 @@ func HandleFile(L *lua.LState) int {
 	return 0
 }
 
-// HandleString lua http_server_ud:handler_string(body)
+// HandleString lua http_server_ud:handle_string(body)
 func HandleString(L *lua.LState) int {
 	s := checkServer(L, 1)
 	body := L.CheckString(2)
@@ -257,6 +258,7 @@ func HandleString(L *lua.LState) int {
 		case data := <-s.serveData:
 			go func(sData *serveData, content string) {
 				state := newHandlerState(sData)
+				defer state.Close()
 				if err := state.DoString(content); err != nil {
 					log.Printf("[ERROR] handle: %s\n", err.Error())
 					data.done <- true
@@ -266,6 +268,48 @@ func HandleString(L *lua.LState) int {
 		}
 	}
 	return 0
+}
+
+// HandleFunction lua http_server_ud:handle_function(func(response, request))
+func HandleFunction(L *lua.LState) int {
+	s := checkServer(L, 1)
+	f := L.CheckFunction(2)
+	if len(f.Upvalues) > 0 {
+		L.ArgError(2, "cannot pass closures")
+	}
+
+	// Stash any args to pass to the function beyond response and request
+	var args []lua.LValue
+	top := L.GetTop()
+	for i := 3; i <= top; i++ {
+		args = append(args, L.Get(i))
+	}
+
+	for {
+		select {
+		case data := <-s.serveData:
+			go func(sData *serveData) {
+				state := newHandlerState(sData)
+				defer state.Close()
+				response := state.GetGlobal("response")
+				request := state.GetGlobal("request")
+				f := state.NewFunctionFromProto(f.Proto)
+				state.Push(f)
+				state.Push(response)
+				state.Push(request)
+				// Push any extra args
+				for _, arg := range args {
+					state.Push(arg)
+				}
+				if err := state.PCall(2+len(args), 0, nil); err != nil {
+					log.Printf("[ERROR] handle: %s\n", err.Error())
+					data.done <- true
+					log.Printf("[ERROR] closed connection\n")
+				}
+				state.Pop(state.GetTop())
+			}(data)
+		}
+	}
 }
 
 // ServeHTTP interface realisation

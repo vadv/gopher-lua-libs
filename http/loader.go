@@ -49,10 +49,11 @@ func Loader(L *lua.LState) int {
 	http_server_ud := L.NewTypeMetatable(`http_server_ud`)
 	L.SetGlobal(`http_server_ud`, http_server_ud)
 	L.SetField(http_server_ud, "__index", L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"accept":           server.Accept,
-		"addr":             server.Addr,
-		"do_handle_file":   server.HandleFile,
-		"do_handle_string": server.HandleString,
+		"accept":             server.Accept,
+		"addr":               server.Addr,
+		"do_handle_file":     server.HandleFile,
+		"do_handle_string":   server.HandleString,
+		"do_handle_function": server.HandleFunction,
 	}))
 
 	t := L.NewTable()

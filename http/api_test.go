@@ -262,3 +262,13 @@ func TestMTLSServerWithClient(t *testing.T) {
 	)
 	assert.NotZero(t, tests.RunLuaTestFile(t, preload, "test/test_mtls_server_with_client.lua"))
 }
+
+func TestServer(t *testing.T) {
+	preload := tests.SeveralPreloadFuncs(
+		lua_http.Preload,
+		lua_time.Preload,
+		inspect.Preload,
+		plugin.Preload,
+	)
+	assert.NotZero(t, tests.RunLuaTestFile(t, preload, "test/test_server.lua"))
+}
