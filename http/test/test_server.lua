@@ -31,4 +31,6 @@ function Test_do_handle_function(t)
     local resp, err = client:do_request(req)
     assert(not err, tostring(err))
     assert(resp.code == 200, tostring(resp.code))
+
+    server_plugin:stop()
 end
