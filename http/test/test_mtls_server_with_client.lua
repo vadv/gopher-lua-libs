@@ -9,6 +9,8 @@ function TestMTLSServerWithClient(t)
         local addr_ch = unpack(arg)
         local http = require 'http'
         local server, err = http.server {
+            client_cas_pem_file = "test/data/test.cert.pem",
+            client_auth = "RequireAndVerifyClientCert",
             server_public_cert_pem_file = "test/data/test.cert.pem",
             server_private_key_pem_file = "test/data/test.key.pem",
         }
@@ -30,7 +32,9 @@ function TestMTLSServerWithClient(t)
     local tURL = string.format("https://%s/", addr)
 
     t:Run('no-client-cert fails', function(t)
-        local client = http.client()
+        local client = http.client {
+            insecure_ssl = true,
+        }
         local req, err = http.request("GET", tURL)
         assert(not err, tostring(err))
         local resp, err = client:do_request(req)

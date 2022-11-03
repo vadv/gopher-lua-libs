@@ -4,7 +4,9 @@ function TestMTLS(t)
     assert(tURL, 'tURL global is not set')
 
     t:Run('no-client-cert fails', function(t)
-        local client = http.client()
+        local client = http.client{
+            insecure_ssl = true,
+        }
         local req, err = http.request("GET", tURL)
         assert(not err, tostring(err))
         local resp, err = client:do_request(req)
