@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"encoding/base64"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	lua "github.com/yuin/gopher-lua"
@@ -10,6 +9,8 @@ import (
 	"strings"
 	"testing"
 )
+
+//go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in suite.lua -o lua_const.go -c lua_suite
 
 type PreloadFunc func(L *lua.LState)
 
@@ -125,11 +126,7 @@ func registerTType(L *lua.LState) {
 }
 
 func LoadSuite(L *lua.LState) int {
-	code, err := base64.StdEncoding.DecodeString(lua_suite)
-	if err != nil {
-		L.RaiseError(err.Error())
-	}
-	if err = L.DoString(string(code)); err != nil {
+	if err := L.DoString(lua_suite); err != nil {
 		L.RaiseError(err.Error())
 	}
 	return 1
