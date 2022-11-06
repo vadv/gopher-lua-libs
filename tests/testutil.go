@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"encoding/base64"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	lua "github.com/yuin/gopher-lua"
@@ -106,13 +107,29 @@ func registerTType(L *lua.LState) {
 	L.SetGlobal(TType, mt)
 }
 
-//RunLuaTestFile fires up a new state, registers the *testing.T and invokes all methods starting with Test.
+func LoadSuite(L *lua.LState) int {
+	code, err := base64.StdEncoding.DecodeString(lua_suite)
+	if err != nil {
+		L.RaiseError(err.Error())
+	}
+	if err = L.DoString(string(code)); err != nil {
+		L.RaiseError(err.Error())
+	}
+	return 1
+}
+
+func PreloadSuite(L *lua.LState) {
+	L.PreloadModule("suite", LoadSuite)
+}
+
+// RunLuaTestFile fires up a new state, registers the *testing.T and invokes all methods starting with Test.
 // This allows the lua test files to operate similar to go tests - see shellescape/test/test_api.lua
 func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) (numTests int) {
 	L := lua.NewState()
 	t.Cleanup(L.Close)
 
 	registerTType(L)
+	PreloadSuite(L)
 	require.NotNil(t, preload)
 	preload(L)
 	L.SetGlobal("t", tLua(L, t))
@@ -132,7 +149,7 @@ func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) (numTest
 	return
 }
 
-//SeveralPreloadFuncs combines several PreloadFuncs to one such as when tests want to preload theirs + inspect
+// SeveralPreloadFuncs combines several PreloadFuncs to one such as when tests want to preload theirs + inspect
 func SeveralPreloadFuncs(preloadFuncs ...PreloadFunc) PreloadFunc {
 	return func(L *lua.LState) {
 		for _, preloadFunc := range preloadFuncs {
