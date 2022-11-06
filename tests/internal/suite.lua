@@ -9,17 +9,27 @@ function suite.Run(t, testSuite)
     -- testSuite must be subclass of suite.Suite, so will have this method
     testSuite:SetT(t)
 
-    pcall(testSuite.SetupSuite, testSuite)
+    if testSuite.SetupSuite then
+        testSuite:SetupSuite()
+    end
     for k, v in pairs(testSuite) do
         if strings.has_prefix(k, "Test") then
-            pcall(testSuite.SetupTest, testSuite)
+            if testSuite.SetupTest then
+                testSuite:SetupTest()
+            end
             t:Run(k, function(t)
+                testSuite:SetT(t)
                 v(testSuite)
             end)
-            pcall(testSuite.TearDownTest, testSuite)
+            testSuite:SetT(t)
+            if testSuite.TearDownTest then
+                testSuite:TearDownTest()
+            end
         end
     end
-    pcall(testSuite.TearDownSuite, testSuite)
+    if testSuite.TearDownSuite then
+        testSuite:TearDownSuite()
+    end
 end
 
 function suite.Suite:new(o)
