@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	lua "github.com/yuin/gopher-lua"
+	"os"
 	"strings"
 	"testing"
 )
@@ -96,7 +97,14 @@ func tSkipf(L *lua.LState) int {
 
 func tTempDir(L *lua.LState) int {
 	t := checkT(L, 1)
-	L.Push(lua.LString(t.TempDir()))
+	// TODO(scr): WHen the minimal version supported has this on the *testing.T object, remove this shim
+	//L.Push(lua.LString(t.TempDir()))
+	tempDir := os.TempDir()
+	t.Cleanup(func() {
+		_ = os.RemoveAll(tempDir)
+	})
+
+	L.Push(lua.LString(tempDir))
 	return 1
 }
 
