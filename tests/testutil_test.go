@@ -9,10 +9,10 @@ import (
 
 func TestSuite(t *testing.T) {
 	preload := strings.Preload
-	assert.NotZero(t, RunLuaTestFile(t, preload, "testdata/suite_test.lua"))
+	assert.NotZero(t, RunLuaTestFile(t, preload, "testdata/test_suite.lua"))
 }
 
 func TestApi(t *testing.T) {
 	preload := goos.Preload
-	assert.NotZero(t, RunLuaTestFile(t, preload, "testdata/tests.lua"))
+	assert.NotZero(t, RunLuaTestFile(t, preload, "testdata/test_api.lua"))
 }
