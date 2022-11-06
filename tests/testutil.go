@@ -97,7 +97,7 @@ func tSkipf(L *lua.LState) int {
 
 func tTempDir(L *lua.LState) int {
 	t := checkT(L, 1)
-	// TODO(scr): WHen the minimal version supported has this on the *testing.T object, remove this shim
+	// TODO(scr): When the minimal version supported has this on the *testing.T object, remove this shim
 	//L.Push(lua.LString(t.TempDir()))
 	tempDir := os.TempDir()
 	t.Cleanup(func() {
