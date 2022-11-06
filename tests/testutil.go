@@ -94,14 +94,21 @@ func tSkipf(L *lua.LState) int {
 	return 0
 }
 
+func tTempDir(L *lua.LState) int {
+	t := checkT(L, 1)
+	L.Push(lua.LString(t.TempDir()))
+	return 1
+}
+
 func registerTType(L *lua.LState) {
 	mt := L.NewTypeMetatable(TType)
 	index := L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"Run":   tRun,
-		"Log":   tLog,
-		"Logf":  tLogf,
-		"Skip":  tSkip,
-		"Skipf": tSkipf,
+		"Run":     tRun,
+		"Log":     tLog,
+		"Logf":    tLogf,
+		"Skip":    tSkip,
+		"Skipf":   tSkipf,
+		"TempDir": tTempDir,
 	})
 	L.SetField(mt, "__index", index)
 	L.SetGlobal(TType, mt)
