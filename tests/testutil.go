@@ -10,6 +10,7 @@ import (
 	"testing"
 )
 
+// TODO(scr): move to embed once minimum supported go version is 1.16
 //go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in suite.lua -o lua_const.go -c lua_suite
 
 type PreloadFunc func(L *lua.LState)

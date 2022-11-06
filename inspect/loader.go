@@ -1,5 +1,6 @@
 package inspect
 
+// TODO(scr): move to embed once minimum supported go version is 1.16
 //go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in inspect.lua -o lua_const.go -c lua_inspect
 
 import (
