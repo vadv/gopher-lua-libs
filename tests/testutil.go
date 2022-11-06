@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	lua "github.com/yuin/gopher-lua"
+	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -99,7 +100,8 @@ func tTempDir(L *lua.LState) int {
 	t := checkT(L, 1)
 	// TODO(scr): When the minimal version supported has this on the *testing.T object, remove this shim
 	//L.Push(lua.LString(t.TempDir()))
-	tempDir := os.TempDir()
+	tempDir, err := ioutil.TempDir(os.TempDir(), "test.tempDir*")
+	require.NoError(t, err)
 	t.Cleanup(func() {
 		_ = os.RemoveAll(tempDir)
 	})
