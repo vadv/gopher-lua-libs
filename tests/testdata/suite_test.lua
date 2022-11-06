@@ -29,7 +29,13 @@ function MySuite:TestFoobar()
 end
 
 function MySuite:TestBaz()
-    self:T():Log('TestBaz')
+    self:Run('sub1', function()
+        self:T():Log('sub1')
+    end)
+
+    self:Run('sub2', function()
+        self:T():Log('sub2')
+    end)
 end
 
 function TestSuite(t)

@@ -47,4 +47,13 @@ function suite.Suite:SetT(t)
     self.t = t
 end
 
+function suite.Suite:Run(name, f)
+    local t = self:T()
+    self:T():Run(name, function(t)
+        self:SetT(t)
+        f(self)
+    end)
+    self:SetT(t)
+end
+
 return suite
