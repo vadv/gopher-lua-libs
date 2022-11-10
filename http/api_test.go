@@ -2,12 +2,18 @@ package http_test
 
 import (
 	"crypto/subtle"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/vadv/gopher-lua-libs/tests"
 	"golang.org/x/sync/errgroup"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
@@ -217,4 +223,52 @@ func TestApi(t *testing.T) {
 	t.Run("test_serve_static", func(t *testing.T) {
 		assert.NoError(t, state.DoFile("./test/test_serve_static.lua"))
 	})
+}
+
+func TestMTLSClient(t *testing.T) {
+	s := httptest.NewUnstartedServer(http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
+		_, _ = io.WriteString(writer, "OK\n")
+	}))
+	defer s.Close()
+	serverCert, err := tls.LoadX509KeyPair("test/data/test.cert.pem", "test/data/test.key.pem")
+	require.NoError(t, err)
+	caData, err := ioutil.ReadFile("test/data/test.cert.pem")
+	require.NoError(t, err)
+	cas := x509.NewCertPool()
+	cas.AppendCertsFromPEM(caData)
+	s.TLS = &tls.Config{
+		Certificates: []tls.Certificate{serverCert},
+		ClientCAs:    cas,
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+	}
+	s.StartTLS()
+
+	preload := tests.SeveralPreloadFuncs(
+		lua_http.Preload,
+		func(L *lua.LState) {
+			// Pass the httptest server URL as a global, so it can be used for queries.
+			L.SetGlobal("tURL", lua.LString(s.URL))
+		},
+	)
+	assert.NotZero(t, tests.RunLuaTestFile(t, preload, "test/test_mtls_client.lua"))
+}
+
+func TestMTLSServerWithClient(t *testing.T) {
+	preload := tests.SeveralPreloadFuncs(
+		lua_http.Preload,
+		lua_time.Preload,
+		inspect.Preload,
+		plugin.Preload,
+	)
+	assert.NotZero(t, tests.RunLuaTestFile(t, preload, "test/test_mtls_server_with_client.lua"))
+}
+
+func TestServer(t *testing.T) {
+	preload := tests.SeveralPreloadFuncs(
+		lua_http.Preload,
+		lua_time.Preload,
+		inspect.Preload,
+		plugin.Preload,
+	)
+	assert.NotZero(t, tests.RunLuaTestFile(t, preload, "test/test_server.lua"))
 }
