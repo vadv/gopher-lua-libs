@@ -82,7 +82,7 @@ end
 
 function TestSuite(t)
     -- Same mechanism for test discovery is used, but then the suite is run as sub tests via suite.Run
-    suite.Run(t, MySuite)
+    assert(suite.Run(t, MySuite), "No tests were run by this Suite")
 
     -- Called for every test: two tests so should be 2
     assert(MySuite.setupCount == 2, tostring(MySuite.setupCount))
