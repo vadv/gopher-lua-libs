@@ -4,9 +4,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	lua "github.com/yuin/gopher-lua"
+	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 )
+
+// TODO(scr): move to embed once minimum supported go version is 1.16
+//go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in suite.lua -o lua_const.go -c lua_suite
 
 type PreloadFunc func(L *lua.LState)
 
@@ -93,26 +98,53 @@ func tSkipf(L *lua.LState) int {
 	return 0
 }
 
+func tTempDir(L *lua.LState) int {
+	t := checkT(L, 1)
+	// TODO(scr): When the minimal version supported has this on the *testing.T object, remove this shim
+	//L.Push(lua.LString(t.TempDir()))
+	tempDir, err := ioutil.TempDir(os.TempDir(), "test.tempDir*")
+	require.NoError(t, err)
+	t.Cleanup(func() {
+		_ = os.RemoveAll(tempDir)
+	})
+
+	L.Push(lua.LString(tempDir))
+	return 1
+}
+
 func registerTType(L *lua.LState) {
 	mt := L.NewTypeMetatable(TType)
 	index := L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"Run":   tRun,
-		"Log":   tLog,
-		"Logf":  tLogf,
-		"Skip":  tSkip,
-		"Skipf": tSkipf,
+		"Run":     tRun,
+		"Log":     tLog,
+		"Logf":    tLogf,
+		"Skip":    tSkip,
+		"Skipf":   tSkipf,
+		"TempDir": tTempDir,
 	})
 	L.SetField(mt, "__index", index)
 	L.SetGlobal(TType, mt)
 }
 
-//RunLuaTestFile fires up a new state, registers the *testing.T and invokes all methods starting with Test.
+func LoadSuite(L *lua.LState) int {
+	if err := L.DoString(lua_suite); err != nil {
+		L.RaiseError(err.Error())
+	}
+	return 1
+}
+
+func PreloadSuite(L *lua.LState) {
+	L.PreloadModule("suite", LoadSuite)
+}
+
+// RunLuaTestFile fires up a new state, registers the *testing.T and invokes all methods starting with Test.
 // This allows the lua test files to operate similar to go tests - see shellescape/test/test_api.lua
 func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) (numTests int) {
 	L := lua.NewState()
 	t.Cleanup(L.Close)
 
 	registerTType(L)
+	PreloadSuite(L)
 	require.NotNil(t, preload)
 	preload(L)
 	L.SetGlobal("t", tLua(L, t))
@@ -132,7 +164,7 @@ func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) (numTest
 	return
 }
 
-//SeveralPreloadFuncs combines several PreloadFuncs to one such as when tests want to preload theirs + inspect
+// SeveralPreloadFuncs combines several PreloadFuncs to one such as when tests want to preload theirs + inspect
 func SeveralPreloadFuncs(preloadFuncs ...PreloadFunc) PreloadFunc {
 	return func(L *lua.LState) {
 		for _, preloadFunc := range preloadFuncs {
