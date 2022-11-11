@@ -78,4 +78,18 @@ function assertions:Truef(t, actual, fmt, ...)
     return self:Failf(t, string.format([[expected true; got %s%s%s]], actual, '\n', fmt), ...)
 end
 
+function assertions:False(t, actual, ...)
+    if not actual then
+        return true
+    end
+    return self:Fail(t, string.format([[expected false; got %s]] .. '\n', actual), ...)
+end
+
+function assertions:Falsef(t, actual, fmt, ...)
+    if not actual then
+        return true
+    end
+    return self:Failf(t, string.format([[expected false; got %s%s%s]], actual, '\n', fmt), ...)
+end
+
 return assertions

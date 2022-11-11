@@ -20,9 +20,15 @@ func TestApi(t *testing.T) {
 }
 
 func TestAssertions(t *testing.T) {
-	if _, ok := os.LookupEnv("TEST_ASSERTIONS"); !ok {
-		t.Skip("Skipping unless TEST_ASSERTIONS is set")
-	}
-	preload := inspect.Preload
-	assert.NotZero(t, RunLuaTestFile(t, preload, "testdata/test_assertions.lua"))
+	t.Run("passing", func(t *testing.T) {
+		preload := inspect.Preload
+		assert.NotZero(t, RunLuaTestFile(t, preload, "testdata/test_assertions_passing.lua"))
+	})
+	t.Run("failing", func(t *testing.T) {
+		if _, ok := os.LookupEnv("TEST_ASSERTIONS_FAILING"); !ok {
+			t.Skip("Skipping unless TEST_ASSERTIONS_FAILING is set")
+		}
+		preload := inspect.Preload
+		assert.NotZero(t, RunLuaTestFile(t, preload, "testdata/test_assertions_failing.lua"))
+	})
 }

@@ -36,3 +36,7 @@ function TestTablesNotEqual(t)
     }
     assert:NotEqual(t, inspect(t1), inspect(t2, { process = remove_all_metatables }))
 end
+
+function TestFalse(t)
+    assert:False(true, "oh noes")
+end
