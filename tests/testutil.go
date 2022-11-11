@@ -12,6 +12,9 @@ import (
 
 // TODO(scr): move to embed once minimum supported go version is 1.16
 //go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in suite.lua -o lua_const.go -c lua_suite
+//go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in assertions.lua -o assertions_const.go -c lua_assertions
+//go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in assert.lua -o assert_const.go -c lua_assert
+//go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in require.lua -o require_const.go -c lua_require
 
 type PreloadFunc func(L *lua.LState)
 
@@ -62,13 +65,40 @@ func tLog(L *lua.LState) int {
 	return 0
 }
 
+func tLogHelper(L *lua.LState) int {
+	t := checkT(L, 1)
+	level := L.CheckInt(2)
+	where := L.Where(level)
+	args := []interface{}{"\n", where}
+	top := L.GetTop()
+	for i := 3; i <= top; i++ {
+		args = append(args, L.Get(i))
+	}
+	t.Log(args...)
+	return 0
+}
+
 func tLogf(L *lua.LState) int {
 	t := checkT(L, 1)
-	format := "%s " + L.CheckString(2)
+	format := "\n%s " + L.CheckString(2)
 	where := L.Where(1)
 	args := []interface{}{where}
 	top := L.GetTop()
 	for i := 3; i <= top; i++ {
+		args = append(args, L.Get(i))
+	}
+	t.Logf(format, args...)
+	return 0
+}
+
+func tLogHelperf(L *lua.LState) int {
+	t := checkT(L, 1)
+	level := L.CheckInt(2)
+	format := "\n%s " + L.CheckString(3)
+	where := L.Where(level)
+	args := []interface{}{where}
+	top := L.GetTop()
+	for i := 4; i <= top; i++ {
 		args = append(args, L.Get(i))
 	}
 	t.Logf(format, args...)
@@ -98,6 +128,52 @@ func tSkipf(L *lua.LState) int {
 	return 0
 }
 
+func tFail(L *lua.LState) int {
+	t := checkT(L, 1)
+	t.Fail()
+	return 0
+}
+
+func tFailNow(L *lua.LState) int {
+	t := checkT(L, 1)
+	t.FailNow()
+	return 0
+}
+
+func tFailed(L *lua.LState) int {
+	t := checkT(L, 1)
+	L.Push(lua.LBool(t.Failed()))
+	return 1
+}
+
+func tError(L *lua.LState) int {
+	tLog(L)
+	t := checkT(L, 1)
+	t.Fail()
+	return 0
+}
+
+func tErrorf(L *lua.LState) int {
+	tLogf(L)
+	t := checkT(L, 1)
+	t.Fail()
+	return 0
+}
+
+func tFatal(L *lua.LState) int {
+	tLog(L)
+	t := checkT(L, 1)
+	t.FailNow()
+	return 0
+}
+
+func tFatalf(L *lua.LState) int {
+	tLogf(L)
+	t := checkT(L, 1)
+	t.FailNow()
+	return 0
+}
+
 func tTempDir(L *lua.LState) int {
 	t := checkT(L, 1)
 	// TODO(scr): When the minimal version supported has this on the *testing.T object, remove this shim
@@ -115,12 +191,21 @@ func tTempDir(L *lua.LState) int {
 func registerTType(L *lua.LState) {
 	mt := L.NewTypeMetatable(TType)
 	index := L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
-		"Run":     tRun,
-		"Log":     tLog,
-		"Logf":    tLogf,
-		"Skip":    tSkip,
-		"Skipf":   tSkipf,
-		"TempDir": tTempDir,
+		"Error":      tError,
+		"Errorf":     tErrorf,
+		"Fail":       tFail,
+		"FailNow":    tFailNow,
+		"Failed":     tFailed,
+		"Fatal":      tFatal,
+		"Fatalf":     tFatalf,
+		"Log":        tLog,
+		"LogHelper":  tLogHelper,
+		"LogHelperf": tLogHelperf,
+		"Logf":       tLogf,
+		"Run":        tRun,
+		"Skip":       tSkip,
+		"Skipf":      tSkipf,
+		"TempDir":    tTempDir,
 	})
 	L.SetField(mt, "__index", index)
 	L.SetGlobal(TType, mt)
@@ -137,6 +222,39 @@ func PreloadSuite(L *lua.LState) {
 	L.PreloadModule("suite", LoadSuite)
 }
 
+func LoadAssertions(L *lua.LState) int {
+	if err := L.DoString(lua_assertions); err != nil {
+		L.RaiseError(err.Error())
+	}
+	return 1
+}
+
+func PreloadAssertions(L *lua.LState) {
+	L.PreloadModule("assertions", LoadAssertions)
+}
+
+func LoadAssert(L *lua.LState) int {
+	if err := L.DoString(lua_assert); err != nil {
+		L.RaiseError(err.Error())
+	}
+	return 1
+}
+
+func PreloadAssert(L *lua.LState) {
+	L.PreloadModule("assert", LoadAssert)
+}
+
+func LoadRequre(L *lua.LState) int {
+	if err := L.DoString(lua_require); err != nil {
+		L.RaiseError(err.Error())
+	}
+	return 1
+}
+
+func PreloadRequire(L *lua.LState) {
+	L.PreloadModule("require", LoadRequre)
+}
+
 // RunLuaTestFile fires up a new state, registers the *testing.T and invokes all methods starting with Test.
 // This allows the lua test files to operate similar to go tests - see shellescape/test/test_api.lua
 func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) (numTests int) {
@@ -145,6 +263,9 @@ func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) (numTest
 
 	registerTType(L)
 	PreloadSuite(L)
+	PreloadAssertions(L)
+	PreloadAssert(L)
+	PreloadRequire(L)
 	require.NotNil(t, preload)
 	preload(L)
 	L.SetGlobal("t", tLua(L, t))
