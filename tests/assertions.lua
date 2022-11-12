@@ -22,24 +22,22 @@ function assertions:cleanseString(s)
 end
 
 function assertions:Fail(t, ...)
+    assert(t.LogHelper, "First parameter must be t (the testing.T object)")
     t:LogHelper(2, ...)
     if self.fail_now then
-        assert(t.FailNow, "First parameter must be t (the testing.T object)")
         t:FailNow()
     else
-        assert(t.Fail, "First parameter must be t (the testing.T object)")
         t:Fail()
     end
     return false
 end
 
 function assertions:Failf(t, fmt, ...)
+    assert(t.LogHelperf, "First parameter must be t (the testing.T object)")
     t:LogHelperf(2, fmt, ...)
     if self.fail_now then
-        assert(t.FailNow, "First parameter must be t (the testing.T object)")
         t:FailNow()
     else
-        assert(t.Fail, "First parameter must be t (the testing.T object)")
         t:Fail()
     end
     return false
@@ -132,6 +130,29 @@ function assertions:Falsef(t, actual, fmt, ...)
 Error: Should be false
 Messages: %s
 ]], fmt), ...)
+end
+
+function assertions:NoError(t, err, ...)
+    if not err then
+        return true
+    end
+    return self:Fail(t, string.format([[
+
+Error:      	Received unexpected error:
+                %s
+Messages: ]], err), ...)
+end
+
+function assertions:NoErrorf(t, err, fmt, ...)
+    if not err then
+        return true
+    end
+    return self:Fail(t, string.format([[
+
+Error:      	Received unexpected error:
+                %s
+Messages: %s
+]], err, fmt), ...)
 end
 
 return assertions

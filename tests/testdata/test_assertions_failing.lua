@@ -44,3 +44,7 @@ end
 function TestStringsEqual(t)
     assert:Equal(t, "expected text", "actual text")
 end
+
+function TestNoError(t)
+    assert:NoError(t, "foo bar")
+end
