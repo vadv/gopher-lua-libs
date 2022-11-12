@@ -38,5 +38,9 @@ function TestTablesNotEqual(t)
 end
 
 function TestFalse(t)
-    assert:False(true, "oh noes")
+    assert:False(t, true, "oh noes")
+end
+
+function TestStringsEqual(t)
+    assert:Equal(t, "expected text", "actual text")
 end
