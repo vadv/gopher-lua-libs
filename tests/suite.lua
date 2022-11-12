@@ -6,6 +6,8 @@ local suite = {
 }
 
 function suite.Run(t, testSuite)
+    local testCount = 0
+
     -- testSuite must be subclass of suite.Suite, so will have this method
     testSuite:SetT(t)
 
@@ -14,6 +16,7 @@ function suite.Run(t, testSuite)
     end
     for k, v in pairs(testSuite) do
         if strings.has_prefix(k, "Test") then
+            testCount = testCount + 1
             if testSuite.SetupTest then
                 testSuite:SetupTest()
             end
@@ -30,6 +33,8 @@ function suite.Run(t, testSuite)
     if testSuite.TearDownSuite then
         testSuite:TearDownSuite()
     end
+
+    return testCount
 end
 
 function suite.Suite:new(o)
