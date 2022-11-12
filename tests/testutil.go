@@ -263,9 +263,9 @@ func RunLuaTestFile(t *testing.T, preload PreloadFunc, filename string) (numTest
 
 	registerTType(L)
 	PreloadSuite(L)
-	//PreloadAssertions(L)
-	//PreloadAssert(L)
-	//PreloadRequire(L)
+	PreloadAssertions(L)
+	PreloadAssert(L)
+	PreloadRequire(L)
 	require.NotNil(t, preload)
 	preload(L)
 	L.SetGlobal("t", tLua(L, t))
