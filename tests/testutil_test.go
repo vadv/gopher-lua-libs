@@ -32,9 +32,3 @@ func TestAssertions(t *testing.T) {
 		assert.NotZero(t, RunLuaTestFile(t, preload, "testdata/test_assertions_failing.lua"))
 	})
 }
-
-func TestFail(t *testing.T) {
-	assert.Equal(t, "foo", "bar", "yikes", "bob")
-	assert.True(t, false, "another message")
-	assert.NotEqual(t, 123, 123)
-}

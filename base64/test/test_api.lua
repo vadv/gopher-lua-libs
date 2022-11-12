@@ -32,7 +32,7 @@ function TestEncodeToString(t)
     for _, tt in ipairs(tests) do
         t:Run(tt.name, function(t)
             local got = tt.encoder:encode_to_string(tt.input)
-            assert:Equal(t, tt.expected , got)
+            assert:Equal(t, tt.expected, got)
         end)
     end
 end
@@ -68,11 +68,11 @@ function TestDecodeString(t)
         t:Run(tt.name, function(t)
             local got, err = tt.encoder:decode_string(tt.input)
             if tt.want_err then
-                assert(err, "expected err")
+                assert:Error(t, err)
                 return
             end
-            assert(not err, err)
-            assert(tt.expected == got, string.format("'%s' ~= '%s'", tt.expected, got))
+            assert:NoError(t, err)
+            assert:Equal(t, tt.expected, got)
         end)
     end
 end
@@ -104,8 +104,8 @@ function TestEncodeDecode(t)
         t:Run(tt.name, function(t)
             local encoded = tt.encoder:encode_to_string(tt.input)
             local decoded, err = tt.encoder:decode_string(encoded)
-            assert(not err, err)
-            assert(tt.input == decoded, string.format("'%s' ~= '%s'", tt.input, decoded))
+            assert:NoError(t, err)
+            assert:Equal(t, tt.input, decoded)
         end)
     end
 end
@@ -116,14 +116,14 @@ function TestEncoder(t)
     encoder:write("foo", "bar", "baz")
     encoder:close()
     local s = writer:string()
-    assert(s == "Zm9vYmFyYmF6", string.format("'%s' ~= '%s'", s, "Zm9vYmFyYmF6"))
+    assert:Equal(t, "Zm9vYmFyYmF6", s)
 end
 
 function TestDecoder(t)
     local reader = strings.new_reader("Zm9vYmFyYmF6")
     local decoder = base64.new_decoder(base64.StdEncoding, reader)
     local s = decoder:read("*a")
-    assert(s == "foobarbaz", string.format("'%s' ~= '%s'", s, "foobarbaz"))
+    assert:Equal(t, "foobarbaz", s)
 end
 
 function TestDecoderReadNum(t)
@@ -131,11 +131,11 @@ function TestDecoderReadNum(t)
     local reader = strings.new_reader(encoded)
     local decoder = base64.new_decoder(base64.StdEncoding, reader)
     local n = decoder:read("*n")
-    assert(n == 123, string.format("%d ~= %d", n, 123))
+    assert:Equal(t, 123, n)
     n = decoder:read("*n")
-    assert(n == 456, string.format("%d ~= %d", n, 456))
+    assert:Equal(t, 456, n)
     n = decoder:read("*n")
-    assert(n == 789, string.format("%d ~= %d", n, 789))
+    assert:Equal(t, 789, n)
 end
 
 function TestDecoderReadCount(t)
@@ -143,7 +143,7 @@ function TestDecoderReadCount(t)
     local reader = strings.new_reader(encoded)
     local decoder = base64.new_decoder(base64.StdEncoding, reader)
     local s = decoder:read(3)
-    assert(s == "123", string.format("'%s' ~= '%s'", s, "123"))
+    assert:Equal(t, "123", s)
 end
 
 function TestDecoderReadline(t)
@@ -151,7 +151,7 @@ function TestDecoderReadline(t)
     local reader = strings.new_reader(encoded)
     local decoder = base64.new_decoder(base64.StdEncoding, reader)
     local s = decoder:read("*l")
-    assert(s == "foo", string.format("'%s' ~= '%s'", s, "foo"))
+    assert:Equal(t, "foo", s)
     s = decoder:read("*l")
-    assert(s == "bar", string.format("'%s' ~= '%s'", s, "bar"))
+    assert:Equal(t, "bar", s)
 end

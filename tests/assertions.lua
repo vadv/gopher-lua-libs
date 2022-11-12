@@ -155,4 +155,25 @@ Messages: %s
 ]], err, fmt), ...)
 end
 
+function assertions:Error(t, err, ...)
+    if err then
+        return true
+    end
+    return self:Fail(t, string.format([[
+
+Error:      	An error is expected but got nil.
+Messages: ]], err), ...)
+end
+
+function assertions:Errorf(t, err, fmt, ...)
+    if err then
+        return true
+    end
+    return self:Fail(t, string.format([[
+
+Error:      	An error is expected but got nil.
+Messages: %s
+]], err, fmt), ...)
+end
+
 return assertions
