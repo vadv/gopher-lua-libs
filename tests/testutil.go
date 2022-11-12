@@ -56,7 +56,7 @@ func tRun(L *lua.LState) int {
 func tLog(L *lua.LState) int {
 	t := checkT(L, 1)
 	where := L.Where(1)
-	args := []interface{}{where}
+	args := []interface{}{"\n", where}
 	top := L.GetTop()
 	for i := 2; i <= top; i++ {
 		args = append(args, L.Get(i))
