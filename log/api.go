@@ -52,6 +52,9 @@ func New(L *lua.LState) int {
 }
 
 func setOutput(L *lua.LState, logger *luaLogger, output string) error {
+	_ = logger.closeFunc()
+	logger.closeFunc = func() error { return nil }
+
 	switch output {
 	case "-", "STDOUT":
 		logger.SetOutput(os.Stdout)
@@ -143,13 +146,14 @@ func Printf(L *lua.LState) int {
 }
 
 // SetFlags logger_ud:set_flags(config={})
-// config = {
-//   date = false, -- print date
-//   time = false, -- print time
-//   microseconds = false, -- print microseconds
-//   utc = false, -- use utc
-//   longfile = false -- print lua code line
-// }
+//
+//	config = {
+//	  date = false, -- print date
+//	  time = false, -- print time
+//	  microseconds = false, -- print microseconds
+//	  utc = false, -- use utc
+//	  longfile = false -- print lua code line
+//	}
 func SetFlags(L *lua.LState) int {
 	logger := checkLogger(L, 1)
 	luaTable := L.CheckTable(2)
