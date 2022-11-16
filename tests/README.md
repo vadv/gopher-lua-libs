@@ -93,3 +93,42 @@ function TestSuite(t)
     assert(MySuite.tearDownSuiteCount == 1, tostring(MySuite.tearDownSuiteCount))
 end
 ```
+
+## Example use of assert and require
+
+Similar to testify [assert](https://pkg.go.dev/github.com/stretchr/testify/assert) and 
+[require](https://pkg.go.dev/github.com/stretchr/testify/require), Lua's `assert` and `require` can be enhanced to
+add structured assertions.
+
+```lua
+local require = require 'require'
+local assert = require 'assert'
+local inspect = require 'inspect'
+
+function TestAssertions(t)
+    local s1 = "foo"
+    local s2 = "foo"
+    assert:Equal(t, s1, s2)
+    assert:Equalf(t, s1, s2, "I really didn't expect them to be equal %d", 123)
+    
+    local o1 = {
+        foo = "bar",
+    }
+    local o2 = {
+        foo = "bar",
+    }
+    assert:Equal(t, inspect(o1), inspect(o2))
+    assert:NotEqual(t, 123, 456, [[wow - they're equal?]])
+    
+    local err = nil
+    assert:NoError(t, err, "I got an error?!?")
+
+    assert:False(t, false, "expected false")
+    assert:Falsef(t, false, "expected false for %s", "foobar")
+    
+    assert:True(t, true, "I wanted the truth")
+    
+    err = 'foo bar'
+    assert:Error(t, err)
+end
+```
