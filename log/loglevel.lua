@@ -10,10 +10,21 @@ setmetatable(loglevel, {
     __index = log
 })
 
--- Attach the logs to the loglevel object and set default to INFO
-for level, level_value in pairs(loglevel.levels) do
+-- Gets the output for the given level as compared to the loglevel.level
+local function outputForLevel(level)
+    level = string.upper(level)
+    local level_value = loglevel.levels[level]
+    if not level_value then
+        error('Illegal level ' + level)
+    end
     local current_level_value = loglevel.levels[loglevel.level]
     local output = (current_level_value <= level_value) and loglevel.defaultOutput or '/dev/null'
+    return output
+end
+
+-- Attach the logs to the loglevel object and set default to INFO
+for level in pairs(loglevel.levels) do
+    local output = outputForLevel(level)
     loglevel[level] = log.new(output)
     loglevel[level]:set_prefix(string.format('[%s] ', level))
     loglevel[level]:set_flags { date = true }
@@ -32,8 +43,8 @@ function loglevel.SetLevel(new_level)
         error('Illegal level ' + new_level)
     end
     loglevel.level = new_level
-    for level, level_value in pairs(loglevel.levels) do
-        local output = (new_level_value <= level_value) and loglevel.defaultOutput or '/dev/null'
+    for level in pairs(loglevel.levels) do
+        local output = outputForLevel(level)
         loglevel[level]:set_output(output)
     end
 end
