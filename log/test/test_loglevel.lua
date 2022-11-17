@@ -2,6 +2,7 @@ local log = require 'loglevel'
 local suite = require 'suite'
 local filepath = require 'filepath'
 local ioutil = require 'ioutil'
+local assert = require 'assert'
 
 local LogLevelSuite = suite.Suite:new {
     stderr = io.stderr,
@@ -68,4 +69,14 @@ function LogLevelSuite:TestBogusLogLevelHasError()
     local ok, err = pcall(log.SetLevel, 'DJFDJFDJFJF')
     assert(not ok)
     assert(err)
+end
+
+function LogLevelSuite:TestLogNew()
+    -- Test that the metadata mechanism works - i.e. that the loglevel object returned can still call log methods.
+    local l = log.new('abc')
+    l:set_output(self.output)
+    l:print('def')
+    local got, err = self:getOutput()
+    assert:NoError(self:T(), err)
+    assert:Equal(self:T(), 'def\n', got)
 end
