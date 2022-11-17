@@ -22,7 +22,7 @@ local function outputForLevel(level)
     return output
 end
 
--- Attach the logs to the loglevel object and set default to INFO
+-- Attach the logs to the loglevel object
 for level in pairs(loglevel.levels) do
     local output = outputForLevel(level)
     loglevel[level] = log.new(output)
