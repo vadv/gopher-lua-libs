@@ -1,45 +1,45 @@
 local log = require 'log'
 
-local log_levels = {
+local loglevel = {
     levels = { DEBUG = 0, INFO = 1, WARN = 2, ERROR = 3 }
 }
-log_levels.defaultOutput = 'STDERR'
-setmetatable(log_levels, {
+loglevel.defaultOutput = 'STDERR'
+setmetatable(loglevel, {
     __index = log
 })
 
-for level in pairs(log_levels.levels) do
-    log_levels[level] = log.new('STDERR')
-    log_levels[level]:set_prefix(string.format('[%s] ', level))
-    log_levels[level]:set_flags { date = true }
+for level in pairs(loglevel.levels) do
+    loglevel[level] = log.new('STDERR')
+    loglevel[level]:set_prefix(string.format('[%s] ', level))
+    loglevel[level]:set_flags { date = true }
 end
 
-function log_levels.Level()
-    return log_levels.level
+function loglevel.Level()
+    return loglevel.level
 end
 
-function log_levels.SetLevel(level)
+function loglevel.SetLevel(level)
     level = string.upper(level)
-    local level_value = log_levels.levels[level]
+    local level_value = loglevel.levels[level]
     if not level_value then
         error('Illegal level ' + level)
     end
-    log_levels.level = level
-    for k, v in pairs(log_levels.levels) do
+    loglevel.level = level
+    for k, v in pairs(loglevel.levels) do
         if level_value <= v then
-            log_levels[k]:set_output(log_levels.defaultOutput)
+            loglevel[k]:set_output(loglevel.defaultOutput)
         else
-            log_levels[k]:set_output('/dev/null')
+            loglevel[k]:set_output('/dev/null')
         end
     end
 end
 
-function log_levels.DefaultOutput()
-    return log_levels.defaultOutput
+function loglevel.DefaultOutput()
+    return loglevel.defaultOutput
 end
 
-function log_levels.SetDefaultOutput(output)
-    log_levels.defaultOutput = output
+function loglevel.SetDefaultOutput(output)
+    loglevel.defaultOutput = output
 end
 
-return log_levels
+return loglevel
