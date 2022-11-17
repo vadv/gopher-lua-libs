@@ -48,3 +48,43 @@ end
 function TestNoError(t)
     assert:NoError(t, "foo bar")
 end
+
+function TestNil(t)
+    assert:Nil(t, "foo bar baz")
+end
+
+function TestNotNil(t)
+    assert:NotNil(t, nil)
+end
+
+function TestGreater(t)
+    assert:Greater(t, 4, 5)
+end
+
+function TestGreaterf(t)
+    assert:Greaterf(t, 4, 5, "foo %s", "bar")
+end
+
+function TestGreaterOrEqual(t)
+    assert:GreaterOrEqual(t, 4, 5)
+end
+
+function TestGreaterOrEqualf(t)
+    assert:GreaterOrEqualf(t, 4, 5, "foo %s", "bar")
+end
+
+function TestLess(t)
+    assert:Less(t, 2, 1)
+end
+
+function TestLessf(t)
+    assert:Lessf(t, 2, 1, "abc %s", "def")
+end
+
+function TestLessOrEqual(t)
+    assert:LessOrEqual(t, 2, 1)
+end
+
+function TestLessOrEqualf(t)
+    assert:LessOrEqualf(t, 2, 1, "abc %s", "def")
+end

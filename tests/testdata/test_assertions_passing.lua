@@ -63,3 +63,45 @@ function TestObjectsInspectEqual(t)
     }
     require:Equal(t, inspect(t1), inspect(t2))
 end
+
+function TestNil(t)
+    assert:Nil(t, nil)
+end
+
+function TestNotNil(t)
+    assert:NotNil(t, 123)
+    assert:NotNil(t, "")
+end
+
+
+function TestGreater(t)
+    assert:Greater(t, 4, 1)
+end
+
+function TestGreaterf(t)
+    assert:Greaterf(t, 4, 1, "foo %s", "bar")
+end
+
+function TestGreaterOrEqual(t)
+    assert:GreaterOrEqual(t, 4, 4)
+end
+
+function TestGreaterOrEqualf(t)
+    assert:GreaterOrEqualf(t, 4, 4, "foo %s", "bar")
+end
+
+function TestLess(t)
+    assert:Less(t, 2, 3)
+end
+
+function TestLessf(t)
+    assert:Less(t, 2, 3, "abc %s", "def")
+end
+
+function TestLessOrEqual(t)
+    assert:LessOrEqual(t, 2, 2)
+end
+
+function TestLessOrEqualf(t)
+    assert:LessOrEqualf(t, 2, 2, "abc %s", "def")
+end
