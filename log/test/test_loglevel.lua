@@ -11,13 +11,13 @@ local LogLevelSuite = suite.Suite:new {
 function LogLevelSuite:SetupTest()
     self.temp_dir = self:T():TempDir()
     self.output = filepath.join(self.temp_dir, 'test.output')
-    log.SetDefaultOutput(self.output)
-    log.SetLevel('INFO')
+    log.set_default_output(self.output)
+    log.set_level('INFO')
 end
 
 function LogLevelSuite:TearDownTest()
-    log.SetDefaultOutput('STDERR')
-    log.SetLevel('INFO')
+    log.set_default_output('STDERR')
+    log.set_level('INFO')
 end
 
 function LogLevelSuite:getOutput()
@@ -43,7 +43,7 @@ function LogLevelSuite:TestDebugNoContent()
 end
 
 function LogLevelSuite:TestDebugWithDebugSetHasContent()
-    log.SetLevel('DEBUG')
+    log.set_level('DEBUG')
     log.DEBUG:print('foobar')
     local got, err = self:getOutput()
     assert(not err, err)
@@ -51,7 +51,7 @@ function LogLevelSuite:TestDebugWithDebugSetHasContent()
 end
 
 function LogLevelSuite:TestInfoHasContent()
-    log.SetLevel('INFO')
+    log.set_level('INFO')
     log.INFO:print('foobar')
     local got, err = self:getOutput()
     assert(not err, err)
@@ -66,7 +66,7 @@ function LogLevelSuite:TestErrorHasContent()
 end
 
 function LogLevelSuite:TestBogusLogLevelHasError()
-    local ok, err = pcall(log.SetLevel, 'DJFDJFDJFJF')
+    local ok, err = pcall(log.set_level, 'DJFDJFDJFJF')
     assert(not ok)
     assert(err)
 end
