@@ -78,3 +78,31 @@ info:set_output("STDOUT") -- to STDOUT
 info:set_output("-") -- to STDOUT
 info:set_output("STDERR") -- to STDERR
 ```
+
+# loglevel - usage similar to slf4j
+
+```lua
+local log = require 'loglevel'
+log.set_default_output('some-file-on-disk') -- defaults to "STDOUT"
+
+-- Logs go to /dev/null
+log.DEBUG:print('foobar')
+log.DEBUG:printf('foo bar %s', 'baz')
+
+-- Logs go to some-file-on-disk (the default_output setting)
+log.set_level('DEBUG') -- defaults to "INFO"
+log.DEBUG:print('foobar')
+log.DEBUG:printf('foo bar %s', 'baz')
+
+-- Other loggers
+log.DEBUG:print('debug')
+log.INFO:print('info')
+log.WARN:print('warn')
+log.ERROR:print('error')
+
+-- Log levels
+log.set_level('DEBUG')
+log.set_level('INFO')
+log.set_level('WARN')
+log.set_level('ERROR')
+```
