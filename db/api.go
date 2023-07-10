@@ -128,7 +128,7 @@ func Query(L *lua.LState) int {
 		L.Push(lua.LString(err.Error()))
 		return 2
 	}
-	defer tx.Commit()
+	defer tx.Rollback()
 	sqlRows, err := tx.Query(query)
 	if err != nil {
 		L.Push(lua.LNil)
@@ -142,6 +142,7 @@ func Query(L *lua.LState) int {
 		L.Push(lua.LString(err.Error()))
 		return 2
 	}
+	tx.Commit()
 	result := L.NewTable()
 	result.RawSetString(`rows`, rows)
 	result.RawSetString(`columns`, columns)
@@ -161,7 +162,7 @@ func Exec(L *lua.LState) int {
 		L.Push(lua.LString(err.Error()))
 		return 2
 	}
-	defer tx.Commit()
+	defer tx.Rollback()
 	sqlResult, err := tx.Exec(query)
 	if err != nil {
 		L.Push(lua.LNil)
@@ -175,6 +176,7 @@ func Exec(L *lua.LState) int {
 	if aff, err := sqlResult.RowsAffected(); err == nil {
 		result.RawSetString(`rows_affected`, lua.LNumber(aff))
 	}
+	tx.Commit()
 	L.Push(result)
 	return 1
 }
