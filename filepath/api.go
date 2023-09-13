@@ -91,13 +91,6 @@ func IsAbs(L *lua.LState) int {
 	return 1
 }
 
-// IsLocal reports whether path, using lexical analysis only, is local
-func IsLocal(L *lua.LState) int {
-	path := L.CheckString(1)
-	L.Push(lua.LBool(filepath.IsLocal(path)))
-	return 1
-}
-
 // Join lua fileapth.join(path, ...) joins any number of path elements into a single path, adding a Separator if necessary.
 func Join(L *lua.LState) int {
 	path := L.CheckString(1)

@@ -30,7 +30,6 @@ var api = map[string]lua.LGFunction{
 	"ext":            Ext,
 	"glob":           Glob,
 	"is_abs":         IsAbs,
-	"is_local":       IsLocal,
 	"join":           Join,
 	"list_separator": ListSeparator,
 	"match":          Match,

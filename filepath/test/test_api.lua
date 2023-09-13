@@ -74,10 +74,6 @@ function Test_is_abs(t)
     end
 end
 
-function Test_is_local(t)
-    t:Skip('TODO')
-end
-
 function Test_match(t)
     tests = {
         {
