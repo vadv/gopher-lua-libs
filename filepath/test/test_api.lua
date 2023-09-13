@@ -10,6 +10,32 @@ function Test_join_and_separator(t)
     assert(path == need_path, string.format("expected %s; got %s", need_path, path))
 end
 
+function Test_join(t)
+    tests = {
+        {
+            name = "1/2/3",
+            args = { "1", "2", "3" },
+        },
+        {
+            name = "foo",
+            args = { "foo" },
+        },
+        {
+            name = "",
+            args = {},
+        },
+        {
+            name = "/a/b/c",
+            args = { "/", "a", "b", "c" },
+        },
+    }
+    for _, tt in ipairs(tests) do
+        t:Run(tt.name, function(t)
+            assert:Equal(t, tt.name, filepath.join(unpack(tt.args)))
+        end)
+    end
+end
+
 function Test_glob(t)
     local results = filepath.glob("test" .. filepath.separator() .. "*")
     assert(#results == 1, string.format("expected one glob result; got %d", #results))

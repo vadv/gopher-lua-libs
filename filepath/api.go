@@ -94,11 +94,12 @@ func IsAbs(L *lua.LState) int {
 
 // Join lua fileapth.join(path, ...) joins any number of path elements into a single path, adding a Separator if necessary.
 func Join(L *lua.LState) int {
-	path := L.CheckString(1)
-	for i := 2; i <= L.GetTop(); i++ {
-		add := L.CheckAny(i).String()
-		path = filepath.Join(path, add)
+	var elems []string
+	for i := 1; i <= L.GetTop(); i++ {
+		elem := L.CheckAny(i).String()
+		elems = append(elems, elem)
 	}
+	path := filepath.Join(elems...)
 	L.Push(lua.LString(path))
 	return 1
 }
