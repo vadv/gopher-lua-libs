@@ -1,6 +1,7 @@
 package tests
 
 import (
+	_ "embed"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	lua "github.com/yuin/gopher-lua"
@@ -10,11 +11,17 @@ import (
 	"testing"
 )
 
-// TODO(scr): move to embed once minimum supported go version is 1.16
-//go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in suite.lua -o lua_const.go -c lua_suite
-//go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in assertions.lua -o assertions_const.go -c lua_assertions
-//go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in assert.lua -o assert_const.go -c lua_assert
-//go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in require.lua -o require_const.go -c lua_require
+//go:embed suite.lua
+var lua_suite string
+
+//go:embed assertions.lua
+var lua_assertions string
+
+//go:embed assert.lua
+var lua_assert string
+
+//go:embed require.lua
+var lua_require string
 
 type PreloadFunc func(L *lua.LState)
 

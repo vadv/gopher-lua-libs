@@ -24,7 +24,7 @@ func ExampleSleep() {
 		log.Fatal(err.Error())
 	}
 	// Output:
-	// 1
+	// 1.2
 }
 
 // time.parse(value, layout)
