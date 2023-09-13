@@ -7,6 +7,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
+// Abs returns an absolute representation of path.
 func Abs(L *lua.LState) int {
 	path := L.CheckString(1)
 	ret, err := filepath.Abs(path)
