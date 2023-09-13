@@ -22,8 +22,9 @@ func UnixNano(L *lua.LState) int {
 
 // Sleep lua time.sleep(number) port of go time.Sleep(int64)
 func Sleep(L *lua.LState) int {
-	val := L.CheckNumber(1)
-	time.Sleep(time.Duration(val) * time.Second)
+	val := float64(L.CheckNumber(1))
+	sec := float64(time.Second)
+	time.Sleep(time.Duration(val * sec))
 	return 0
 }
 
