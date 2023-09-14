@@ -1,11 +1,12 @@
 package inspect
 
-// TODO(scr): move to embed once minimum supported go version is 1.16
-//go:generate go run github.com/logrusorgru/textFileToGoConst@latest -in inspect.lua -o lua_const.go -c lua_inspect
-
 import (
+	_ "embed"
 	lua "github.com/yuin/gopher-lua"
 )
+
+//go:embed inspect.lua
+var lua_inspect string
 
 // Preload adds inspect to the given Lua state's package.preload table. After it
 // has been preloaded, it can be loaded using require:
