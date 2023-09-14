@@ -19,6 +19,7 @@ function assertions:cleanseString(s)
     if s == nil then
         return s
     end
+    s = tostring(s)
     s = string.gsub(s, '\n', '\\n')
     s = string.gsub(s, '\t', '\\t')
     s = string.gsub(s, '\r', '\\r')

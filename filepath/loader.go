@@ -7,7 +7,7 @@ import (
 // Preload adds filepath to the given Lua state's package.preload table. After it
 // has been preloaded, it can be loaded using require:
 //
-//  local filepath = require("filepath")
+//	local filepath = require("filepath")
 func Preload(L *lua.LState) {
 	L.PreloadModule("filepath", Loader)
 }
@@ -21,11 +21,22 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"dir":            Dir,
+	"abs":            Abs,
 	"basename":       Basename,
+	"clean":          Clean,
+	"dir":            Dir,
+	"eval_symlinks":  EvalSymlinks,
+	"from_slash":     FromSlash,
 	"ext":            Ext,
 	"glob":           Glob,
+	"is_abs":         IsAbs,
 	"join":           Join,
-	"separator":      Separator,
 	"list_separator": ListSeparator,
+	"match":          Match,
+	"rel":            Rel,
+	"separator":      Separator,
+	"split":          Split,
+	"split_list":     SplitList,
+	"to_slash":       ToSlash,
+	"volume_name":    VolumeName,
 }
