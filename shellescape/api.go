@@ -1,7 +1,7 @@
 package shellescape
 
 import (
-	"github.com/alessio/shellescape"
+	"al.essio.dev/pkg/shellescape"
 	lua "github.com/yuin/gopher-lua"
 )
 

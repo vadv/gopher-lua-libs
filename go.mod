@@ -3,7 +3,7 @@ module github.com/vadv/gopher-lua-libs
 go 1.16
 
 require (
-	github.com/alessio/shellescape v1.4.1
+	al.essio.dev/pkg/shellescape v1.5.1
 	github.com/aws/aws-sdk-go v1.34.0
 	github.com/cbroglie/mustache v1.0.1
 	github.com/cheggaaa/pb/v3 v3.0.5
