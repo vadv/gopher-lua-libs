@@ -222,6 +222,10 @@ func New(L *lua.LState) int {
 				} else {
 					L.ArgError(1, "headers must be table")
 				}
+			case `disable_redirect`:
+				client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+					return http.ErrUseLastResponse
+				}
 			}
 		})
 	}
