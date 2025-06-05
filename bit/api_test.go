@@ -1,9 +1,10 @@
-package stats
+package bit
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/vadv/gopher-lua-libs/tests"
-	"testing"
 )
 
 func TestApi(t *testing.T) {

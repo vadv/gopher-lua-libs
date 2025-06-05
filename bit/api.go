@@ -1,5 +1,5 @@
-// Package strings implements golang package montanaflynn/stats functionality for lua.
-package stats
+// Package bit implements Go bitwise operations functionality for Lua.
+package bit
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ const (
 	rs
 )
 
-// ShiftLeft
+// Bitwise returns a Lua function used for bitwise operations.
 func Bitwise(kind op) lua.LGFunction {
 	return func(l *lua.LState) int {
 		if kind > rs {
@@ -49,6 +49,7 @@ func Bitwise(kind op) lua.LGFunction {
 	}
 }
 
+// Not implements bitwise not.
 func Not(l *lua.LState) int {
 	val, err := intToU32(l.CheckInt(1))
 	if err != nil {
@@ -59,12 +60,12 @@ func Not(l *lua.LState) int {
 	return 1
 }
 
-func prepareParams(l *lua.LState) (val, pos uint32, err error) {
-	val, err = intToU32(l.CheckInt(1))
+func prepareParams(l *lua.LState) (val1, val2 uint32, err error) {
+	val1, err = intToU32(l.CheckInt(1))
 	if err != nil {
 		return 0, 0, err
 	}
-	pos, err = intToU32(l.CheckInt(2))
+	val2, err = intToU32(l.CheckInt(2))
 	if err != nil {
 		return 0, 0, err
 	}

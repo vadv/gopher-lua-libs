@@ -1,4 +1,4 @@
-package stats
+package bit
 
 import lua "github.com/yuin/gopher-lua"
 
