@@ -23,13 +23,14 @@ const (
 func Bitwise(kind op) lua.LGFunction {
 	return func(l *lua.LState) int {
 		if kind > rs {
-			l.Push(lua.LString("invalid type of operation"))
-			return 1
+			l.RaiseError("unsupported operation type")
+			return 0
 		}
 		val1, val2, err := prepareParams(l)
 		if err != nil {
+			l.Push(lua.LNil)
 			l.Push(lua.LString(err.Error()))
-			return 1
+			return 2
 		}
 		var ret uint32
 		switch kind {
@@ -53,6 +54,7 @@ func Bitwise(kind op) lua.LGFunction {
 func Not(l *lua.LState) int {
 	val, err := intToU32(l.CheckInt(1))
 	if err != nil {
+		l.Push(lua.LNil)
 		l.Push(lua.LString(err.Error()))
 		return 1
 	}
