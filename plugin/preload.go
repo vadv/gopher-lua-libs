@@ -4,6 +4,7 @@ import (
 	"github.com/vadv/gopher-lua-libs/argparse"
 	"github.com/vadv/gopher-lua-libs/aws/cloudwatch"
 	"github.com/vadv/gopher-lua-libs/base64"
+	"github.com/vadv/gopher-lua-libs/bit"
 	"github.com/vadv/gopher-lua-libs/cert_util"
 	"github.com/vadv/gopher-lua-libs/chef"
 	"github.com/vadv/gopher-lua-libs/cmd"
@@ -74,4 +75,5 @@ func PreloadAll(L *lua.LState) {
 	xmlpath.Preload(L)
 	yaml.Preload(L)
 	zabbix.Preload(L)
+	bit.Preload(L)
 }
