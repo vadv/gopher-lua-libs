@@ -56,7 +56,7 @@ func Not(l *lua.LState) int {
 	if err != nil {
 		l.Push(lua.LNil)
 		l.Push(lua.LString(err.Error()))
-		return 1
+		return 2
 	}
 	l.Push(lua.LNumber(^val))
 	return 1
