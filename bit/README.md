@@ -1,4 +1,4 @@
-# stats [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs/bit?bit.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs/bit)
+# bit [![GoDoc](https://godoc.org/github.com/vadv/gopher-lua-libs/bit?bit.svg)](https://godoc.org/github.com/vadv/gopher-lua-libs/bit)
 
 ## Usage
 

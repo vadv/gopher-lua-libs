@@ -2,7 +2,7 @@ package bit
 
 import lua "github.com/yuin/gopher-lua"
 
-// Preload adds stats to the given Lua state's package.preload table. After it
+// Preload adds bit to the given Lua state's package.preload table. After it
 // has been preloaded, it can be loaded using require:
 //
 //	local bit = require("bit")
