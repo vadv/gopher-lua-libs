@@ -43,7 +43,7 @@ function TestOr(t)
             expected = nil,
             err = "cannot convert negative int -423 to uint32",
         },
-                {
+        {
             input1 = 123,
             input2 = 4294967296,
             expected = nil,
