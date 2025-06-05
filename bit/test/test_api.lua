@@ -1,55 +1,129 @@
-local bit = require("bit")
+local bit = require 'bit'
+local assert = require 'assert'
 
-function Test_and(t)
-    local result, err = bit.band(1, 0)
-    assert(not err, err)
-    assert(result == 0, "and get: " .. tostring(result))
-    result, err = bit.band(5, 6)
-    assert(not err, err)
-    assert(result == 4, "and get: " .. tostring(result))
+function TestAnd(t)
+    local tests = {
+        {
+            input1 = 1,
+            input2 = 0,
+            expected = 0,
+        },
+        {
+            input1 = 111,
+            input2 = 222,
+            expected = 78,
+        }
+    }
+    for _, tt in ipairs(tests) do
+        t:Run(tostring(tt.input1).." and "..tostring(tt.input2) , function(t)
+            local got = bit.band(tt.input1, tt.input2)
+            assert:Equal(t, tt.expected, got)
+        end)
+    end
 end
 
-function Test_or(t)
-    local result, err = bit.bor(1, 0)
-    assert(not err, err)
-    assert(result == 1, "or get: " .. tostring(result))
-    result, err = bit.bor(5, 6)
-    assert(not err, err)
-    assert(result == 7, "or get: " .. tostring(result))
+
+function TestOr(t)
+    local tests = {
+        {
+            input1 = 1,
+            input2 = 0,
+            expected = 1,
+        },
+        {
+            input1 = 111,
+            input2 = 222,
+            expected = 255,
+        }
+    }
+    for _, tt in ipairs(tests) do
+        t:Run(tostring(tt.input1).." or "..tostring(tt.input2), function(t)
+            local got = bit.bor(tt.input1, tt.input2)
+            assert:Equal(t, tt.expected, got)
+        end)
+    end
 end
 
-function Test_xor(t)
-    local result, err = bit.bxor(1, 0)
-    assert(not err, err)
-    assert(result == 1, "xor get: " .. tostring(result))
-    result, err = bit.bxor(5, 6)
-    assert(not err, err)
-    assert(result == 3, "xor get: " .. tostring(result))
+
+
+function TestXor(t)
+    local tests = {
+        {
+            input1 = 1,
+            input2 = 0,
+            expected = 1,
+        },
+        {
+            input1 = 111,
+            input2 = 222,
+            expected = 177,
+        }
+    }
+    for _, tt in ipairs(tests) do
+        t:Run(tostring(tt.input1).." xor "..tostring(tt.input2), function(t)
+            local got = bit.bxor(tt.input1, tt.input2)
+            assert:Equal(t, tt.expected, got)
+        end)
+    end
 end
 
-function Test_left_shift(t)
-    local result, err = bit.lshift(1, 0)
-    assert(not err, err)
-    assert(result == 1, "left_shift get: " .. tostring(result))
-    result, err = bit.lshift(0xFF, 8)
-    assert(not err, err)
-    assert(result == 65280, "left_shift get: " .. tostring(result))
+function TestLShift(t)
+    local tests = {
+        {
+            input1 = 123456,
+            input2 = 8,
+            expected = 31604736,
+        },
+        {
+            input1 = 0XFF,
+            input2 = 8,
+            expected = 65280,
+        }
+    }
+    for _, tt in ipairs(tests) do
+        t:Run(tostring(tt.input1).." << "..tostring(tt.input2), function(t)
+            local got = bit.lshift(tt.input1, tt.input2)
+            assert:Equal(t, tt.expected, got)
+        end)
+    end
 end
 
-function Test_right_shift(t)
-    local result, err = bit.rshift(42, 2)
-    assert(not err, err)
-    assert(result == 10, "right_shift get: " .. tostring(result))
-    result, err = bit.rshift(0xFF, 4)
-    assert(not err, err)
-    assert(result == 15, "right_shift get: " .. tostring(result))
+function TestRShift(t)
+    local tests = {
+        {
+            input1 = 123456,
+            input2 = 8,
+            expected = 482,
+        },
+        {
+            input1 = 0XFF,
+            input2 = 1,
+            expected = 0x7F,
+        }
+    }
+    for _, tt in ipairs(tests) do
+        t:Run(tostring(tt.input1).." >> "..tostring(tt.input2), function(t)
+            local got = bit.rshift(tt.input1, tt.input2)
+            assert:Equal(t, tt.expected, got)
+        end)
+    end
 end
 
-function Test_not(t)
-    local result, err = bit.bnot(65536)
-    assert(not err, err)
-    assert(result == 4294901759, "not get: " .. tostring(result))
-    result, err = bit.bnot(4294901759)
-    assert(not err, err)
-    assert(result == 65536, "not get: " .. tostring(result))
+function TestNot(t)
+    local tests = {
+        {
+            input = 65536,
+            expected = 4294901759,
+        },
+        {
+            input = 4294901759,
+            expected = 65536,
+        }
+    }
+    for _, tt in ipairs(tests) do
+        t:Run("not "..tostring(tt.input), function(t)
+            local got = bit.bnot(tt.input)
+            assert:Equal(t, tt.expected, got)
+        end)
+    end
 end

@@ -8,5 +8,6 @@ import (
 )
 
 func TestApi(t *testing.T) {
-	assert.NotZero(t, tests.RunLuaTestFile(t, Preload, "./test/test_api.lua"))
+	preload := tests.SeveralPreloadFuncs(Preload)
+	assert.NotZero(t, tests.RunLuaTestFile(t, preload, "./test/test_api.lua"))
 }
