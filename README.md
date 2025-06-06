@@ -50,6 +50,7 @@ go get github.com/vadv/gopher-lua-libs
 * [xmlpath](/xmlpath) [gopkg.in/xmlpath.v2](https://gopkg.in/xmlpath.v2) port
 * [yaml](/yaml) [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2) port
 * [zabbix](/zabbix) zabbix bot
+* [bit](/bit) bitwise operations
 
 
 ## Usage
