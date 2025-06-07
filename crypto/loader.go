@@ -7,7 +7,7 @@ import (
 // Preload adds crypto to the given Lua state's package.preload table. After it
 // has been preloaded, it can be loaded using require:
 //
-//  local crypto = require("crypto")
+//	local crypto = require("crypto")
 func Preload(L *lua.LState) {
 	L.PreloadModule("crypto", Loader)
 }
@@ -21,6 +21,8 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"md5":    MD5,
-	"sha256": SHA256,
+	"md5":         MD5,
+	"sha256":      SHA256,
+	"aes_encrypt": AESEncrypt,
+	"aes_decrypt": AESDecrypt,
 }
