@@ -1,11 +1,131 @@
 local crypto = require("crypto")
+local assert = require 'assert'
 
-function Test_crypto(t)
-    t:Run("md5", function(t)
-        assert(crypto.md5("1\n") == "b026324c6904b2a9cb4b88d6d61c81d1")
-    end)
+function TestMD5(t)
+    local tests = {
+        {
+            input = "1\n",
+            expected = "b026324c6904b2a9cb4b88d6d61c81d1",
+        },
+        {
+            input = "test",
+            expected = "098f6bcd4621d373cade4e832627b4f6"
+        }
+    }
+    for _, tt in ipairs(tests) do
+        t:Run("md5(" .. tostring(tt.input) .. ")", function(t)
+            local got = crypto.md5(tt.input)
+            assert:Equal(t, tt.expected, got)
+        end)
+    end
+end
 
-    t:Run("sha256", function(t)
-        assert(crypto.sha256("1\n") == "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865")
-    end)
+function TestSha256(t)
+    local tests = {
+        {
+            input = "1\n",
+            expected = "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+        },
+        {
+            input = "test",
+            expected = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+        }
+    }
+    for _, tt in ipairs(tests) do
+        t:Run("sha256(" .. tostring(tt.input) .. ")", function(t)
+            local got = crypto.sha256(tt.input)
+            assert:Equal(t, tt.expected, got)
+        end)
+    end
+end
+
+function TestAESEncrypt(t)
+    local tests = {
+        {
+            data = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            mode = {
+                text = "GCM",
+                value = 1,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "b6b86d581a991a652158bd10",
+            expected = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
+            err = nil,
+        },
+        {
+            data = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            mode = {
+                text = "CBC",
+                value = 2,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "068bb92e032884ba8b260fa7d3a80005",
+            expected = "dfba6f71cce4d4b76be301b577d9f095",
+            err = nil,
+        },
+        {
+            data = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            mode = {
+                text = "CRT",
+                value = 3,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "e3057fc2bf103a09a1b2c3d4e5f60718",
+            expected = "138434a80bd7dcd9ee8adc",
+            err = nil,
+        },
+    }
+    for _, tt in ipairs(tests) do
+        t:Run("aes_encrypt(" .. tostring(tt.mode.text) .. ")", function(t)
+            local got, err = crypto.aes_encrypt(tt.mode.value, tt.key, tt.init, tt.data)
+            assert:Equal(t, tt.expected, got)
+            assert:Equal(t, tt.err, err)
+        end)
+    end
+end
+
+
+function TestAESDecrypt(t)
+    local tests = {
+        {
+            data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
+            mode = {
+                text = "GCM",
+                value = 1,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "b6b86d581a991a652158bd10",
+            expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            err = nil,
+        },
+        {
+            data = "dfba6f71cce4d4b76be301b577d9f095",
+            mode = {
+                text = "CBC",
+                value = 2,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "068bb92e032884ba8b260fa7d3a80005",
+            expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            err = nil,
+        },
+        {
+            data = "138434a80bd7dcd9ee8adc",
+            mode = {
+                text = "CRT",
+                value = 3,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "e3057fc2bf103a09a1b2c3d4e5f60718",
+            expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            err = nil,
+        },
+    }
+    for _, tt in ipairs(tests) do
+        t:Run("aes_decrypt(" .. tostring(tt.mode.text) .. ")", function(t)
+            local got, err = crypto.aes_decrypt(tt.mode.value, tt.key, tt.init, tt.data)
+            assert:Equal(t, tt.expected, got)
+            assert:Equal(t, tt.err, err)
+        end)
+    end
 end
