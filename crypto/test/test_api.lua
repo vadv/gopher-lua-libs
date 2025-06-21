@@ -42,6 +42,28 @@ end
 function TestAESEncrypt(t)
     local tests = {
         {
+            data = "48656c6c6f207w76f726c64", -- "Hello world" in hex
+            mode = {
+                text = "GCM",
+                value = 1,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "b6b86d581a991a652158bd10",
+            expected = nil,
+            err = "failed to decode params: failed to decode data: encoding/hex: invalid byte: U+0077 'w'",
+        },
+        {
+            data = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            mode = {
+                text = "GCM",
+                value = 1,
+            },
+            key = "86e15cbc1cbf51d8f2e51d4b63a2144",
+            init = "b6b86d581a991a652158bd10",
+            expected = nil,
+            err = "failed to decode params: failed to decode key: encoding/hex: odd length hex string",
+        },
+        {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
             mode = {
                 text = "GCM",
@@ -74,7 +96,7 @@ function TestAESEncrypt(t)
             expected = "dfba6f71cce4d4b76be301b577d9f095",
             err = nil,
         },
-                {
+        {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
             mode = {
                 text = "CBC",
@@ -96,7 +118,7 @@ function TestAESEncrypt(t)
             expected = "138434a80bd7dcd9ee8adc",
             err = nil,
         },
-                {
+        {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
             mode = {
                 text = "CRT",
@@ -119,6 +141,28 @@ end
 
 function TestAESDecrypt(t)
     local tests = {
+        {
+            data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3efwb3e",
+            mode = {
+                text = "GCM",
+                value = 1,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "b6b86d581a991a652158bd10",
+            expected = nil,
+            err = "failed to decode params: failed to decode data: encoding/hex: invalid byte: U+0077 'w'",
+        },
+        {
+            data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
+            mode = {
+                text = "GCM",
+                value = 1,
+            },
+            key = "86e15cbc1cbf51d8f2e51d4b63a2144",
+            init = "b6b86d581a991a652158bd10",
+            expected = nil,
+            err = "failed to decode params: failed to decode key: encoding/hex: odd length hex string",
+        },
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
             mode = {
