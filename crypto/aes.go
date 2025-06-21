@@ -67,15 +67,27 @@ func encryptAES(m mode, key, init, plaintext []byte) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
+		l := len(init)
+		if l != aesGCM.NonceSize() {
+			return nil, fmt.Errorf("incorrect GCM nonce size: %d, expected: %d", len(init), aesGCM.NonceSize())
+		}
 		ciphertext := aesGCM.Seal(nil, init, plaintext, nil)
 		return ciphertext, nil
 	case CBC:
+		l := len(init)
+		if l != block.BlockSize() {
+			return nil, fmt.Errorf("invalid IV size: %d, expected: %d", l, block.BlockSize())
+		}
 		padded := pad(plaintext, aes.BlockSize)
 		mode := cipher.NewCBCEncrypter(block, init)
 		ciphertext := make([]byte, len(padded))
 		mode.CryptBlocks(ciphertext, padded)
 		return ciphertext, nil
 	case CTR:
+		l := len(init)
+		if l != block.BlockSize() {
+			return nil, fmt.Errorf("invalid IV size: %d, expected: %d", l, block.BlockSize())
+		}
 		stream := cipher.NewCTR(block, init)
 		ciphertext := make([]byte, len(plaintext))
 		stream.XORKeyStream(ciphertext, plaintext)
@@ -97,6 +109,10 @@ func decryptAES(m mode, key, init, ciphertext []byte) ([]byte, error) {
 		aesGCM, err := cipher.NewGCM(block)
 		if err != nil {
 			return nil, err
+		}
+		l := len(init)
+		if l != aesGCM.NonceSize() {
+			return nil, fmt.Errorf("incorrect GCM nonce size: %d, expected: %d", len(init), aesGCM.NonceSize())
 		}
 		plaintext, err := aesGCM.Open(nil, init, ciphertext, nil)
 		if err != nil {

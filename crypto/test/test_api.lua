@@ -55,6 +55,17 @@ function TestAESEncrypt(t)
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
             mode = {
+                text = "GCM",
+                value = 1,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "b6b86d581a991a652158bd010211",
+            expected = nil,
+            err = "failed to encrypt: incorrect GCM nonce size: 14, expected: 12",
+        },
+        {
+            data = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            mode = {
                 text = "CBC",
                 value = 2,
             },
@@ -62,6 +73,17 @@ function TestAESEncrypt(t)
             init = "068bb92e032884ba8b260fa7d3a80005",
             expected = "dfba6f71cce4d4b76be301b577d9f095",
             err = nil,
+        },
+                {
+            data = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            mode = {
+                text = "CBC",
+                value = 2,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "068bb92e03288884ba8b260fa7d3a80005",
+            expected = nil,
+            err = "failed to encrypt: invalid IV size: 17, expected: 16",
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
@@ -74,16 +96,26 @@ function TestAESEncrypt(t)
             expected = "138434a80bd7dcd9ee8adc",
             err = nil,
         },
+                {
+            data = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            mode = {
+                text = "CRT",
+                value = 3,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "e3057fc2b9f103a909a1b2c3d4e5f60718",
+            expected = nil,
+            err = "failed to encrypt: invalid IV size: 17, expected: 16",
+        },
     }
     for _, tt in ipairs(tests) do
-        t:Run("aes_encrypt(" .. tostring(tt.mode.text) .. ")", function(t)
+        t:Run("aes_encrypt in " .. tostring(tt.mode.text) .. " mode", function(t)
             local got, err = crypto.aes_encrypt(tt.mode.value, tt.key, tt.init, tt.data)
             assert:Equal(t, tt.expected, got)
             assert:Equal(t, tt.err, err)
         end)
     end
 end
-
 
 function TestAESDecrypt(t)
     local tests = {
@@ -97,6 +129,17 @@ function TestAESDecrypt(t)
             init = "b6b86d581a991a652158bd10",
             expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
             err = nil,
+        },
+        {
+            data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
+            mode = {
+                text = "GCM",
+                value = 1,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "b6b86d581a991a652158bd010211",
+            expected = nil,
+            err = "failed to decrypt: incorrect GCM nonce size: 14, expected: 12",
         },
         {
             data = "dfba6f71cce4d4b76be301b577d9f095",
@@ -122,7 +165,7 @@ function TestAESDecrypt(t)
         },
     }
     for _, tt in ipairs(tests) do
-        t:Run("aes_decrypt(" .. tostring(tt.mode.text) .. ")", function(t)
+        t:Run("aes_decrypt in " .. tostring(tt.mode.text) .. " mode", function(t)
             local got, err = crypto.aes_decrypt(tt.mode.value, tt.key, tt.init, tt.data)
             assert:Equal(t, tt.expected, got)
             assert:Equal(t, tt.err, err)
