@@ -88,6 +88,17 @@ function TestAESEncrypt(t)
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
             mode = {
+                text = "GCM",
+                value = 1,
+            },
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "b6b86d581a991a652158bd010211",
+            expected = nil,
+            err = "failed to encrypt: incorrect GCM nonce size: 14, expected: 12",
+        },
+        {
+            data = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            mode = {
                 text = "CBC",
                 value = 2,
             },
