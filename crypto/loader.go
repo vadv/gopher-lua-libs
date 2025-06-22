@@ -1,8 +1,6 @@
 package crypto
 
-import (
-	lua "github.com/yuin/gopher-lua"
-)
+import lua "github.com/yuin/gopher-lua"
 
 // Preload adds crypto to the given Lua state's package.preload table. After it
 // has been preloaded, it can be loaded using require:
