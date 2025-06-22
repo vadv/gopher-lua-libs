@@ -6,7 +6,7 @@
 - `aes_encrypt(string, string, string, string)` - return AES encrypted hex-encoded ciphertext
 - `aes_decrypt(string, string, string, string)` - return AES decrypted hex-encoded plain text
 
-AES support 3 modes: GCM, CBC, and CTR - first parameter is mode, second is key, third is initialization vector or nonce - depending on the mode, and forth is plain text or ciphertext.
+AES support 3 modes: GCM, CBC, and CTR - first parameter is mode, second is hex-encoded key, third is hex-encoded initialization vector or nonce - depending on the mode, and forth is hex-encoded plain text or ciphertext.
 
 ## Examples
 

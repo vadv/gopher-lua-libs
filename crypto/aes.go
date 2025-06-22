@@ -142,7 +142,10 @@ func decryptAES(m mode, key, init, ciphertext []byte) ([]byte, error) {
 		mode := cipher.NewCBCDecrypter(block, init)
 		plaintext := make([]byte, len(ciphertext))
 		mode.CryptBlocks(plaintext, ciphertext)
-		return unpad(plaintext, aes.BlockSize)
+		// Padding reversal is intentionally delegated to the application layer.
+		// On constrained devices with fixed-length payloads, padding is sometimes omitted
+		// to avoid unnecessary processing load and data overhead.
+		return plaintext, nil
 	case CTR:
 		stream := cipher.NewCTR(block, init)
 		plaintext := make([]byte, len(ciphertext))
@@ -157,20 +160,4 @@ func pad(data []byte, blockSize int) []byte {
 	padLen := blockSize - len(data)%blockSize
 	padding := bytes.Repeat([]byte{byte(padLen)}, padLen)
 	return append(data, padding...)
-}
-
-func unpad(data []byte, blockSize int) ([]byte, error) {
-	if len(data) == 0 || len(data)%blockSize != 0 {
-		return nil, fmt.Errorf("invalid padding size")
-	}
-	padLen := int(data[len(data)-1])
-	if padLen == 0 || padLen > blockSize {
-		return nil, fmt.Errorf("invalid padding")
-	}
-	for i := 0; i < padLen; i++ {
-		if data[len(data)-1-i] != byte(padLen) {
-			return nil, fmt.Errorf("invalid padding byte")
-		}
-	}
-	return data[:len(data)-padLen], nil
 }

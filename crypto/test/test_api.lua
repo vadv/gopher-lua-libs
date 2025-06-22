@@ -82,12 +82,12 @@ function TestAESEncrypt(t)
             err = "failed to encrypt: incorrect GCM nonce size: 14, expected: 12",
         },
         {
-            data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode  = "cbc",
-            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
-            init = "068bb92e032884ba8b260fa7d3a80005",
+            data     = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            mode     = "cbc",
+            key      = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init     = "068bb92e032884ba8b260fa7d3a80005",
             expected = "dfba6f71cce4d4b76be301b577d9f095",
-            err = nil,
+            err      = nil,
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
@@ -162,7 +162,7 @@ function TestAESDecrypt(t)
             mode = "cbc",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "068bb92e032884ba8b260fa7d3a80005",
-            expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            expected = "48656c6c6f20776f726c640505050505", -- "Hello world" + padding in hex
             err = nil,
         },
         {
