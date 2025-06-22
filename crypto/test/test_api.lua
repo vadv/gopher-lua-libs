@@ -43,10 +43,7 @@ function TestAESEncrypt(t)
     local tests = {
         {
             data = "48656c6c6f207w76f726c64", -- "Hello world" in hex
-            mode = {
-                text = "GCM",
-                value = 1,
-            },
+            mode = "GCM",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -54,10 +51,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = {
-                text = "GCM",
-                value = 1,
-            },
+            mode = "GCM",
             key = "86e15cbc1cbf51d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -65,10 +59,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = {
-                text = "GCM",
-                value = 1,
-            },
+            mode = "GCM",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
@@ -76,10 +67,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = {
-                text = "GCM",
-                value = 1,
-            },
+            mode = "GCM",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd010211",
             expected = nil,
@@ -87,10 +75,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = {
-                text = "GCM",
-                value = 1,
-            },
+            mode = "GCM",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd010211",
             expected = nil,
@@ -98,10 +83,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = {
-                text = "CBC",
-                value = 2,
-            },
+            mode  = "cbc",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "068bb92e032884ba8b260fa7d3a80005",
             expected = "dfba6f71cce4d4b76be301b577d9f095",
@@ -109,10 +91,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = {
-                text = "CBC",
-                value = 2,
-            },
+            mode = "CBC",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "068bb92e03288884ba8b260fa7d3a80005",
             expected = nil,
@@ -120,10 +99,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = {
-                text = "CRT",
-                value = 3,
-            },
+            mode = "CTR",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "e3057fc2bf103a09a1b2c3d4e5f60718",
             expected = "138434a80bd7dcd9ee8adc",
@@ -131,10 +107,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = {
-                text = "CRT",
-                value = 3,
-            },
+            mode = "CTR",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "e3057fc2b9f103a909a1b2c3d4e5f60718",
             expected = nil,
@@ -142,8 +115,8 @@ function TestAESEncrypt(t)
         },
     }
     for _, tt in ipairs(tests) do
-        t:Run("aes_encrypt in " .. tostring(tt.mode.text) .. " mode", function(t)
-            local got, err = crypto.aes_encrypt(tt.mode.value, tt.key, tt.init, tt.data)
+        t:Run("aes_encrypt in " .. tostring(tt.mode) .. " mode", function(t)
+            local got, err = crypto.aes_encrypt(tt.mode, tt.key, tt.init, tt.data)
             assert:Equal(t, tt.expected, got)
             assert:Equal(t, tt.err, err)
         end)
@@ -154,10 +127,7 @@ function TestAESDecrypt(t)
     local tests = {
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3efwb3e",
-            mode = {
-                text = "GCM",
-                value = 1,
-            },
+            mode = "GCM",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -165,10 +135,7 @@ function TestAESDecrypt(t)
         },
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
-            mode = {
-                text = "GCM",
-                value = 1,
-            },
+            mode = "GCM",
             key = "86e15cbc1cbf51d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -176,10 +143,7 @@ function TestAESDecrypt(t)
         },
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
-            mode = {
-                text = "GCM",
-                value = 1,
-            },
+            mode = "GCM",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
@@ -187,10 +151,7 @@ function TestAESDecrypt(t)
         },
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
-            mode = {
-                text = "GCM",
-                value = 1,
-            },
+            mode = "GCM",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd010211",
             expected = nil,
@@ -198,10 +159,7 @@ function TestAESDecrypt(t)
         },
         {
             data = "dfba6f71cce4d4b76be301b577d9f095",
-            mode = {
-                text = "CBC",
-                value = 2,
-            },
+            mode = "cbc",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "068bb92e032884ba8b260fa7d3a80005",
             expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
@@ -209,10 +167,7 @@ function TestAESDecrypt(t)
         },
         {
             data = "138434a80bd7dcd9ee8adc",
-            mode = {
-                text = "CRT",
-                value = 3,
-            },
+            mode = "CTR",
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "e3057fc2bf103a09a1b2c3d4e5f60718",
             expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
@@ -220,8 +175,8 @@ function TestAESDecrypt(t)
         },
     }
     for _, tt in ipairs(tests) do
-        t:Run("aes_decrypt in " .. tostring(tt.mode.text) .. " mode", function(t)
-            local got, err = crypto.aes_decrypt(tt.mode.value, tt.key, tt.init, tt.data)
+        t:Run("aes_decrypt in " .. tostring(tt.mode) .. " mode", function(t)
+            local got, err = crypto.aes_decrypt(tt.mode, tt.key, tt.init, tt.data)
             assert:Equal(t, tt.expected, got)
             assert:Equal(t, tt.err, err)
         end)

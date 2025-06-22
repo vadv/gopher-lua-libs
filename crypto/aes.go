@@ -6,6 +6,7 @@ import (
 	"crypto/cipher"
 	"encoding/hex"
 	"fmt"
+	"strings"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -17,6 +18,12 @@ const (
 	CBC
 	CTR
 )
+
+var modeNames = map[string]mode{
+	"GCM": GCM,
+	"CBC": CBC,
+	"CTR": CTR,
+}
 
 func (m mode) String() string {
 	switch m {
@@ -31,27 +38,39 @@ func (m mode) String() string {
 	}
 }
 
-func decodeParams(l *lua.LState) (mode int, key, iv, data []byte, err error) {
-	mode = l.ToInt(1)
-	keyStr := l.ToString(2)
-	ivStr := l.ToString(3)
-	dataStr := l.ToString(4)
+func parseString(s string) (mode, error) {
+	ret, ok := modeNames[strings.ToUpper(s)]
+	if !ok {
+		return 0, fmt.Errorf("invalid mode: %s", s)
+	}
+	return ret, nil
+}
 
+func decodeParams(l *lua.LState) (m mode, key, iv, data []byte, err error) {
+	modeString := l.ToString(1)
+	m, err = parseString(modeString)
+	if err != nil {
+		return 0, nil, nil, nil, err
+	}
+
+	keyStr := l.ToString(2)
 	key, err = hex.DecodeString(keyStr)
 	if err != nil {
 		return 0, nil, nil, nil, fmt.Errorf("failed to decode key: %v", err)
 	}
 
+	ivStr := l.ToString(3)
 	iv, err = hex.DecodeString(ivStr)
 	if err != nil {
 		return 0, nil, nil, nil, fmt.Errorf("failed to decode IV: %v", err)
 	}
 
+	dataStr := l.ToString(4)
 	data, err = hex.DecodeString(dataStr)
 	if err != nil {
 		return 0, nil, nil, nil, fmt.Errorf("failed to decode data: %v", err)
 	}
-	return mode, key, iv, data, nil
+	return m, key, iv, data, nil
 }
 
 // encryptAES implements AES encryption given mode, key, plaintext, and init value.
@@ -82,9 +101,8 @@ func encryptAES(m mode, key, init, plaintext []byte) ([]byte, error) {
 		mode.CryptBlocks(ciphertext, padded)
 		return ciphertext, nil
 	case CTR:
-		l := len(init)
-		if l != block.BlockSize() {
-			return nil, fmt.Errorf("invalid IV size: %d, expected: %d", l, block.BlockSize())
+		if len(init) != block.BlockSize() {
+			return nil, fmt.Errorf("invalid IV size: %d, expected: %d", len(init), block.BlockSize())
 		}
 		stream := cipher.NewCTR(block, init)
 		ciphertext := make([]byte, len(plaintext))

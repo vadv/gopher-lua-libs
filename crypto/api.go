@@ -35,7 +35,7 @@ func AESEncrypt(l *lua.LState) int {
 		return 2
 	}
 
-	enc, err := encryptAES(mode(m), key, iv, data)
+	enc, err := encryptAES(m, key, iv, data)
 	if err != nil {
 		l.Push(lua.LNil)
 		l.Push(lua.LString(fmt.Sprintf("failed to encrypt: %v", err)))
