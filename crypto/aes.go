@@ -67,16 +67,14 @@ func encryptAES(m mode, key, init, plaintext []byte) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		l := len(init)
-		if l != aesGCM.NonceSize() {
+		if len(init) != aesGCM.NonceSize() {
 			return nil, fmt.Errorf("incorrect GCM nonce size: %d, expected: %d", len(init), aesGCM.NonceSize())
 		}
 		ciphertext := aesGCM.Seal(nil, init, plaintext, nil)
 		return ciphertext, nil
 	case CBC:
-		l := len(init)
-		if l != block.BlockSize() {
-			return nil, fmt.Errorf("invalid IV size: %d, expected: %d", l, block.BlockSize())
+		if len(init) != block.BlockSize() {
+			return nil, fmt.Errorf("invalid IV size: %d, expected: %d", len(init), block.BlockSize())
 		}
 		padded := pad(plaintext, aes.BlockSize)
 		mode := cipher.NewCBCEncrypter(block, init)
@@ -97,7 +95,7 @@ func encryptAES(m mode, key, init, plaintext []byte) ([]byte, error) {
 	}
 }
 
-// decryptAES implements AES decryption given mode, key, cyphertext, and init value.
+// decryptAES implements AES decryption given mode, key, ciphertext, and init value.
 // Init value is either initialization vector or nonce, depending on the mode.
 func decryptAES(m mode, key, init, ciphertext []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
