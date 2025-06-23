@@ -32,23 +32,12 @@ dGhpcyBpcyBhIDx0YWc-IGFuZCBzaG91bGQgYmUgZW5jb2RlZA==
 ```lua
 local hex = require 'hex'
 
-s, err = hex.decode_string("Zm9vAWJhcg")
+decoded, err = hex.decode_string("666f6f62617262617a")
 assert(not err, err)
-print(s)
+print(decoded)
 foobar
 
-s, err = hex.StdEncoding:decode_string("Zm9vAWJhcg==")
-assert(not err, err)
-print(s)
-foobar
-
-s, err = hex.RawURLEncoding:decode_string("dGhpcyBpcyBhIDx0YWc-IGFuZCBzaG91bGQgYmUgZW5jb2RlZA")
-assert(not err, err)
-print(s)
-this is a <tag> and should be encoded
-
-s, err = hex.URLEncoding:decode_string("dGhpcyBpcyBhIDx0YWc-IGFuZCBzaG91bGQgYmUgZW5jb2RlZA==")
-assert(not err, err)
-print(s)
-this is a <tag> and should be encoded
+encoded = hex.encode_to_string(decoded)
+print(encoded)
+666f6f62617262617a
 ```
