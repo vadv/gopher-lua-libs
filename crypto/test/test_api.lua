@@ -2,6 +2,8 @@ local crypto = require("crypto")
 local assert = require 'assert'
 local hex = require 'hex'
 local require = require 'require'
+local filepath = require 'filepath'
+local ioutil = require 'ioutil'
 
 function TestMD5(t)
     local tests = {
@@ -211,5 +213,60 @@ function TestAESEncrypt(t)
         require:NoError(t, err)
         got = hex.encode_to_string(got)
         assert:Equal(t, tt.err, err)
+    end
+end
+
+function TestAESDecrypt(t)
+    tests = {
+        {
+            data = "138434a80bd7dcd9ee8adc",
+            mode = "CTR",
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "e3057fc2bf103a09a1b2c3d4e5f60718",
+            expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            wantErr = false,
+        },
+    }
+    for _, tt in ipairs(tests) do
+        t:Run("aes_decrypt in " .. tostring(tt.mode) .. " mode", function(t)
+            local key, err = hex.decode_string(tt.key)
+            require:NoError(t, err)
+            local init, err = hex.decode_string(tt.init)
+            require:NoError(t, err)
+            local data, err = hex.decode_string(tt.data)
+            require:NoError(t, err)
+            local got, err = crypto.aes_decrypt(tt.mode, key, init, data)
+            if tt.wantErr then
+                require:Error(t, err)
+                return
+            end
+            require:NoError(t, err)
+            got, err = hex.encode_to_string(got)
+            require:NoError(t, err)
+            assert:Equal(t, tt.expected, got)
+        end)
+    end
+end
+
+function TestAESCodecFile(t)
+    for i = 1, 1 do
+        local data, err = ioutil.read_file(filepath.join("test/data", tostring(i) .. ".data.bin"))
+        require:NoError(t, err)
+        local expected, err = ioutil.read_file(filepath.join("test/data", tostring(i) .. ".expected.bin"))
+        require:NoError(t, err)
+        local init, err = ioutil.read_file(filepath.join("test/data", tostring(i) .. ".init.bin"))
+        require:NoError(t, err)
+        local key, err = ioutil.read_file(filepath.join("test/data", tostring(i) .. ".key.bin"))
+        require:NoError(t, err)
+        t:Run("TestAESEncryptFile " .. tostring(i), function(t)
+            local got, err = crypto.aes_encrypt("CTR", key, init, data)
+            require:NoError(t, err)
+            assert:Equal(t, expected, got)
+
+            local decrypted, err = crypto.aes_decrypt("CTR", key, init, got)
+            t:Logf('data: "%s", decrypted: "%s"', data, decrypted)
+            require:NoError(t, err)
+            assert:Equal(t, data, decrypted)
+        end)
     end
 end
