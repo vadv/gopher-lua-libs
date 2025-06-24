@@ -1,5 +1,7 @@
 local crypto = require("crypto")
 local assert = require 'assert'
+local hex = require 'hex'
+local require = require 'require'
 
 function TestMD5(t)
     local tests = {
@@ -39,7 +41,7 @@ function TestSha256(t)
     end
 end
 
-function TestAESEncrypt(t)
+function TestAESEncryptHex(t)
     local tests = {
         {
             data = "48656c6c6f207w76f726c64", -- "Hello world" in hex
@@ -82,12 +84,12 @@ function TestAESEncrypt(t)
             err = "failed to encrypt: incorrect GCM nonce size: 14, expected: 12",
         },
         {
-            data     = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode     = "cbc",
-            key      = "86e15cbc1cbf510d8f2e51d4b63a2144",
-            init     = "068bb92e032884ba8b260fa7d3a80005",
+            data = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            mode = "cbc",
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "068bb92e032884ba8b260fa7d3a80005",
             expected = "dfba6f71cce4d4b76be301b577d9f095",
-            err      = nil,
+            err = nil,
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
@@ -116,14 +118,14 @@ function TestAESEncrypt(t)
     }
     for _, tt in ipairs(tests) do
         t:Run("aes_encrypt in " .. tostring(tt.mode) .. " mode", function(t)
-            local got, err = crypto.aes_encrypt(tt.mode, tt.key, tt.init, tt.data)
+            local got, err = crypto.aes_encrypt_hex(tt.mode, tt.key, tt.init, tt.data)
             assert:Equal(t, tt.expected, got)
             assert:Equal(t, tt.err, err)
         end)
     end
 end
 
-function TestAESDecrypt(t)
+function TestAESDecryptHex(t)
     local tests = {
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3efwb3e",
@@ -176,9 +178,38 @@ function TestAESDecrypt(t)
     }
     for _, tt in ipairs(tests) do
         t:Run("aes_decrypt in " .. tostring(tt.mode) .. " mode", function(t)
-            local got, err = crypto.aes_decrypt(tt.mode, tt.key, tt.init, tt.data)
+            local got, err = crypto.aes_decrypt_hex(tt.mode, tt.key, tt.init, tt.data)
             assert:Equal(t, tt.expected, got)
             assert:Equal(t, tt.err, err)
         end)
+    end
+end
+
+function TestAESEncrypt(t)
+    tests = {
+        {
+            data = "48656c6c6f20776f726c64",
+            mode = "cbc",
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "068bb92e032884ba8b260fa7d3a80005",
+            expected = "dfba6f71cce4d4b76be301b577d9f095",
+            wantErr = false,
+        },
+    }
+    for _, tt in ipairs(tests) do
+        local key, err = hex.decode_string(tt.key)
+        require:NoError(t, err)
+        local init, err = hex.decode_string(tt.init)
+        require:NoError(t, err)
+        local data, err = hex.decode_string(tt.data)
+        require:NoError(t, err)
+        local got, err = crypto.aes_encrypt(tt.mode, key, init, data)
+        if tt.wantErr then
+            require:Error(t, err)
+            return
+        end
+        require:NoError(t, err)
+        got = hex.encode_to_string(got)
+        assert:Equal(t, tt.err, err)
     end
 end

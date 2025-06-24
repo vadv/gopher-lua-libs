@@ -19,8 +19,10 @@ func Loader(L *lua.LState) int {
 }
 
 var api = map[string]lua.LGFunction{
-	"md5":         MD5,
-	"sha256":      SHA256,
-	"aes_encrypt": AESEncrypt,
-	"aes_decrypt": AESDecrypt,
+	"md5":             MD5,
+	"sha256":          SHA256,
+	"aes_encrypt_hex": AESEncryptHex,
+	"aes_decrypt_hex": AESDecryptHex,
+	"aes_encrypt":     AESEncrypt,
+	"aes_decrypt":     AESDecrypt,
 }
