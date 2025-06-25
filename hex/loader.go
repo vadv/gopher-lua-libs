@@ -1,8 +1,6 @@
 package hex
 
-import (
-	lua "github.com/yuin/gopher-lua"
-)
+import lua "github.com/yuin/gopher-lua"
 
 // Preload adds yaml to the given Lua state's package.preload table. After it
 // has been preloaded, it can be loaded using require:
@@ -17,7 +15,7 @@ func Loader(L *lua.LState) int {
 	registerHexDecoder(L)
 	registerHexEncoder(L)
 
-	// Register the encodings offered by base64 go module.
+	// Register the encodings offered by hex go module.
 	t := L.NewTable()
 	L.SetFuncs(t, map[string]lua.LGFunction{
 		"decode_string":    DecodeString,

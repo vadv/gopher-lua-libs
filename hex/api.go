@@ -1,4 +1,4 @@
-// Package hex implements base64 encode/decode functionality for lua.
+// Package hex implements hex encode/decode functionality for lua.
 package hex
 
 import (
