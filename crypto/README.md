@@ -31,14 +31,14 @@ if not(crypto.sha256("1\n") == "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9
 end
 
 --- aes encrypt in GCM mode with hex-encoded data
-s, err = crypto.aes_encrypt_hex("GCM", "86e15cbc1cbf510d8f2e51d4b63a2144", "b6b86d581a991a652158bd10", "48656c6c6f20776f726c64")
+s, err = crypto.aes_encrypt_hex(crypto.GCM, "86e15cbc1cbf510d8f2e51d4b63a2144", "b6b86d581a991a652158bd10", "48656c6c6f20776f726c64")
 assert(not err, err)
 if not(s == "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e") then
     error("encrypt AES")
 end
 
 --- aes decrypt in GCM mode with hex-encoded data
-s, err = crypto.aes_decrypt_hex("GCM", "86e15cbc1cbf510d8f2e51d4b63a2144", "b6b86d581a991a652158bd10", "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e")
+s, err = crypto.aes_decrypt_hex(crypto.GCM, "86e15cbc1cbf510d8f2e51d4b63a2144", "b6b86d581a991a652158bd10", "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e")
 assert(not err, err)
 if not(s == "48656c6c6f20776f726c64") then
     error("decrypt AES")
@@ -53,20 +53,20 @@ iv, err = hex.decode_string('b6b86d581a991a652158bd10')
 assert(not err, err)
 plaintext, err = hex.decode_string('48656c6c6f20776f726c64')
 assert(not err, err)
-s, err = crypto.aes_encrypt("GCM", key, iv, plaintext)
+s, err = crypto.aes_encrypt(crypto.GCM, key, iv, plaintext)
 assert(not err, err)
 encrypted, err = hex.decode_string("7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e")
 assert(not err, err)
 
 --- aes encrypt binary in GCM mode
-s, err = crypto.aes_encrypt("GCM", key, iv, plaintext)
+s, err = crypto.aes_encrypt(crypto.GCM, key, iv, plaintext)
 assert(not err, err)
 if not(s == encrypted) then
     error("encrypt AES")
 end
 
 --- aes decrypt in GCM mode
-s, err = crypto.aes_decrypt("GCM", key, iv, encrypted)
+s, err = crypto.aes_decrypt(crypto.GCM, key, iv, encrypted)
 assert(not err, err)
 if not(s == plaintext) then
     error("decrypt AES")

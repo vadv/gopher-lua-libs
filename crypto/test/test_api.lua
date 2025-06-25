@@ -47,7 +47,7 @@ function TestAESEncryptHex(t)
     local tests = {
         {
             data = "48656c6c6f207w76f726c64", -- "Hello world" in hex
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -55,7 +55,7 @@ function TestAESEncryptHex(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf51d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -63,7 +63,7 @@ function TestAESEncryptHex(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
@@ -71,7 +71,7 @@ function TestAESEncryptHex(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd010211",
             expected = nil,
@@ -79,7 +79,7 @@ function TestAESEncryptHex(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd010211",
             expected = nil,
@@ -95,7 +95,7 @@ function TestAESEncryptHex(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "CBC",
+            mode = crypto.CBC,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "068bb92e03288884ba8b260fa7d3a80005",
             expected = nil,
@@ -103,7 +103,7 @@ function TestAESEncryptHex(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "CTR",
+            mode = crypto.CTR,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "e3057fc2bf103a09a1b2c3d4e5f60718",
             expected = "138434a80bd7dcd9ee8adc",
@@ -111,7 +111,7 @@ function TestAESEncryptHex(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "CTR",
+            mode = crypto.CTR,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "e3057fc2b9f103a909a1b2c3d4e5f60718",
             expected = nil,
@@ -131,7 +131,7 @@ function TestAESDecryptHex(t)
     local tests = {
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3efwb3e",
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -139,7 +139,7 @@ function TestAESDecryptHex(t)
         },
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf51d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -147,7 +147,7 @@ function TestAESDecryptHex(t)
         },
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
@@ -155,7 +155,7 @@ function TestAESDecryptHex(t)
         },
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd010211",
             expected = nil,
@@ -171,7 +171,7 @@ function TestAESDecryptHex(t)
         },
         {
             data = "138434a80bd7dcd9ee8adc",
-            mode = "CTR",
+            mode = crypto.CTR,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "e3057fc2bf103a09a1b2c3d4e5f60718",
             expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
@@ -191,7 +191,7 @@ function TestAESEncrypt(t)
     tests = {
         {
             data = "48656c6c6f20776f726c64",
-            mode = "cbc",
+            mode = crypto.CBC,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "068bb92e032884ba8b260fa7d3a80005",
             expected = "dfba6f71cce4d4b76be301b577d9f095",
@@ -220,7 +220,7 @@ function TestAESDecrypt(t)
     tests = {
         {
             data = "138434a80bd7dcd9ee8adc",
-            mode = "CTR",
+            mode = crypto.CTR,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "e3057fc2bf103a09a1b2c3d4e5f60718",
             expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
@@ -259,11 +259,11 @@ function TestAESCodecFile(t)
         local key, err = ioutil.read_file(filepath.join("test/data", tostring(i) .. ".key.bin"))
         require:NoError(t, err)
         t:Run("TestAESEncryptFile " .. tostring(i), function(t)
-            local got, err = crypto.aes_encrypt("CTR", key, init, data)
+            local got, err = crypto.aes_encrypt(crypto.CTR, key, init, data)
             require:NoError(t, err)
             assert:Equal(t, expected, got)
 
-            local decrypted, err = crypto.aes_decrypt("CTR", key, init, got)
+            local decrypted, err = crypto.aes_decrypt(crypto.CTR, key, init, got)
             t:Logf('data: "%s", decrypted: "%s"', data, decrypted)
             require:NoError(t, err)
             assert:Equal(t, data, decrypted)
