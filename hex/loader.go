@@ -2,10 +2,10 @@ package hex
 
 import lua "github.com/yuin/gopher-lua"
 
-// Preload adds yaml to the given Lua state's package.preload table. After it
+// Preload adds hex to the given Lua state's package.preload table. After it
 // has been preloaded, it can be loaded using require:
 //
-//	local yaml = require("yaml")
+//	local hex = require("hex")
 func Preload(L *lua.LState) {
 	L.PreloadModule("hex", Loader)
 }
