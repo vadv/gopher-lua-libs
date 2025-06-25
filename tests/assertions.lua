@@ -152,7 +152,7 @@ function assertions:NoErrorf(t, err, fmt, ...)
     if not err then
         return true
     end
-    return self:Fail(t, string.format([[
+    return self:Failf(t, string.format([[
 
 Error:      	Received unexpected error:
                 %s
