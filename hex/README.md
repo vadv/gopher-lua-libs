@@ -9,19 +9,19 @@ Lua module for [encoding/hex](https://pkg.go.dev/encoding/hex)
 ```lua
 local hex = require("hex")
 
-s = hex.RawStdEncoding:encode_to_string("foo\01bar")
+s = hex:encode_to_string("foo\01bar")
 print(s)
 Zm9vAWJhcg
 
-s = hex.StdEncoding:encode_to_string("foo\01bar")
+s = hex:encode_to_string("foo\01bar")
 print(s)
 Zm9vAWJhcg==
 
-s = hex.RawURLEncoding:encode_to_string("this is a <tag> and should be encoded")
+s = hex:encode_to_string("this is a <tag> and should be encoded")
 print(s)
 dGhpcyBpcyBhIDx0YWc-IGFuZCBzaG91bGQgYmUgZW5jb2RlZA
 
-s = hex.URLEncoding:encode_to_string("this is a <tag> and should be encoded")
+s = hex:encode_to_string("this is a <tag> and should be encoded")
 print(s)
 dGhpcyBpcyBhIDx0YWc-IGFuZCBzaG91bGQgYmUgZW5jb2RlZA==
 
