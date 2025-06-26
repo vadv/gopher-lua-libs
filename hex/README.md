@@ -11,19 +11,7 @@ local hex = require("hex")
 
 s = hex:encode_to_string("foo\01bar")
 print(s)
-Zm9vAWJhcg
-
-s = hex:encode_to_string("foo\01bar")
-print(s)
-Zm9vAWJhcg==
-
-s = hex:encode_to_string("this is a <tag> and should be encoded")
-print(s)
-dGhpcyBpcyBhIDx0YWc-IGFuZCBzaG91bGQgYmUgZW5jb2RlZA
-
-s = hex:encode_to_string("this is a <tag> and should be encoded")
-print(s)
-dGhpcyBpcyBhIDx0YWc-IGFuZCBzaG91bGQgYmUgZW5jb2RlZA==
+666f6f01626172
 
 ```
 
@@ -32,12 +20,12 @@ dGhpcyBpcyBhIDx0YWc-IGFuZCBzaG91bGQgYmUgZW5jb2RlZA==
 ```lua
 local hex = require 'hex'
 
-decoded, err = hex.decode_string("666f6f62617262617a")
+decoded, err = hex.decode_string("666f6f01626172")
 assert(not err, err)
 print(decoded)
 foobar
 
 encoded = hex.encode_to_string(decoded)
 print(encoded)
-666f6f62617262617a
+666f6f01626172
 ```
