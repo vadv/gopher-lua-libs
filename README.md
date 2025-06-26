@@ -26,6 +26,7 @@ go get github.com/vadv/gopher-lua-libs
 * [db](/db) access to databases
 * [filepath](/filepath) path.filepath port
 * [goos](/goos) os port
+* [hex](/hex) Port of [encoding/hex](https://pkg.go.dev/encoding/hex)
 * [http](/http) http.client && http.server
 * [humanize](/humanize) humanize [github.com/dustin/go-humanize](https://github.com/dustin/go-humanize) port
 * [inspect](/inspect) pretty print [github.com/kikito/inspect.lua](https://github.com/kikito/inspect.lua)
