@@ -28,6 +28,26 @@ func SHA256(L *lua.LState) int {
 
 // AESEncrypt implements AES encryption in Lua.
 func AESEncrypt(l *lua.LState) int {
+	modeStr := l.CheckString(1)
+	m, err := parseString(modeStr)
+	if err != nil {
+		l.ArgError(1, err.Error())
+	}
+	key := []byte(l.CheckString(2))
+	iv := []byte(l.CheckString(3))
+	data := []byte(l.CheckString(4))
+	enc, err := encryptAES(m, key, iv, data)
+	if err != nil {
+		l.Push(lua.LNil)
+		l.Push(lua.LString(fmt.Sprintf("failed to encrypt: %v", err)))
+		return 2
+	}
+	l.Push(lua.LString(enc))
+	return 1
+}
+
+// AESEncryptHex implements AES encryption in Lua.
+func AESEncryptHex(l *lua.LState) int {
 	m, key, iv, data, err := decodeParams(l)
 	if err != nil {
 		l.Push(lua.LNil)
@@ -47,6 +67,26 @@ func AESEncrypt(l *lua.LState) int {
 
 // AESDecrypt implement AES decryption in Lua.
 func AESDecrypt(l *lua.LState) int {
+	modeStr := l.CheckString(1)
+	m, err := parseString(modeStr)
+	if err != nil {
+		l.ArgError(1, err.Error())
+	}
+	key := []byte(l.CheckString(2))
+	iv := []byte(l.CheckString(3))
+	data := []byte(l.CheckString(4))
+	dec, err := decryptAES(m, key, iv, data)
+	if err != nil {
+		l.Push(lua.LNil)
+		l.Push(lua.LString(fmt.Sprintf("failed to decrypt: %v", err)))
+		return 2
+	}
+	l.Push(lua.LString(dec))
+	return 1
+}
+
+// AESDecryptHex implement AES decryption in Lua.
+func AESDecryptHex(l *lua.LState) int {
 	m, key, iv, data, err := decodeParams(l)
 	if err != nil {
 		l.Push(lua.LNil)

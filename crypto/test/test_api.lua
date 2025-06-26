@@ -1,5 +1,9 @@
 local crypto = require("crypto")
 local assert = require 'assert'
+local hex = require 'hex'
+local require = require 'require'
+local filepath = require 'filepath'
+local ioutil = require 'ioutil'
 
 function TestMD5(t)
     local tests = {
@@ -39,11 +43,11 @@ function TestSha256(t)
     end
 end
 
-function TestAESEncrypt(t)
+function TestAESEncryptHex(t)
     local tests = {
         {
             data = "48656c6c6f207w76f726c64", -- "Hello world" in hex
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -51,7 +55,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf51d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -59,7 +63,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
@@ -67,7 +71,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd010211",
             expected = nil,
@@ -75,23 +79,23 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd010211",
             expected = nil,
             err = "failed to encrypt: incorrect GCM nonce size: 14, expected: 12",
         },
         {
-            data     = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode     = "cbc",
-            key      = "86e15cbc1cbf510d8f2e51d4b63a2144",
-            init     = "068bb92e032884ba8b260fa7d3a80005",
+            data = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            mode = "cbc",
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "068bb92e032884ba8b260fa7d3a80005",
             expected = "dfba6f71cce4d4b76be301b577d9f095",
-            err      = nil,
+            err = nil,
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "CBC",
+            mode = crypto.CBC,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "068bb92e03288884ba8b260fa7d3a80005",
             expected = nil,
@@ -99,7 +103,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "CTR",
+            mode = crypto.CTR,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "e3057fc2bf103a09a1b2c3d4e5f60718",
             expected = "138434a80bd7dcd9ee8adc",
@@ -107,7 +111,7 @@ function TestAESEncrypt(t)
         },
         {
             data = "48656c6c6f20776f726c64", -- "Hello world" in hex
-            mode = "CTR",
+            mode = crypto.CTR,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "e3057fc2b9f103a909a1b2c3d4e5f60718",
             expected = nil,
@@ -116,18 +120,18 @@ function TestAESEncrypt(t)
     }
     for _, tt in ipairs(tests) do
         t:Run("aes_encrypt in " .. tostring(tt.mode) .. " mode", function(t)
-            local got, err = crypto.aes_encrypt(tt.mode, tt.key, tt.init, tt.data)
+            local got, err = crypto.aes_encrypt_hex(tt.mode, tt.key, tt.init, tt.data)
             assert:Equal(t, tt.expected, got)
             assert:Equal(t, tt.err, err)
         end)
     end
 end
 
-function TestAESDecrypt(t)
+function TestAESDecryptHex(t)
     local tests = {
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3efwb3e",
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -135,7 +139,7 @@ function TestAESDecrypt(t)
         },
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf51d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = nil,
@@ -143,7 +147,7 @@ function TestAESDecrypt(t)
         },
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd10",
             expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
@@ -151,7 +155,7 @@ function TestAESDecrypt(t)
         },
         {
             data = "7ec4e38508a26abf7b46e8dc90a7299d5144bcf045e460c3ef6b3e",
-            mode = "GCM",
+            mode = crypto.GCM,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "b6b86d581a991a652158bd010211",
             expected = nil,
@@ -167,7 +171,7 @@ function TestAESDecrypt(t)
         },
         {
             data = "138434a80bd7dcd9ee8adc",
-            mode = "CTR",
+            mode = crypto.CTR,
             key = "86e15cbc1cbf510d8f2e51d4b63a2144",
             init = "e3057fc2bf103a09a1b2c3d4e5f60718",
             expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
@@ -176,9 +180,93 @@ function TestAESDecrypt(t)
     }
     for _, tt in ipairs(tests) do
         t:Run("aes_decrypt in " .. tostring(tt.mode) .. " mode", function(t)
-            local got, err = crypto.aes_decrypt(tt.mode, tt.key, tt.init, tt.data)
+            local got, err = crypto.aes_decrypt_hex(tt.mode, tt.key, tt.init, tt.data)
             assert:Equal(t, tt.expected, got)
             assert:Equal(t, tt.err, err)
+        end)
+    end
+end
+
+function TestAESEncrypt(t)
+    tests = {
+        {
+            data = "48656c6c6f20776f726c64",
+            mode = crypto.CBC,
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "068bb92e032884ba8b260fa7d3a80005",
+            expected = "dfba6f71cce4d4b76be301b577d9f095",
+            wantErr = false,
+        },
+    }
+    for _, tt in ipairs(tests) do
+        local key, err = hex.decode_string(tt.key)
+        require:NoError(t, err)
+        local init, err = hex.decode_string(tt.init)
+        require:NoError(t, err)
+        local data, err = hex.decode_string(tt.data)
+        require:NoError(t, err)
+        local got, err = crypto.aes_encrypt(tt.mode, key, init, data)
+        if tt.wantErr then
+            require:Error(t, err)
+            return
+        end
+        require:NoError(t, err)
+        got = hex.encode_to_string(got)
+        assert:Equal(t, tt.err, err)
+    end
+end
+
+function TestAESDecrypt(t)
+    tests = {
+        {
+            data = "138434a80bd7dcd9ee8adc",
+            mode = crypto.CTR,
+            key = "86e15cbc1cbf510d8f2e51d4b63a2144",
+            init = "e3057fc2bf103a09a1b2c3d4e5f60718",
+            expected = "48656c6c6f20776f726c64", -- "Hello world" in hex
+            wantErr = false,
+        },
+    }
+    for _, tt in ipairs(tests) do
+        t:Run("aes_decrypt in " .. tostring(tt.mode) .. " mode", function(t)
+            local key, err = hex.decode_string(tt.key)
+            require:NoError(t, err)
+            local init, err = hex.decode_string(tt.init)
+            require:NoError(t, err)
+            local data, err = hex.decode_string(tt.data)
+            require:NoError(t, err)
+            local got, err = crypto.aes_decrypt(tt.mode, key, init, data)
+            if tt.wantErr then
+                require:Error(t, err)
+                return
+            end
+            require:NoError(t, err)
+            got, err = hex.encode_to_string(got)
+            require:NoError(t, err)
+            assert:Equal(t, tt.expected, got)
+        end)
+    end
+end
+
+function TestAESCodecFile(t)
+    for i = 1, 1 do
+        local data, err = ioutil.read_file(filepath.join("test/data", tostring(i) .. ".data.bin"))
+        require:NoError(t, err)
+        local expected, err = ioutil.read_file(filepath.join("test/data", tostring(i) .. ".expected.bin"))
+        require:NoError(t, err)
+        local init, err = ioutil.read_file(filepath.join("test/data", tostring(i) .. ".init.bin"))
+        require:NoError(t, err)
+        local key, err = ioutil.read_file(filepath.join("test/data", tostring(i) .. ".key.bin"))
+        require:NoError(t, err)
+        t:Run("TestAESEncryptFile " .. tostring(i), function(t)
+            local got, err = crypto.aes_encrypt(crypto.CTR, key, init, data)
+            require:NoError(t, err)
+            assert:Equal(t, expected, got)
+
+            local decrypted, err = crypto.aes_decrypt(crypto.CTR, key, init, got)
+            t:Logf('data: "%s", decrypted: "%s"', data, decrypted)
+            require:NoError(t, err)
+            assert:Equal(t, data, decrypted)
         end)
     end
 end
