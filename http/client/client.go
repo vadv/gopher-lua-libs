@@ -103,12 +103,15 @@ func New(L *lua.LState) int {
 	tlsConfig := &tls.Config{}
 	transport := &http.Transport{}
 	// parse env
-	if proxyEnv := os.Getenv(`HTTP_PROXY`); proxyEnv != `` {
-		proxyUrl, err := url.Parse(proxyEnv)
-		if err == nil {
-			transport.Proxy = http.ProxyURL(proxyUrl)
+	if !config.RawGet(lua.LString("disable_env_proxy")).(lua.LBool) {
+		if proxyEnv := os.Getenv(`HTTP_PROXY`); proxyEnv != `` {
+			proxyUrl, err := url.Parse(proxyEnv)
+			if err == nil {
+				transport.Proxy = http.ProxyURL(proxyUrl)
+			}
 		}
 	}
+
 	transport.MaxIdleConns = 0
 	transport.MaxIdleConnsPerHost = 1
 	transport.IdleConnTimeout = DefaultTimeout
@@ -218,6 +221,10 @@ func New(L *lua.LState) int {
 					client.headers = headers
 				} else {
 					L.ArgError(1, "headers must be table")
+				}
+			case `disable_redirect`:
+				client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+					return http.ErrUseLastResponse
 				}
 			}
 		})
