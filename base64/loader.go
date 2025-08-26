@@ -2,13 +2,14 @@ package base64
 
 import (
 	"encoding/base64"
+
 	lua "github.com/yuin/gopher-lua"
 )
 
-// Preload adds yaml to the given Lua state's package.preload table. After it
+// Preload adds base64 to the given Lua state's package.preload table. After it
 // has been preloaded, it can be loaded using require:
 //
-//  local yaml = require("yaml")
+//  local base64 = require("base64")
 func Preload(L *lua.LState) {
 	L.PreloadModule("base64", Loader)
 }

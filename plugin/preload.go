@@ -4,6 +4,7 @@ import (
 	"github.com/vadv/gopher-lua-libs/argparse"
 	"github.com/vadv/gopher-lua-libs/aws/cloudwatch"
 	"github.com/vadv/gopher-lua-libs/base64"
+	"github.com/vadv/gopher-lua-libs/bit"
 	"github.com/vadv/gopher-lua-libs/cert_util"
 	"github.com/vadv/gopher-lua-libs/chef"
 	"github.com/vadv/gopher-lua-libs/cmd"
@@ -11,6 +12,7 @@ import (
 	"github.com/vadv/gopher-lua-libs/db"
 	"github.com/vadv/gopher-lua-libs/filepath"
 	"github.com/vadv/gopher-lua-libs/goos"
+	"github.com/vadv/gopher-lua-libs/hex"
 	"github.com/vadv/gopher-lua-libs/http"
 	"github.com/vadv/gopher-lua-libs/humanize"
 	"github.com/vadv/gopher-lua-libs/inspect"
@@ -43,6 +45,7 @@ func PreloadAll(L *lua.LState) {
 
 	argparse.Preload(L)
 	base64.Preload(L)
+	bit.Preload(L)
 	cert_util.Preload(L)
 	chef.Preload(L)
 	cloudwatch.Preload(L)
@@ -51,6 +54,7 @@ func PreloadAll(L *lua.LState) {
 	db.Preload(L)
 	filepath.Preload(L)
 	goos.Preload(L)
+	hex.Preload(L)
 	http.Preload(L)
 	humanize.Preload(L)
 	inspect.Preload(L)
