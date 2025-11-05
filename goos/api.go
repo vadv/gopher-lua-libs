@@ -3,6 +3,7 @@ package goos
 
 import (
 	"os"
+	"strings"
 
 	lua "github.com/yuin/gopher-lua"
 )
@@ -51,4 +52,16 @@ func MkdirAll(L *lua.LState) int {
 		return 1
 	}
 	return 0
+}
+
+// Environ lua goos.environ() returns table
+func Environ(L *lua.LState) int {
+	envVars := os.Environ()
+	result := L.NewTable()
+	for _, env := range envVars {
+		parts := strings.SplitN(env, "=", 2)
+		result.RawSetString(parts[0], lua.LString(parts[1]))
+	}
+	L.Push(result)
+	return 1
 }

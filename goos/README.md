@@ -26,4 +26,12 @@ if not(page_size > 0) then error("bad pagesize") end
 goos.mkdir_all("./test/test_dir/test_dir/all")
 local stat, err = goos.stat("./test/test_dir/test_dir/all")
 if err then error(err) end
+
+-- environ
+local env = goos.environ()
+print(env.PATH)  -- prints the PATH environment variable
+print(env.HOME)  -- prints the HOME environment variable
+for key, value in pairs(env) do
+    print(key .. "=" .. value)
+end
 ```
