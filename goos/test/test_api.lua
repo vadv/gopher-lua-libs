@@ -35,4 +35,6 @@ function Test_environ(t)
     assert(env.PATH or env.Path, "PATH environment variable should exist")
     -- Test environment variable with equals sign in value
     assert(env.ENV_VAR == "TEST=1", "ENV_VAR should be TEST=1")
+    -- Test environment variable with empty value
+    assert(env.EMPTY_VAR == "", "EMPTY_VAR should be empty string")
 end
