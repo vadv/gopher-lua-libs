@@ -82,3 +82,27 @@ print(err == nil)
 	// Output:
 	// true
 }
+
+// goos.environ()
+func ExampleEnviron() {
+	state := lua.NewState()
+	Preload(state)
+	source := `
+local goos = require("goos")
+local env = goos.environ()
+-- Check that we get a table
+print(type(env) == "table")
+-- Check that we have at least one environment variable
+local count = 0
+for k, v in pairs(env) do
+	count = count + 1
+end
+print(count > 0)
+	`
+	if err := state.DoString(source); err != nil {
+		log.Fatal(err.Error())
+	}
+	// Output:
+	// true
+	// true
+}
