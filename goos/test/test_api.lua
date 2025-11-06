@@ -33,4 +33,6 @@ function Test_environ(t)
     assert(count > 0, "environ should return at least one environment variable")
     -- PATH should exist on most systems
     assert(env.PATH or env.Path, "PATH environment variable should exist")
+    -- Test environment variable with equals sign in value
+    assert(env.ENV_VAR == "TEST=1", "ENV_VAR should be TEST=1")
 end

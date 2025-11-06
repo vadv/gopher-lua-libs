@@ -1,14 +1,19 @@
 package goos
 
 import (
+	"os"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/vadv/gopher-lua-libs/tests"
-	"testing"
 
 	runtime "github.com/vadv/gopher-lua-libs/runtime"
 )
 
 func TestApi(t *testing.T) {
+	os.Setenv("ENV_VAR", "TEST=1")
+	defer os.Unsetenv("ENV_VAR")
+
 	preload := tests.SeveralPreloadFuncs(
 		runtime.Preload,
 		Preload,
